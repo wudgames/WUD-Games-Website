@@ -1,0 +1,779 @@
+openapi: 3.0.0
+info:
+  title: Wud Games Website
+  description: |-
+    Wud Games Website
+    
+    Notes on security levels:
+    1) Unauthenticated: read only access to game library search tools
+    2) Host: adds access to physical game checkout, adds internal notes
+    3) Admin: Full access to read write everything
+  version: 1.0.0
+tags:
+  - name: Unauthenticated
+    description: Calls that any client can make
+  - name: Host
+    description: Calls that require authentication
+  - name: Admin
+    description: Calls that only the admins can make can make
+
+servers:
+  - url: 'http://wudgames.minecraft.best:8000/api'
+paths:
+  /auth/login:
+    post:
+      operationId: loginUser
+      summary: Authenticate a user
+      description: Log in a user and issue a bearer token for subsequent requests.
+      tags:
+        - Unauthenticated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username for authentication.
+                  example: user123
+                password:
+                  type: string
+                  description: The password for authentication.
+                  format: password
+                  example: securepassword
+      responses:
+        '200':
+          description: Successfully authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthDTO'
+        '401':
+          description: Invalid credentials.
+  /auth/version:
+    get:
+      summary: Get the current project version
+      description: Returns the current version of the project.
+      operationId: getVersion
+      tags:
+        - Unauthenticated
+      responses:
+        '200':
+          description: Successfully retrieved the project version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    description: The current version of the project
+                    example: "1.0.0"
+  /auth/refresh:
+    post:
+      summary: Refresh JWT Token
+      description: Generates a new JWT token for an authenticated user using the existing token in the `Authorization` header.
+      tags:
+        - Host
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successfully refreshed token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthDTO'
+        '401':
+          description: Unauthorized - Invalid or expired token.
+  /games:
+    get:
+      operationId: getGames
+      summary: Retrieve a list of games
+      description: Retrieve all games or filter games based on criteria.
+      tags:
+        - Unauthenticated
+      parameters:
+        - name: name
+          in: query
+          description: Filter by game name.
+          required: false
+          schema:
+            type: string
+        - name: minPlaytime
+          in: query
+          description: Filter by minimum playtime (in minutes).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+        - name: maxPlaytime
+          in: query
+          description: Filter by maximum playtime (in minutes).
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+        - name: genre
+          in: query
+          description: Filter by genre.
+          required: false
+          schema:
+            type: string
+        - name: playerCount
+          in: query
+          description: Filter by player count.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: A list of games matching the criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+    post:
+      summary: Add a new game
+      operationId: addGame
+      description: Add a new game to the collection.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+      responses:
+        '201':
+          description: The game was successfully created.
+        '400':
+          description: Bad Request
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+  /games/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Update an existing game
+      operationId: updateGame
+      tags:
+        - Admin
+      description: Edit the details of an existing game.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+      responses:
+        '200':
+          description: The game was successfully updated.
+        '400':
+          description: Bad Request
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: deleteGame
+      summary: Delete a game
+      tags:
+        - Admin
+      description: Remove a game from the collection.
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The game was successfully deleted.
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+    get:
+      summary: Retrieve a game by ID
+      description: Get the details of a specific game by its ID.
+      tags:
+        - Unauthenticated
+      responses:
+        '200':
+          description: The requested game details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '404':
+          description: Game not found.
+    patch:
+      summary: Update specific fields of a game
+      description: Update specific fields of an existing game. Only the fields provided in the request body will be updated.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: A JSON object containing the fields to update.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the game.
+                  example: Updated Game Name
+                minPlaytime:
+                  type: integer
+                  description: The updated minimum playtime in minutes.
+                  minimum: 0
+                  example: 30
+                maxPlaytime:
+                  type: integer
+                  description: The updated maximum playtime in minutes.
+                  minimum: 0
+                  example: 120
+                genre:
+                  type: string
+                  description: The updated genre of the game.
+                  example: Strategy
+                minPlayers:
+                  type: integer
+                  description: The updated number of players required.
+                  minimum: 1
+                  example: 4
+                maxPlayers:
+                  type: integer
+                  description: The updated number of players required.
+                  minimum: 1
+                  example: 4
+      responses:
+        '200':
+          description: The updated game details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Invalid input data.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Game not found.
+  /games/download-csv:
+    get:
+      summary: Download the database as a CSV file
+      description: Generates and downloads a CSV file containing all board games in the database.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: CSV file successfully generated and downloaded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /games/{id}/checkout:
+    post:
+      operationId: checkoutGame
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      summary: Checkout a games
+      description: Mark a game as checked out.
+      tags:
+        - Host
+      security:
+        - bearerAuth: [ ]
+
+      responses:
+        '200':
+          description: Game checked out successfully.
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Game checked out successfully.
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+  /games/{id}/return:
+    post:
+      summary: Return a game
+      description: Increment the available copies of the game.
+      tags:
+        - Host
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the game.
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Game returned successfully.
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Game returned successfully.
+        '404':
+          description: Game not found.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /games/import:
+    post:
+      summary: Import Board Games from a CSV file
+      description: Upload a CSV file to import Board Games into the database. This is currently not programmed.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successfully imported board games from the CSV.
+        '400':
+          description: Invalid CSV format or content.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /games/stats:
+    get:
+      summary: Get Game Night Stats
+      description: Get interesting statistics about game nights
+      parameters:
+        - name: startDate
+          description: Start Date of the Stats Search
+          schema:
+            type: string
+            format: date
+          required: false
+          in: path
+        - name: endDate
+          description: End Date of the stats search
+          schema:
+            type: string
+            format: date
+          required: false
+          in: path
+      tags:
+        - Host
+      responses:
+        '200':
+          description: Successfully got games statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mostPopularGameId:
+                    type: string
+                  mostPopularGameName:
+                    type: string
+                  averageGamesCheckout:
+                    type: number
+                    format: float
+                  mostPopularGameNight:
+                    type: string
+                    format: date
+                  totalCheckouts:
+                    type: integer
+                  averagePlayersPerGame:
+                    type: number
+                    format: float
+                  averagePlaytimePerGame:
+                    type: number
+                    format: float
+                  totalAvailableCopies:
+                    type: integer
+  /games/return-all:
+    put:
+      summary: Mark all games as returned
+      description: Sets the available copies of all games equal to their quantity and returns a list of games that were updated.
+      tags:
+        - Host
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successfully returned games and listed updated games
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The ID of the game
+                    name:
+                      type: string
+                      description: The name of the game
+                    quantity:
+                      type: integer
+                      description: The quantity of the game returned
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+        '500':
+          description: Internal server error
+  /api/consoles:
+    get:
+      summary: "GET api/consoles"
+      operationId: "getAllConsoles"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Console"
+    post:
+      summary: "POST api/consoles"
+      operationId: "createConsole"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Console"
+        required: true
+      responses:
+        "200":
+          description: "Console Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Console"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/consoles/{id}:
+    get:
+      summary: "GET api/consoles/{id}"
+      operationId: "getConsoleById"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Console"
+    put:
+      summary: "PUT api/consoles/{id}"
+      operationId: "updateConsole"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Console"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Console"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      summary: "DELETE api/consoles/{id}"
+      operationId: "deleteConsole"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/consoles/games:
+    get:
+      summary: "GET api/consoles/games"
+      operationId: "getAllConsoleGames"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ConsoleGame"
+    post:
+      summary: "POST api/consoles/games"
+      operationId: "createConsoleGame"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsoleGame"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConsoleGame"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/consoles/games/{id}:
+    get:
+      summary: "GET api/consoles/games/{id}"
+      operationId: "getConsoleGameById"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConsoleGame"
+    put:
+      summary: "PUT api/consoles/games/{id}"
+      operationId: "updateConsoleGame"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsoleGame"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConsoleGame"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      summary: "DELETE api/consoles/games/{id}"
+      operationId: "deleteConsoleGame"
+      tags:
+        - Admin
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the game.
+        name:
+          type: string
+          description: Name of the game.
+        minPlaytime:
+          type: integer
+          description: Minimum playtime of the game in minutes.
+        maxPlaytime:
+          type: integer
+          description: Maximum playtime of tha game in minutes.
+        genre:
+          type: string
+          description: Genre of the game.
+        minPlayerCount:
+          type: integer
+          description: Minimum number of players supported by the game.
+        maxPlayerCount:
+          type: integer
+          description: Maximum number of player supported by the game.
+        availableCopies:
+          type: integer
+          description: Number of copies available for checkout
+        boxImageUrl:
+          type: string
+          description: URL to the box art
+        description:
+          type: string
+          description: Quick description of the game
+        quantity:
+          type: integer
+          description: Number of copies owned of the game
+        checkoutCount:
+          type: integer
+          description: Number of times the games has been checkouted this semester
+        internalNotes:
+          type: string
+          description: Internal notes, only sent to people with host login or above
+    AuthDTO:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Bearer token for authenticated requests.
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        expireTime:
+          type: string
+          description: When the token will expire
+          format: date-time
+        authenticationLevel:
+          type: string
+          enum: [ Unauthenticated, Host, Exec ]
+          description: The level of authentication the token is for
+    Console:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+    ConsoleGame:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        boxImageUrl:
+          type: "string"
+        consoles:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Console"
+        description:
+          type: "string"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Not authenticated
+    Forbidden:
+      description: Missing required roles
