@@ -38,8 +38,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthDTO> login(@RequestHeader HttpHeaders headers, @RequestBody LoginDTO login) {
-        System.out.println(login.getPassword() + " -> " + encoder.encode(login.getPassword()));
-
         UserProperties.User matchingUser = userProperties.getUsers().stream()
                 .filter(user -> user.getUsername().equals(login.getUsername())
                         && (encoder.matches(login.getPassword(), user.getPassword())))
