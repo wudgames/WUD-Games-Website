@@ -26,4 +26,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT SUM(b.availableCopies) FROM BoardGame b")
     Integer findTotalAvailableCopies();
 
+    @Query("SELECT DISTINCT b.genre FROM BoardGame b WHERE b.genre IS NOT NULL ORDER BY b.genre")
+    List<String> findDistinctGenres();
+
 }

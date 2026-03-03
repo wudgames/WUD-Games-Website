@@ -13,7 +13,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVRecord;
-import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,13 +22,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,7 @@ public class BoardGameController {
                                                          @RequestParam(required = false) Integer playerCount) {
         List<BoardGame> games = boardGameRepository.findFiltered(name, genre, minPlayTime, maxPlayTime, playerCount, Sort.by("name"));
 
-        if(jwtUtil.getCurrentAccessLevel().equals(JwtUtil.AccessLevel.ANONYMOUS)) {
+        if(JwtUtil.AccessLevel.ANONYMOUS.equals(jwtUtil.getCurrentAccessLevel())) {
             for (BoardGame game : games) {
                 game.setInternalNotes(null);
                 game.setCheckoutCount(null);
@@ -66,6 +64,12 @@ public class BoardGameController {
         }
 //        List<BoardGame> games = boardGameRepository.findAll();
         return ResponseEntity.ok(games);
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<String>> getGenres() {
+        List<String> genres = boardGameRepository.findDistinctGenres();
+        return ResponseEntity.ok(genres);
     }
 
     @PostMapping
@@ -82,12 +86,13 @@ public class BoardGameController {
             throw new InputErrorException("A104", "A game with that name already exists.");
         }
         BoardGame gameObj = new BoardGame();
-        BeanUtils.copyProperties(game, gameObj);
+        BeanUtils.copyProperties(game, gameObj, "createdAt");
         gameObj.setAvailableCopies(gameObj.getQuantity());
         gameObj.setCheckoutCount(0);
 
         gameObj = boardGameRepository.save(gameObj);
         game.setId(gameObj.getId());
+        game.setCreatedAt(gameObj.getCreatedAt());
         return ResponseEntity.status(201).body(game);
     }
 
@@ -107,8 +112,8 @@ public class BoardGameController {
             throw new InputErrorException("A104", "A game with that name already exists.");
         }
 
-        // Update the game object
-        BeanUtils.copyProperties(game, existingGame, "id"); // Exclude ID from being copied
+        // Update the game object (exclude id and createdAt from being copied)
+        BeanUtils.copyProperties(game, existingGame, "id", "createdAt");
         existingGame = boardGameRepository.save(existingGame);
 
         // Return the updated game
@@ -119,6 +124,7 @@ public class BoardGameController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public ResponseEntity<Void> deleteGame(@PathVariable Long id) {
         // Check if the game exists
         BoardGame game = boardGameRepository.findById(id).orElseThrow(() ->
@@ -126,7 +132,7 @@ public class BoardGameController {
 
 
         // Delete the game
-        boardGameCheckoutRepository.deleteByKey_BoardGame(game);
+        boardGameCheckoutRepository.deleteByBoardGame(game);
         boardGameRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -142,7 +148,7 @@ public class BoardGameController {
         BeanUtils.copyProperties(game, gameDTO);
 
         // Remove sensitive fields if the user is anonymous
-        if (jwtUtil.getCurrentAccessLevel().equals(JwtUtil.AccessLevel.ANONYMOUS)) {
+        if (JwtUtil.AccessLevel.ANONYMOUS.equals(jwtUtil.getCurrentAccessLevel())) {
             gameDTO.setInternalNotes(null);
         }
 
@@ -151,35 +157,34 @@ public class BoardGameController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GameDTO> patchGame(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        // Check if the game exists
+    public ResponseEntity<GameDTO> patchGame(@PathVariable Long id, @RequestBody GameDTO updates) {
         BoardGame game = boardGameRepository.findById(id)
                 .orElseThrow(() -> new InputErrorException("A105", "Game not found with ID: " + id));
 
-        // Apply updates
-        updates.forEach((key, value) -> {
-            Field field = ReflectionUtils.findField(BoardGame.class, key);
-            if (field != null) {
-                if (!field.getName().equals("id")) {
-                    field.setAccessible(true);
-                    ReflectionUtils.setField(field, game, value);
-                }
-            }
-        });
+        if (updates.getName() != null) game.setName(updates.getName());
+        if (updates.getGenre() != null) game.setGenre(updates.getGenre());
+        if (updates.getDescription() != null) game.setDescription(updates.getDescription());
+        if (updates.getMinPlayerCount() != null) game.setMinPlayerCount(updates.getMinPlayerCount());
+        if (updates.getMaxPlayerCount() != null) game.setMaxPlayerCount(updates.getMaxPlayerCount());
+        if (updates.getMinPlaytime() != null) game.setMinPlaytime(updates.getMinPlaytime());
+        if (updates.getMaxPlaytime() != null) game.setMaxPlaytime(updates.getMaxPlaytime());
+        if (updates.getBoxImageUrl() != null) game.setBoxImageUrl(updates.getBoxImageUrl());
+        if (updates.getQuantity() != null) game.setQuantity(updates.getQuantity());
+        if (updates.getAvailableCopies() != null) game.setAvailableCopies(updates.getAvailableCopies());
+        if (updates.getCheckoutCount() != null) game.setCheckoutCount(updates.getCheckoutCount());
+        if (updates.getInternalNotes() != null) game.setInternalNotes(updates.getInternalNotes());
+        if (updates.getLocation() != null) game.setLocation(updates.getLocation());
 
-        // Validate the updated fields
+        // Validate
         if (game.getName() == null || game.getName().isBlank()) {
             throw new InputErrorException("A103", "The 'name' field is required and cannot be empty or blank.");
         }
-        if (boardGameRepository.existsByNameIgnoreCase(game.getName()) &&
-                !game.getId().equals(id)) { // Ensure it's not the same game
+        if (boardGameRepository.existsByNameIgnoreCase(game.getName()) && !game.getId().equals(id)) {
             throw new InputErrorException("A104", "A game with that name already exists.");
         }
 
-        // Save the updated game
         boardGameRepository.save(game);
 
-        // Convert to DTO
         GameDTO updatedGame = new GameDTO();
         BeanUtils.copyProperties(game, updatedGame);
         return ResponseEntity.ok(updatedGame);
@@ -189,25 +194,29 @@ public class BoardGameController {
     @PreAuthorize("hasRole('HOST') or hasRole('ADMIN')")
     public ResponseEntity<String> checkoutGame(@PathVariable Long id) {
         BoardGame game = boardGameRepository.findById(id)
-                .orElseThrow(() -> new OpenApiResourceNotFoundException("Game not found with ID: " + id));
+                .orElseThrow(() -> new InputErrorException("A105", "Game not found with ID: " + id));
         if (game.getAvailableCopies() == null) {
             if (game.getQuantity() == null) {
                 game.setQuantity(1);
                 game.setAvailableCopies(1);
-            } else
+            } else {
                 game.setAvailableCopies(game.getQuantity());
+            }
         }
         if (game.getAvailableCopies() <= 0) {
-            throw new InputErrorException("A105", "No copies available for checkout.");
+            throw new InputErrorException("A106", "No copies available for checkout.");
         }
 
-        BoardGameCheckout.BoardGameCheckoutKey key = new BoardGameCheckout.BoardGameCheckoutKey(game, LocalDate.now(ZoneId.of("America/Chicago")));
-        BoardGameCheckout checkout = boardGameCheckoutRepository.findById(key).orElse(new BoardGameCheckout(key, 0));
-        checkout.setCount(checkout.getCount() + 1);
+        BoardGameCheckout checkout = new BoardGameCheckout();
+        checkout.setBoardGame(game);
+        checkout.setCheckedOutAt(LocalDateTime.now(ZoneId.of("America/Chicago")));
+        String username = jwtUtil.getCurrentUsername();
+        checkout.setCheckedOutBy(username != null ? username : "anonymous");
+        checkout.setActive(true);
         boardGameCheckoutRepository.save(checkout);
 
         game.setAvailableCopies(game.getAvailableCopies() - 1);
-        game.setCheckoutCount(game.getCheckoutCount() + 1);
+        game.setCheckoutCount((game.getCheckoutCount() != null ? game.getCheckoutCount() : 0) + 1);
         boardGameRepository.save(game);
 
         return ResponseEntity.ok("Game checked out successfully.");
@@ -217,10 +226,20 @@ public class BoardGameController {
     @PreAuthorize("hasRole('HOST') or hasRole('ADMIN')")
     public ResponseEntity<String> returnGame(@PathVariable Long id) {
         BoardGame game = boardGameRepository.findById(id)
-                .orElseThrow(() -> new OpenApiResourceNotFoundException("Game not found with ID: " + id));
+                .orElseThrow(() -> new InputErrorException("A105", "Game not found with ID: " + id));
 
         if (game.getAvailableCopies() >= game.getQuantity())
             throw new InputErrorException("A107", "Cannot return game, all games already returned");
+
+        // Mark the oldest active checkout as returned
+        List<BoardGameCheckout> activeCheckouts = boardGameCheckoutRepository.findByBoardGameAndActiveTrue(game);
+        if (!activeCheckouts.isEmpty()) {
+            BoardGameCheckout oldestCheckout = activeCheckouts.get(0);
+            oldestCheckout.setActive(false);
+            oldestCheckout.setReturnedAt(LocalDateTime.now(ZoneId.of("America/Chicago")));
+            boardGameCheckoutRepository.save(oldestCheckout);
+        }
+
         game.setAvailableCopies(game.getAvailableCopies() + 1);
         boardGameRepository.save(game);
 
@@ -239,7 +258,7 @@ public class BoardGameController {
              CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(
                      "ID", "Name", "Min Playtime", "Max Playtime", "Min Players", "Max Players",
                      "Available Copies", "Genre", "Box Art URL", "Description", "Quantity",
-                     "Checkout Count", "Internal Notes"
+                     "Checkout Count", "Internal Notes", "Date Added", "Location"
              ))) {
 
             for (BoardGame game : games) {
@@ -256,7 +275,9 @@ public class BoardGameController {
                         game.getDescription(),
                         game.getQuantity(),
                         game.getCheckoutCount(),
-                        game.getInternalNotes()
+                        game.getInternalNotes(),
+                        game.getCreatedAt(),
+                        game.getLocation()
                 );
             }
 
@@ -379,18 +400,20 @@ public class BoardGameController {
                     //
                 }
                 try {
-                    game.setCheckoutCount(parseCheckoutCount(record.get("Times Checked Out")));
+                    game.setCheckoutCount(parseCheckoutCount(record.get("Checkout Count")));
                 } catch (NumberFormatException e) {
                     // Let the error go
                 }
-                if (record.get("Genres") != null)
+                if (record.isMapped("Genres") && record.get("Genres") != null)
                     game.setGenre(record.get("Genres").trim());
-                if (record.get("Quick Description") != null)
+                if (record.isMapped("Quick Description") && record.get("Quick Description") != null)
                     game.setDescription(record.get("Quick Description").trim());
-                if (record.get("Box Art URL") != null)
+                if (record.isMapped("Box Art URL") && record.get("Box Art URL") != null)
                     game.setBoxImageUrl(record.get("Box Art URL").trim());
-                if (record.get("Notes") != null)
+                if (record.isMapped("Notes") && record.get("Notes") != null)
                     game.setInternalNotes(record.get("Notes").trim());
+                if (record.isMapped("Location") && record.get("Location") != null)
+                    game.setLocation(record.get("Location").trim());
 
                 // Save the entity in the DB
                 boardGameRepository.save(game);

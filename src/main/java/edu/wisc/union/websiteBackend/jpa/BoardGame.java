@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "boardGames")
 @Getter
@@ -21,6 +23,9 @@ public class BoardGame {
     private Integer maxPlaytime;
     private Integer minPlayerCount;
     private Integer maxPlayerCount;
+
+    // NOTE: quantity/availableCopies track copies as simple integers.
+    // For per-copy tracking (individual locations, status), consider a GameCopy child entity in the future.
     private Integer availableCopies;
     private String genre;
     private String boxImageUrl;
@@ -32,5 +37,11 @@ public class BoardGame {
     private Integer quantity;
     private Integer checkoutCount;
     private String internalNotes;
+
+    @Column(updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private LocalDateTime createdAt;
+
+    private String location;
 
 }

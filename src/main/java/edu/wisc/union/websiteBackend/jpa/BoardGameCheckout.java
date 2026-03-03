@@ -1,33 +1,36 @@
 package edu.wisc.union.websiteBackend.jpa;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
-
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.time.LocalDateTime;
 
 @Entity
-@Setter
+@Table(name = "board_game_checkouts")
 @Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class BoardGameCheckout {
-    @EmbeddedId
-    private BoardGameCheckoutKey key;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "checkout_gen")
+    @SequenceGenerator(name = "checkout_gen", sequenceName = "checkout_seq")
+    private Long id;
 
-    private int count = 0;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_game_id", nullable = false)
+    private BoardGame boardGame;
 
-    @Embeddable
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class BoardGameCheckoutKey {
-        @ManyToOne
-        private BoardGame boardGame;
+    @Column(nullable = false)
+    private LocalDateTime checkedOutAt;
 
-        private LocalDate date;
-    }
+    private LocalDateTime returnedAt;
+
+    @Column(nullable = false)
+    private String checkedOutBy;
+
+    private Integer playerCount;
+
+    @Column(nullable = false)
+    private boolean active = true;
 }
-

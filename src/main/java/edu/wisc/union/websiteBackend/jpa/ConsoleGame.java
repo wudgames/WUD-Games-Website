@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,5 +36,9 @@ public class ConsoleGame {
     @Column(length = 1024, columnDefinition = "VARCHAR(1024)")
     @Size(max = 1024)
     private String description;
+
+    @Column(updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private LocalDateTime createdAt;
 
 }

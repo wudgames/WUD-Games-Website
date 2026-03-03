@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.Collections;
+import java.util.Map;
 
 @Log4j2
 @ControllerAdvice
@@ -19,11 +20,10 @@ public class InputErrorAdvice {
     @ResponseBody
     @ExceptionHandler(InputErrorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String inputErrorHandler(HttpServletRequest request, InputErrorException ex)
-    {
+    Map<String, String> inputErrorHandler(HttpServletRequest request, InputErrorException ex) {
         MDC.put("errorCode", ex.getErrorCode());
         log.error(ex.getErrorMessage());
         request.setAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, Collections.singleton(MediaType.APPLICATION_JSON));
-        return "{ \"errorCode\" : \"" + ex.getErrorCode() + "\", \"errorMessage\": \""+ex.getErrorMessage() + "\"}";
+        return Map.of("errorCode", ex.getErrorCode(), "errorMessage", ex.getErrorMessage());
     }
 }

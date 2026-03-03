@@ -2,6 +2,8 @@ package edu.wisc.union.websiteBackend.controllers.games;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class GameDTO {
     private Long id;
@@ -17,4 +19,6 @@ public class GameDTO {
     private Integer quantity;
     private Integer checkoutCount;
     private String internalNotes;
+    private LocalDateTime createdAt;
+    private String location;
 }

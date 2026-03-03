@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "outDir": "./target/classes/static/out-tsc",
     "removeComments": true,
     "baseUrl": "src/main/webapp",
@@ -17,24 +14,20 @@
       "@/*": ["app/*"]
     },
     "sourceMap": true,
-    // "alwaysStrict": true,
+    "alwaysStrict": true,
     "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": false,
-    // "noImplicitAny": true,
-    // "noImplicitOverride": true,
-    // "noImplicitReturns": true,
-    // "noUncheckedIndexedAccess": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    "strict": false,
-    // "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
     "typeRoots": ["src/main/webapp/types", "node_modules/@types"]
   },
-  "exclude": [
-    "node_modules/**/*",
-    "**/build/**/*",
-    "**/out/**/*"
-  ]
+  "exclude": ["node_modules/**/*", "**/build/**/*", "**/out/**/*"]
 }
- 

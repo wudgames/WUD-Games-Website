@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,7 +34,7 @@ import java.util.Collections;
 @Configuration
 
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
@@ -77,7 +77,8 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("*"); // Allows requests from all origins
+        config.addAllowedOriginPattern("http://wudgames.minecraft.best:8000");
+        config.addAllowedOriginPattern("http://localhost:*");
         config.addAllowedHeader("*");       // Allows all headers
         config.addAllowedMethod("*");       // Allows all HTTP methods
 
