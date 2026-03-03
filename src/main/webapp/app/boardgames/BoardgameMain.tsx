@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +22,11 @@ import {
   Upload,
   Download,
   X,
+  MapPin,
+  Users,
+  Clock,
+  Tag,
+  Dice6,
 } from "lucide-react";
 import { Game, useGameManager } from "./GameManagerContext";
 import { useAuth } from "@/AuthContext";
@@ -47,6 +52,106 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+import PageHeader from "@/components/PageHeader";
+
+// --- Similar Games Component ---
+
+interface SimilarGamesProps {
+  gameId: number;
+  onSelectGame: (game: Game) => void;
+}
+
+const SimilarGames: React.FC<SimilarGamesProps> = ({
+  gameId,
+  onSelectGame,
+}) => {
+  const [similarGames, setSimilarGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { auth } = useAuth();
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setSimilarGames([]);
+
+    const fetchSimilar = async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (auth?.token) {
+          headers["Authorization"] = `Bearer ${auth.token}`;
+        }
+        const response = await fetch(`/api/games/${gameId}/similar`, {
+          headers,
+        });
+        if (response.ok && !cancelled) {
+          const data: Game[] = await response.json();
+          setSimilarGames(data);
+        }
+      } catch (error) {
+        console.error("Error fetching similar games:", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void fetchSimilar();
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId, auth?.token]);
+
+  if (!loading && similarGames.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 pt-4 border-t">
+      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-3">
+        Similar Games
+      </h4>
+      <div className="flex gap-3 overflow-x-auto pb-2">
+        {loading
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 w-28 rounded-lg border bg-card p-2"
+              >
+                <Skeleton className="w-full h-20 rounded" />
+                <Skeleton className="h-3 w-20 mt-2" />
+              </div>
+            ))
+          : similarGames.map((similar) => (
+              <button
+                key={similar.id}
+                type="button"
+                className="flex-shrink-0 w-28 rounded-lg border bg-card p-2 text-left hover:bg-accent hover:border-primary/30 transition-colors cursor-pointer"
+                onClick={() => onSelectGame(similar)}
+              >
+                {similar.boxImageUrl ? (
+                  <img
+                    src={similar.boxImageUrl}
+                    alt={similar.name}
+                    className="w-full h-20 object-contain rounded"
+                  />
+                ) : (
+                  <div className="w-full h-20 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                    No image
+                  </div>
+                )}
+                <p className="mt-1 text-xs font-medium truncate">
+                  {similar.name}
+                </p>
+              </button>
+            ))}
+      </div>
+    </div>
+  );
+};
+
+// --- Game Card Component ---
+
 interface GameCardProps {
   game: Game;
 }
@@ -66,6 +171,322 @@ interface GameReturnResponse {
   name: string;
   quantity: number;
 }
+
+const GameCard: React.FC<GameCardProps> = ({ game }) => {
+  const { auth } = useAuth();
+  const { deleteGame, checkout, returnGame, updateGame } = useGameManager();
+  const [editingGame, setEditingGame] = useState<Game | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [viewedGame, setViewedGame] = useState<Game>(game);
+  const isAdmin = auth?.authenticationLevel.toLowerCase() === "admin";
+  const isHost = isAdmin || auth?.authenticationLevel.toLowerCase() === "host";
+
+  const openInfoDialog = useCallback(() => {
+    setViewedGame(game);
+    setShowInfoDialog(true);
+  }, [game]);
+
+  const handleSelectSimilarGame = useCallback((similar: Game) => {
+    setViewedGame(similar);
+  }, []);
+
+  const handleEditGame = async (updatedGame: Partial<Game>) => {
+    if (!editingGame) return;
+    await updateGame(game.id, updatedGame);
+    setEditingGame(null);
+  };
+
+  const handleDelete = async () => {
+    deleteGame(game.id);
+  };
+
+  const handleCheckout = async () => {
+    checkout(game.id);
+  };
+
+  const handleReturn = async () => {
+    returnGame(game.id);
+  };
+
+  const isReturnDisabled = game.availableCopies === game.quantity;
+  const isCheckoutDisabled =
+    game.availableCopies === null ||
+    game.availableCopies === undefined ||
+    game.availableCopies <= 0;
+
+  const availabilityColor =
+    game.availableCopies === 0
+      ? "text-destructive"
+      : (game.availableCopies ?? 0) < (game.quantity ?? 0)
+        ? "text-warning"
+        : "text-success";
+
+  return (
+    <>
+      <Card
+        className={`w-full relative flex flex-col overflow-hidden hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer group ${isHost ? "pb-12" : ""}`}
+        onClick={() => openInfoDialog()}
+      >
+        {/* Image Section */}
+        <div className="relative w-full aspect-[3/2] bg-muted overflow-hidden">
+          {game.boxImageUrl ? (
+            <img
+              src={game.boxImageUrl}
+              alt={game.name}
+              className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Dice6 className="w-12 h-12 text-muted-foreground/30" />
+            </div>
+          )}
+          {/* Availability badge */}
+          <div
+            className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded-full ${
+              game.availableCopies === 0
+                ? "bg-destructive/10 text-destructive"
+                : "bg-success/10 text-success"
+            }`}
+          >
+            {game.availableCopies}/{game.quantity}
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <CardContent className="p-3 flex-1">
+          <h3 className="font-semibold text-sm leading-tight line-clamp-2 mb-2">
+            {game.name}
+          </h3>
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <Users className="w-3 h-3 shrink-0" />
+              <span>
+                {game.minPlayerCount}
+                {game.minPlayerCount !== game.maxPlayerCount &&
+                  `-${game.maxPlayerCount}`}{" "}
+                players
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 shrink-0" />
+              <span>
+                {game.minPlaytime}
+                {game.minPlaytime !== game.maxPlaytime &&
+                  `-${game.maxPlaytime}`}{" "}
+                min
+              </span>
+            </div>
+            {game.genre && (
+              <div className="flex items-center gap-1.5">
+                <Tag className="w-3 h-3 shrink-0" />
+                <span className="truncate">{game.genre}</span>
+              </div>
+            )}
+            {game.location && (
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 shrink-0" />
+                <span className="truncate">{game.location}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        {/* Action Buttons */}
+        {isHost && (
+          <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 border-t bg-card/80 backdrop-blur-sm flex justify-between items-center">
+            {isAdmin && (
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingGame(game);
+                  }}
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteDialog(true);
+                  }}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            )}
+            <div
+              className={`flex gap-1 ${!isAdmin ? "ml-auto" : ""}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button
+                title="Checkout Game (remove a copy)"
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                onClick={() => {
+                  handleCheckout();
+                }}
+                disabled={isCheckoutDisabled}
+              >
+                <Minus className="w-3.5 h-3.5 mr-1" />
+                Out
+              </Button>
+              <Button
+                title="Return Game (add a copy back)"
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-success border-success/30 hover:bg-success/10"
+                onClick={() => {
+                  handleReturn();
+                }}
+                disabled={isReturnDisabled}
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                In
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {/* Game Info Dialog */}
+      <Dialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{viewedGame.name}</DialogTitle>
+            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Users className="w-3.5 h-3.5" />
+                {viewedGame.minPlayerCount}
+                {viewedGame.minPlayerCount !== viewedGame.maxPlayerCount &&
+                  `-${viewedGame.maxPlayerCount}`}{" "}
+                players
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                {viewedGame.minPlaytime}
+                {viewedGame.minPlaytime !== viewedGame.maxPlaytime &&
+                  `-${viewedGame.maxPlaytime}`}{" "}
+                min
+              </span>
+              {viewedGame.genre && (
+                <span className="flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5" />
+                  {viewedGame.genre}
+                </span>
+              )}
+            </div>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto">
+            <div className="md:col-span-2 space-y-4">
+              <div>
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                  Description
+                </h4>
+                <p className="mt-1 text-sm">
+                  {viewedGame.description || "No description available."}
+                </p>
+              </div>
+              {isHost && (
+                <>
+                  {viewedGame.internalNotes && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                        Internal Notes
+                      </h4>
+                      <p className="mt-1 text-sm italic">
+                        {viewedGame.internalNotes}
+                      </p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        Availability
+                      </p>
+                      <p className={`text-lg font-bold ${availabilityColor}`}>
+                        {viewedGame.availableCopies} / {viewedGame.quantity}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        Times Checked Out
+                      </p>
+                      <p className="text-lg font-bold">
+                        {viewedGame.checkoutCount}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+              {viewedGame.location && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4" />
+                  {viewedGame.location}
+                </div>
+              )}
+            </div>
+            <div className="flex justify-center">
+              {viewedGame.boxImageUrl && (
+                <img
+                  src={viewedGame.boxImageUrl}
+                  alt={viewedGame.name}
+                  className="w-full max-h-64 object-contain rounded-lg"
+                />
+              )}
+            </div>
+          </div>
+          <SimilarGames
+            gameId={viewedGame.id}
+            onSelectGame={handleSelectSimilarGame}
+          />
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <EditGamePopup
+        game={editingGame!}
+        onSubmit={handleEditGame}
+        onClose={() => setEditingGame(null)}
+        isOpen={Boolean(editingGame)}
+      />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Game</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{game.name}&quot;? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};
+
+// --- Stats Popup ---
 
 interface StatsPopupProps {
   isOpen: boolean;
@@ -99,106 +520,84 @@ export const StatsPopup: React.FC<StatsPopupProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const statCards = stats
+    ? [
+        { label: "Total Checkouts", value: stats.totalCheckouts },
+        { label: "Most Popular Game", value: stats.mostPopularGameName },
+        {
+          label: "Avg Games/Checkout",
+          value: stats.averageGamesCheckout.toFixed(1),
+        },
+        { label: "Busiest Night", value: stats.mostPopularGameNight },
+        {
+          label: "Avg Players/Game",
+          value: stats.averagePlayersPerGame.toFixed(1),
+        },
+        {
+          label: "Avg Playtime",
+          value: `${stats.averagePlaytimePerGame.toFixed(0)} min`,
+        },
+        { label: "Total Copies", value: stats.totalAvailableCopies },
+      ]
+    : [];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-text-light">
-            Game Library Statistics
-          </DialogTitle>
+          <DialogTitle>Library Statistics</DialogTitle>
           <DialogDescription>
-            View statistics that we track about games over a period of time
+            Game checkout statistics for the selected date range.
           </DialogDescription>
         </DialogHeader>
-        <div className="mb-4 grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <Label>Start Date</Label>
+            <Label className="text-xs">Start Date</Label>
             <Input
               type="date"
               name="startDate"
               value={startDate}
               onChange={handleDateChange}
-              className="mt-1 block w-full"
+              className="mt-1"
             />
           </div>
           <div>
-            <Label>End Date</Label>
+            <Label className="text-xs">End Date</Label>
             <Input
               type="date"
               name="endDate"
               value={endDate}
               onChange={handleDateChange}
-              className="mt-1 block w-full"
+              className="mt-1"
             />
           </div>
         </div>
-        {stats ? (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Total Checkouts</h3>
-              <p className="">{stats.totalCheckouts}</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Most Popular Game</h3>
-              <p className="">{stats.mostPopularGameName}</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Average Games Checkout</h3>
-              <p className="">{stats.averageGamesCheckout.toFixed(2)}</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Most Popular Game Night</h3>
-              <p className="">{stats.mostPopularGameNight}</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Average Players Per Game</h3>
-              <p className="">{stats.averagePlayersPerGame.toFixed(2)}</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Average Playtime Per Game</h3>
-              <p className="">{stats.averagePlaytimePerGame.toFixed(2)} mins</p>
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <h3 className="font-bold ">Total Available Copies</h3>
-              <p className="">{stats.totalAvailableCopies}</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-            <div className="p-4 bg-popover rounded">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-          </div>
-        )}
+        <div className="grid grid-cols-2 gap-3">
+          {stats
+            ? statCards.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-lg bg-muted/50 p-3 text-center"
+                >
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                    {stat.label}
+                  </p>
+                  <p className="text-lg font-bold mt-1">{stat.value}</p>
+                </div>
+              ))
+            : Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className="rounded-lg bg-muted/50 p-3 text-center">
+                  <Skeleton className="h-3 w-20 mx-auto" />
+                  <Skeleton className="h-6 w-12 mx-auto mt-2" />
+                </div>
+              ))}
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
+
+// --- Inline Filters ---
 
 interface InlineFilterState {
   name: string;
@@ -220,7 +619,6 @@ const InlineFilters = () => {
 
   const { updateFiltersAndSort, genres } = useGameManager();
 
-  // Update filters whenever they change
   useEffect(() => {
     updateFiltersAndSort(filters, {
       field: sortField as keyof Game,
@@ -228,45 +626,49 @@ const InlineFilters = () => {
     });
   }, [filters, sortField, sortDirection]);
 
-  const handleClick = () => {
-    if (isVisible) {
-      // If filters are visible, clicking means we want to clear and close
-      setFilters({
-        name: "",
-        genre: "",
-        playtime: undefined,
-        playerCount: undefined,
-      });
-      setSortField("name");
-      setSortDirection("asc");
-    }
-    // Toggle visibility
+  const handleClear = () => {
+    setFilters({
+      name: "",
+      genre: "",
+      playtime: undefined,
+      playerCount: undefined,
+    });
+    setSortField("name");
+    setSortDirection("asc");
   };
 
+  const hasActiveFilters =
+    filters.name ||
+    filters.genre ||
+    filters.playtime !== undefined ||
+    filters.playerCount !== undefined ||
+    sortField !== "name" ||
+    sortDirection !== "asc";
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <Button
-        variant="outline"
+        variant={hasActiveFilters ? "default" : "outline"}
+        size="sm"
         onClick={() => setIsVisible(!isVisible)}
         className="flex items-center gap-2"
       >
-        <>
-          <Filter className="w-4 h-4" /> Filter
-        </>
+        <Filter className="w-4 h-4" />
+        Filter
+        {hasActiveFilters && (
+          <span className="ml-1 rounded-full bg-primary-foreground text-primary w-2 h-2" />
+        )}
       </Button>
 
       <div
-        className={`grid gap-4 transition-all duration-300 ease-in-out origin-top ${
-          isVisible
-            ? "grid-rows-[1fr] opacity-100 max-h-[500px]"
-            : "grid-rows-[0fr] opacity-0 max-h-0"
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isVisible ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="overflow-hidden">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-card rounded-lg shadow-sm">
-            {/* Filter Fields */}
-            <div>
-              <Label>Name</Label>
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Name</Label>
               <Input
                 type="text"
                 value={filters.name}
@@ -276,8 +678,8 @@ const InlineFilters = () => {
                 placeholder="Search by name..."
               />
             </div>
-            <div>
-              <Label>Genre</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Genre</Label>
               <Input
                 type="text"
                 list="genre-suggestions"
@@ -293,8 +695,8 @@ const InlineFilters = () => {
                 ))}
               </datalist>
             </div>
-            <div>
-              <Label>Playtime</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Playtime (min)</Label>
               <Input
                 type="number"
                 value={filters.playtime ?? ""}
@@ -306,13 +708,11 @@ const InlineFilters = () => {
                       : undefined,
                   })
                 }
-                placeholder="Playtime..."
+                placeholder="Max playtime..."
               />
             </div>
-            <div>
-              <Label className="block text-sm font-medium mb-1">
-                Player Count
-              </Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Player Count</Label>
               <Input
                 type="number"
                 value={filters.playerCount ?? ""}
@@ -327,20 +727,16 @@ const InlineFilters = () => {
                 placeholder="Number of players..."
               />
             </div>
-            <div>
-              <Label>Sort By</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Sort By</Label>
               <Select value={sortField} onValueChange={setSortField}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="minPlayerCount">
-                    Min Player Count
-                  </SelectItem>
-                  <SelectItem value="maxPlayerCount">
-                    Max Player Count
-                  </SelectItem>
+                  <SelectItem value="minPlayerCount">Min Players</SelectItem>
+                  <SelectItem value="maxPlayerCount">Max Players</SelectItem>
                   <SelectItem value="minPlaytime">Min Playtime</SelectItem>
                   <SelectItem value="maxPlaytime">Max Playtime</SelectItem>
                   <SelectItem value="checkoutCount">Popularity</SelectItem>
@@ -348,28 +744,30 @@ const InlineFilters = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Order</Label>
-              <Select value={sortDirection} onValueChange={setSortDirection}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select order" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asc">Ascending</SelectItem>
-                  <SelectItem value="desc">Descending</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Button
-                variant="outline"
-                onClick={() => handleClick()}
-                className="flex items-center gap-2"
-              >
-                <>
-                  <X className="w-4 h-4" /> Clear Filters
-                </>
-              </Button>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Order</Label>
+              <div className="flex gap-2">
+                <Select value={sortDirection} onValueChange={setSortDirection}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="asc">Ascending</SelectItem>
+                    <SelectItem value="desc">Descending</SelectItem>
+                  </SelectContent>
+                </Select>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleClear}
+                    title="Clear all filters"
+                    className="shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -377,6 +775,8 @@ const InlineFilters = () => {
     </div>
   );
 };
+
+// --- Return All Popup ---
 
 interface ReturnAllPopupProps {
   isOpen: boolean;
@@ -393,7 +793,6 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
   const [confirmed, setConfirmed] = useState(false);
   const [executing, setExecuting] = useState(false);
 
-  // Reset state when popup closes
   useEffect(() => {
     if (!isOpen) {
       setStats(null);
@@ -403,7 +802,6 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
     }
   }, [isOpen]);
 
-  // Execute return-all only after user confirms
   useEffect(() => {
     if (confirmed && !executing) {
       setExecuting(true);
@@ -418,15 +816,6 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
     }
   }, [confirmed, executing, returnAllGames]);
 
-  const handleConfirm = () => {
-    setConfirmed(true);
-  };
-
-  const handleClose = () => {
-    onClose(false);
-  };
-
-  // Step 1: Confirmation dialog
   if (!confirmed) {
     return (
       <AlertDialog
@@ -444,8 +833,10 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleClose}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>
+            <AlertDialogCancel onClick={() => onClose(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => setConfirmed(true)}>
               Yes, Return All
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -454,7 +845,6 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
     );
   }
 
-  // Step 2: Results dialog
   return (
     <Dialog
       open={isOpen}
@@ -471,32 +861,36 @@ export const ReturnAllPopup: React.FC<ReturnAllPopupProps> = ({
           </DialogDescription>
         </DialogHeader>
         {!stats && !errors ? (
-          <div>
-            <Skeleton className="h-6 mb-2 bg-slate-500" />
-            <Skeleton className="h-6 mb-2 bg-slate-500 " />
-            <Skeleton className="h-6 mb-2 bg-slate-500" />
-            <Skeleton className="h-6 mb-2 bg-slate-500" />
-            <Skeleton className="h-6 mb-2 bg-slate-500" />
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-6" />
+            ))}
           </div>
         ) : errors ? (
-          <p className="error">Error: {errors}</p>
+          <p className="text-destructive text-sm">Error: {errors}</p>
         ) : stats && stats.length === 0 ? (
-          <p>No games were updated.</p>
+          <p className="text-muted-foreground">No games were updated.</p>
         ) : (
-          <div className="games-list overflow-y-auto max-h-96">
-            <ul>
-              {stats?.map((game) => (
-                <li key={game.id}>
-                  <strong>{game.name}</strong> - Quantity: {game.quantity}
-                </li>
-              ))}
-            </ul>
+          <div className="overflow-y-auto max-h-96 space-y-1">
+            {stats?.map((game) => (
+              <div
+                key={game.id}
+                className="flex justify-between items-center py-1.5 px-2 rounded bg-muted/50 text-sm"
+              >
+                <span className="font-medium">{game.name}</span>
+                <span className="text-muted-foreground">
+                  Qty: {game.quantity}
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </DialogContent>
     </Dialog>
   );
 };
+
+// --- Import Popup ---
 
 interface ImportPopupProps {
   isOpen: boolean;
@@ -522,22 +916,24 @@ export const ImportPopup: React.FC<ImportPopupProps> = ({
         <DialogHeader>
           <DialogTitle>Import Games</DialogTitle>
           <DialogDescription>
-            Easy way to add lots of games to the database. Duplicates (by name)
-            are skipped.
+            Import games from a CSV file. Duplicates (by name) are skipped.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <a href="importTemplate.csv" download="WUDGames-ImportTemplate">
-            <Button variant="outline">Download Template</Button>
+            <Button variant="outline" size="sm" className="w-full">
+              <Download className="w-4 h-4 mr-2" />
+              Download Template
+            </Button>
           </a>
-          <div>
-            <label className="block text-sm font-medium">Upload CSV</label>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Upload CSV</Label>
             <input
               type="file"
               accept=".csv"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               disabled={loading}
-              className="mt-1 w-full"
+              className="mt-1 w-full text-sm"
             />
           </div>
         </div>
@@ -551,246 +947,22 @@ export const ImportPopup: React.FC<ImportPopupProps> = ({
   );
 };
 
-const GameCard: React.FC<GameCardProps> = ({ game }) => {
-  const { auth } = useAuth();
-  const { deleteGame, checkout, returnGame, updateGame } = useGameManager();
-  const [editingGame, setEditingGame] = useState<Game | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showInfoDialog, setShowInfoDialog] = useState(false);
-  const isAdmin = auth?.authenticationLevel.toLowerCase() === "admin";
-  const isHost = isAdmin || auth?.authenticationLevel.toLowerCase() === "host";
+// --- Skeleton Card for Loading ---
 
-  const handleEditGame = async (updatedGame: Partial<Game>) => {
-    if (!editingGame) return;
-    await updateGame(game.id, updatedGame);
-    setEditingGame(null);
-  };
+const SkeletonCard = () => (
+  <Card className="w-full overflow-hidden">
+    <div className="aspect-[3/2] bg-muted">
+      <Skeleton className="w-full h-full" />
+    </div>
+    <CardContent className="p-3 space-y-2">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-3 w-1/2" />
+      <Skeleton className="h-3 w-2/3" />
+    </CardContent>
+  </Card>
+);
 
-  const handleDelete = async () => {
-    deleteGame(game.id);
-  };
-
-  const handleCheckout = async () => {
-    checkout(game.id);
-  };
-
-  const handleReturn = async () => {
-    returnGame(game.id);
-  };
-
-  const openEditPopup = (game: Game) => {
-    setEditingGame(game);
-  };
-
-  const closeEditPopup = () => {
-    setEditingGame(null);
-  };
-
-  // Disable logic
-  const isReturnDisabled = game.availableCopies === game.quantity;
-  const isCheckoutDisabled =
-    game.availableCopies === null ||
-    game.availableCopies === undefined ||
-    game.availableCopies <= 0;
-
-  return (
-    <>
-      <Card
-        className={`w-full max-w-sm relative flex flex-row ${isHost ? "pb-12" : ""} cursor-pointer`}
-        onClick={() => setShowInfoDialog(true)}
-      >
-        <div className="w-2/3 p-2 text-left">
-          <h3 className="text-lg font-bold">{game.name}</h3>
-          <p className="text-sm">
-            {game.minPlayerCount}
-            {game.minPlayerCount !== game.maxPlayerCount &&
-              `-${game.maxPlayerCount}`}{" "}
-            players | {game.minPlaytime}
-            {game.minPlaytime !== game.maxPlaytime &&
-              `-${game.maxPlaytime}`}{" "}
-            minutes
-          </p>
-          <p className="mt-2 text-sm">Genre: {game.genre}</p>
-          <p className="text-sm">
-            Available: {game.availableCopies} / {game.quantity}
-          </p>
-          {game.location && (
-            <p className="text-sm">Location: {game.location}</p>
-          )}
-        </div>
-        <div className="relative w-1/3">
-          {game.boxImageUrl && (
-            <img
-              src={game.boxImageUrl || "/api/placeholder/200/200"}
-              alt={game.name}
-              className="w-full h-40 object-contain rounded-tr-lg"
-            />
-          )}
-        </div>
-
-        {isHost && (
-          <div className="absolute bottom-0 rounded-tl-md right-0 px-2 py-2 border-t border-l flex justify-between gap-2">
-            {isAdmin && (
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openEditPopup(game);
-                  }}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeleteDialog(true);
-                  }}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-            <div className="flex gap-2">
-              <Button
-                title="Checkout Game (remove a copy)"
-                variant="destructive"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCheckout();
-                }}
-                disabled={isCheckoutDisabled}
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
-              <Button
-                title="Return Game (add a copy back)"
-                variant="destructive"
-                size="icon"
-                className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleReturn();
-                }}
-                disabled={isReturnDisabled}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* Game Info Dialog */}
-      <Dialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{game.name}</DialogTitle>
-            <div className="flex gap-4 text-sm text-muted-foreground">
-              <span>
-                {game.minPlayerCount}
-                {game.minPlayerCount !== game.maxPlayerCount &&
-                  `-${game.maxPlayerCount}`}{" "}
-                players
-              </span>
-              <span>
-                {game.minPlaytime}
-                {game.minPlaytime !== game.maxPlaytime &&
-                  `-${game.maxPlaytime}`}{" "}
-                minutes
-              </span>
-              <span>Genre: {game.genre}</span>
-            </div>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto">
-            <div className="md:col-span-2 space-y-4">
-              <div>
-                <h4 className="font-semibold text-lg">Description</h4>
-                <p className="mt-1">{game.description}</p>
-              </div>
-              {isHost && (
-                <>
-                  <div>
-                    <h4 className="font-semibold text-lg">Internal Notes</h4>
-                    <p className="mt-1 italic">{game.internalNotes}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold text-lg">Availability</h4>
-                      <p className="mt-1 text-muted-foreground">
-                        {game.availableCopies} / {game.quantity} available
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold">
-                        Times Checked Out
-                      </h4>
-                      <p className="mt-1 text-muted-foreground">
-                        {game.checkoutCount}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
-              {game.location && (
-                <div>
-                  <h4 className="font-semibold text-lg">Location</h4>
-                  <p className="mt-1 text-muted-foreground">{game.location}</p>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center">
-              {game.boxImageUrl && (
-                <img
-                  src={game.boxImageUrl}
-                  alt={game.name}
-                  className="w-full max-h-64 object-contain rounded-lg"
-                />
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Close</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <EditGamePopup
-        game={editingGame!}
-        onSubmit={handleEditGame}
-        onClose={closeEditPopup}
-        isOpen={Boolean(editingGame)}
-      />
-
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Game</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{game.name}"? This action cannot
-              be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
-};
+// --- Games List ---
 
 const GamesList: React.FC<{
   onAddGame: () => void;
@@ -800,19 +972,16 @@ const GamesList: React.FC<{
   const isAdmin = auth?.authenticationLevel.toLowerCase() === "admin";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
       {loading ? (
-        <Card className="w-full max-w-sm">
-          <CardHeader className="relative">
-            <Skeleton className="w-full h-48 object-cover bg-slate-500 rounded-t-lg" />
-          </CardHeader>
-          <CardContent className="text-left space-y-2">
-            <Skeleton className="h-4 w-[250px] bg-slate-500" />
-            <Skeleton className="h-4 w-[250px] bg-slate-500" />
-          </CardContent>
-        </Card>
+        <>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </>
       ) : games.length === 0 ? (
-        <div className="col-span-full text-center py-12">
+        <div className="col-span-full text-center py-16">
+          <Dice6 className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
           <p className="text-muted-foreground text-lg">
             No games found matching your filters.
           </p>
@@ -823,15 +992,14 @@ const GamesList: React.FC<{
           )}
         </div>
       ) : (
-        <>
-          {games.map((game) => (
-            <GameCard key={game.id} game={game} />
-          ))}
-        </>
+        games.map((game) => <GameCard key={game.id} game={game} />)
       )}
     </div>
   );
 };
+
+// --- Main Page ---
+
 const BoardgameMain = () => {
   const { auth } = useAuth();
   const isAdmin = auth?.authenticationLevel.toLowerCase() === "admin";
@@ -849,31 +1017,29 @@ const BoardgameMain = () => {
   };
 
   return (
-    <div className="min-h-screen p-8 pt-16">
-      {/* Section Controls */}
-      <div className="mb-6 flex flex-wrap gap-2">
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6">
+      <PageHeader
+        title="Board Games"
+        description="Browse and manage the board game collection."
+      >
         {isAdmin && (
           <>
             <Button
               variant="outline"
-              onClick={() => setShowImport(true)}
-              className="flex items-center gap-2"
-            >
-              <Upload className="w-4 h-4" /> Import
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleExport}
-              className="flex items-center gap-2"
-            >
-              <Download className="w-4 h-4" /> Export
-            </Button>
-            <Button
-              variant="outline"
+              size="sm"
               onClick={() => setIsAddGameOpen(true)}
-              className="flex items-center gap-2"
             >
-              <Plus className="w-4 h-4" /> Add Game
+              <Plus className="w-4 h-4 mr-1" /> Add
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowImport(true)}
+            >
+              <Upload className="w-4 h-4 mr-1" /> Import
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="w-4 h-4 mr-1" /> Export
             </Button>
           </>
         )}
@@ -881,24 +1047,26 @@ const BoardgameMain = () => {
           <>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => setShowReturnAll(true)}
-              className="flex items-center gap-2"
             >
-              <RefreshCw className="w-4 h-4" /> Return All
+              <RefreshCw className="w-4 h-4 mr-1" /> Return All
             </Button>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => setShowStats(true)}
-              className="flex items-center gap-2"
             >
-              <BarChart className="w-4 h-4" /> Stats
+              <BarChart className="w-4 h-4 mr-1" /> Stats
             </Button>
           </>
         )}
+      </PageHeader>
+
+      <div className="mb-6">
         <InlineFilters />
       </div>
 
-      {/* Games List */}
       <GamesList onAddGame={() => setIsAddGameOpen(true)} />
 
       {/* Popups */}

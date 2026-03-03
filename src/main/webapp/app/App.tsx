@@ -14,6 +14,8 @@ import {
   LogIn,
   LogOut,
   Dice6,
+  Wrench,
+  Monitor,
 } from "lucide-react";
 import { AuthProvider, useAuth } from "./AuthContext";
 import {
@@ -26,6 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ConsolegameMain from "@/consolegames/ConsolegameMain";
 import BoardgameMain from "@/boardgames/BoardgameMain";
+import EquipmentMain from "@/equipment/EquipmentMain";
+import SteamMain from "@/steam/SteamMain";
 import { GameManagerProvider } from "@/boardgames/GameManagerContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -86,17 +90,17 @@ export const LoginButton = () => {
         <div className="relative" ref={loginRef}>
           <Button
             onClick={() => setShowLogin(!showLogin)}
-            variant="default"
+            variant="secondary"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border-0"
           >
             <LogIn className="w-4 h-4" /> Login
           </Button>
 
           {showLogin && (
-            <Card className="absolute right-0 mt-2 w-64 shadow-lg">
+            <Card className="absolute right-0 mt-2 w-72 shadow-xl border border-border/50 z-50">
               <CardContent className="p-4">
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-3">
                   {error && (
                     <Alert variant="destructive" className="py-2">
                       <AlertDescription>{error}</AlertDescription>
@@ -129,8 +133,8 @@ export const LoginButton = () => {
                     Login
                   </Button>
 
-                  <p className="text-xs text-muted-foreground">
-                    App version: {appVersion}
+                  <p className="text-xs text-muted-foreground text-center">
+                    v{appVersion}
                   </p>
                 </form>
               </CardContent>
@@ -138,13 +142,15 @@ export const LoginButton = () => {
           )}
         </div>
       ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-sm">{auth.username}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-white/80 hidden sm:inline">
+            {auth.username}
+          </span>
           <Button
             onClick={logout}
-            variant="default"
+            variant="secondary"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border-0"
           >
             <LogOut className="w-4 h-4" /> Logout
           </Button>
@@ -154,94 +160,105 @@ export const LoginButton = () => {
   );
 };
 
+const navItems = [
+  { to: "/board-games", label: "Board Games", icon: Dice6 },
+  { to: "/video-games", label: "Video Games", icon: GamepadIcon },
+  { to: "/equipment", label: "Equipment", icon: Wrench },
+  { to: "/steam", label: "Steam", icon: Monitor },
+];
+
 const UnifiedTopBar = () => {
   return (
-    <div className="fixed top-0 left-0 w-full bg-menubar text-white px-4 py-2 z-10 shadow-lg">
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-bold flex items-center">
-          <img src="/logo.png" alt="Logo" className="h-8 inline-block mr-2" />
-          WUD Games
-        </div>
-
-        {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-4">
+    <header className="fixed top-0 left-0 w-full bg-menubar text-white z-50 shadow-lg">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-14">
+          {/* Brand */}
           <NavLink
-            to="/board-games"
-            className={({ isActive }) =>
-              `flex items-center px-4 py-2 rounded ${
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "hover:bg-accent/50"
-              }`
-            }
+            to="/"
+            className="flex items-center gap-2 text-lg font-bold tracking-tight shrink-0"
           >
-            <Dice6 className="w-4 h-4 mr-2" /> Board Games
+            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+            <span className="hidden sm:inline">WUD Games</span>
           </NavLink>
-          <NavLink
-            to="/video-games"
-            className={({ isActive }) =>
-              `flex items-center px-4 py-2 rounded ${
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "hover:bg-accent/50"
-              }`
-            }
-          >
-            <GamepadIcon className="w-4 h-4 mr-2" /> Video Games
-          </NavLink>
-        </div>
 
-        {/* Theme and Auth */}
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="bg-transparent">
-                <Sun className="absolute h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("auto")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <LoginButton />
-        </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
 
-        {/* Mobile Menu */}
-        <div className="md:hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <NavLink to="/board-games" className="flex items-center">
-                  <Dice6 className="w-4 h-4 mr-2" />
-                  Board Games
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink to="/video-games" className="flex items-center">
-                  <GamepadIcon className="w-4 h-4 mr-2" />
-                  Video Games
-                </NavLink>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Right side: theme toggle + auth + mobile menu */}
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white/70 hover:text-white hover:bg-white/10"
+                >
+                  <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("auto")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <LoginButton />
+
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white/70 hover:text-white hover:bg-white/10"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {navItems.map((item) => (
+                    <DropdownMenuItem key={item.to} asChild>
+                      <NavLink to={item.to} className="flex items-center gap-2">
+                        <item.icon className="w-4 h-4" />
+                        {item.label}
+                      </NavLink>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
@@ -275,20 +292,27 @@ const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen p-8 antialiased">
+        <div className="min-h-screen antialiased">
           <UnifiedTopBar />
-          <Routes>
-            <Route path="/" element={<Navigate to="/board-games" replace />} />
-            <Route
-              path="/board-games/*"
-              element={
-                <GameManagerProvider>
-                  <BoardgameMain />
-                </GameManagerProvider>
-              }
-            />
-            <Route path="/video-games/*" element={<ConsolegameMain />} />
-          </Routes>
+          <main className="pt-14">
+            <Routes>
+              <Route
+                path="/"
+                element={<Navigate to="/board-games" replace />}
+              />
+              <Route
+                path="/board-games/*"
+                element={
+                  <GameManagerProvider>
+                    <BoardgameMain />
+                  </GameManagerProvider>
+                }
+              />
+              <Route path="/video-games/*" element={<ConsolegameMain />} />
+              <Route path="/equipment/*" element={<EquipmentMain />} />
+              <Route path="/steam/*" element={<SteamMain />} />
+            </Routes>
+          </main>
         </div>
       </AuthProvider>
     </Router>

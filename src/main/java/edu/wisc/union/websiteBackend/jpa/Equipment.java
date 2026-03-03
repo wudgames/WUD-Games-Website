@@ -8,28 +8,31 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "steamGames")
+@Table(name = "equipment")
 @Getter
 @Setter
-public class SteamGame {
+public class Equipment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "steam_game_gen")
-    @SequenceGenerator(name = "steam_game_gen", sequenceName = "steam_game_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "equipment_gen")
+    @SequenceGenerator(name = "equipment_gen", sequenceName = "equipment_seq")
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String steamAppId;
-
     private String name;
-    @Column(length = 512)
-    @Size(max = 512)
+
+    private String type; // CONTROLLER, JOYCON, RPG_EQUIPMENT, OTHER
+
+    private Integer quantity;
+    private Integer availableCopies;
+
+    @Column(length = 1024, columnDefinition = "VARCHAR(1024)")
+    @Size(max = 1024)
     private String description;
+
     private String imageUrl;
+    private String location;
     private Integer checkoutCount;
     private String internalNotes;
-    private Boolean windows;
-    private Boolean macos;
-    private Boolean linux;
 
     @Column(updatable = false)
     @org.hibernate.annotations.CreationTimestamp

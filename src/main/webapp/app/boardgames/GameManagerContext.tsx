@@ -1,6 +1,15 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
 import { useAuth } from "@/AuthContext";
 import { Game } from "@/types";
+
+const POLL_INTERVAL_MS = 30000;
 
 export type { Game };
 
@@ -74,8 +83,22 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
     direction: "asc",
   });
 
+  const isFetchingRef = useRef(false);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const filtersRef = useRef(filters);
+  const sortDataRef = useRef(sortData);
+
+  // Keep refs in sync with state so callbacks always see current values
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+  useEffect(() => {
+    sortDataRef.current = sortData;
+  }, [sortData]);
+
   const fetchGames = async () => {
     setLoading(true);
+    isFetchingRef.current = true;
     try {
       const response = await fetch(`${API_BASE_URL}/games`, {
         headers: auth ? { Authorization: `Bearer ${auth.token}` } : {},
@@ -83,7 +106,7 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.ok) {
         const data: Game[] = await response.json();
         setAllGames(data);
-        applyFiltersAndSort(data);
+        applyFiltersAndSort(data, filtersRef.current, sortDataRef.current);
       } else {
         console.error("Failed to fetch games");
       }
@@ -91,8 +114,28 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error fetching games:", error);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
+
+  const silentFetchGames = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    try {
+      const response = await fetch(`${API_BASE_URL}/games`, {
+        headers: auth ? { Authorization: `Bearer ${auth.token}` } : {},
+      });
+      if (response.ok) {
+        const data: Game[] = await response.json();
+        setAllGames(data);
+        applyFiltersAndSort(data, filtersRef.current, sortDataRef.current);
+      }
+    } catch {
+      // Silent fetch — don't log polling errors
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [auth]);
 
   const fetchGenres = async () => {
     try {
@@ -114,48 +157,56 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
     return typeof value === "string" ? value.toLowerCase() : value;
   };
 
-  const applyFiltersAndSort = (data: Game[]) => {
-    let filteredGames = data;
+  const applyFiltersAndSort = (
+    data: Game[],
+    currentFilters: Filters,
+    currentSort: SortData,
+  ) => {
+    let filteredGames = [...data];
 
     // Apply filtering based on the Spring query logic
-    if (filters) {
-      if (filters.name) {
+    if (currentFilters) {
+      if (currentFilters.name) {
         filteredGames = filteredGames.filter(
           (game) =>
             game.name &&
-            game.name.toLowerCase().includes(filters.name!.toLowerCase()),
+            game.name
+              .toLowerCase()
+              .includes(currentFilters.name!.toLowerCase()),
         );
       }
-      if (filters.genre) {
+      if (currentFilters.genre) {
         filteredGames = filteredGames.filter(
           (game) =>
             game.genre &&
-            game.genre.toLowerCase().includes(filters.genre!.toLowerCase()),
+            game.genre
+              .toLowerCase()
+              .includes(currentFilters.genre!.toLowerCase()),
         );
       }
-      if (filters.playtime !== undefined) {
+      if (currentFilters.playtime !== undefined) {
         filteredGames = filteredGames.filter(
           (game) =>
             game.minPlaytime !== undefined &&
             game.maxPlaytime !== undefined &&
-            game.minPlaytime <= filters.playtime! &&
-            game.maxPlaytime >= filters.playtime!,
+            game.minPlaytime <= currentFilters.playtime! &&
+            game.maxPlaytime >= currentFilters.playtime!,
         );
       }
-      if (filters.playerCount !== undefined) {
+      if (currentFilters.playerCount !== undefined) {
         filteredGames = filteredGames.filter(
           (game) =>
             game.minPlayerCount !== undefined &&
             game.maxPlayerCount !== undefined &&
-            game.minPlayerCount <= filters.playerCount! &&
-            game.maxPlayerCount >= filters.playerCount!,
+            game.minPlayerCount <= currentFilters.playerCount! &&
+            game.maxPlayerCount >= currentFilters.playerCount!,
         );
       }
     }
 
     // Apply client-side sorting
-    if (sortData) {
-      const { field, direction } = sortData;
+    if (currentSort) {
+      const { field, direction } = currentSort;
       filteredGames.sort((a, b) => {
         const valueA = a[field];
         const valueB = b[field];
@@ -224,8 +275,8 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
       if (response.ok) {
-        setGames((prevGames) =>
-          prevGames.map((game) =>
+        const updater = (prev: Game[]) =>
+          prev.map((game) =>
             game.id === gameId
               ? {
                   ...game,
@@ -233,8 +284,9 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
                   checkoutCount: (game.checkoutCount ?? 0) + 1,
                 }
               : game,
-          ),
-        );
+          );
+        setAllGames(updater);
+        setGames(updater);
       } else {
         console.error("Failed to checkout game");
       }
@@ -251,13 +303,14 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
       if (response.ok) {
-        setGames((prevGames) =>
-          prevGames.map((game) =>
+        const updater = (prev: Game[]) =>
+          prev.map((game) =>
             game.id === gameId
               ? { ...game, availableCopies: (game.availableCopies ?? 0) + 1 }
               : game,
-          ),
-        );
+          );
+        setAllGames(updater);
+        setGames(updater);
       } else {
         console.error("Failed to checkout game");
       }
@@ -389,9 +442,26 @@ export const GameManagerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (allGames.length > 0) {
-      applyFiltersAndSort(allGames);
+      applyFiltersAndSort(allGames, filters, sortData);
     }
   }, [filters, sortData]);
+
+  // Polling: silently re-fetch games every 30 seconds
+  useEffect(() => {
+    if (pollIntervalRef.current !== null) {
+      clearInterval(pollIntervalRef.current);
+    }
+    pollIntervalRef.current = setInterval(() => {
+      silentFetchGames();
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollIntervalRef.current !== null) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [silentFetchGames]);
 
   return (
     <GameManagerContext.Provider

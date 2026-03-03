@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+} from "react";
 import { useAuth } from "@/AuthContext";
 
 const API_BASE_URL = "/api/consoles";
+const POLL_INTERVAL_MS = 30000;
 
 export interface Console {
   // Added export
@@ -82,6 +90,9 @@ export const ConsoleProvider: React.FC<{ children: React.ReactNode }> = ({
     consoleId: null,
   });
 
+  const isFetchingRef = useRef(false);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const filteredGames = games.filter((game) => {
     const matchesName = game.name
       .toLowerCase()
@@ -112,6 +123,7 @@ export const ConsoleProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchGames = async () => {
     setLoading(true);
+    isFetchingRef.current = true;
     try {
       const response = await fetch(`${API_BASE_URL}/games`, {
         headers: auth ? { Authorization: `Bearer ${auth.token}` } : {},
@@ -125,8 +137,26 @@ export const ConsoleProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error fetching games:", error);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
+
+  const silentFetchGames = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    try {
+      const response = await fetch(`${API_BASE_URL}/games`, {
+        headers: auth ? { Authorization: `Bearer ${auth.token}` } : {},
+      });
+      if (response.ok) {
+        setGames(await response.json());
+      }
+    } catch {
+      // Silent fetch — don't log polling errors
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [auth]);
 
   const fetchGenres = async () => {
     setLoading(true);
@@ -229,6 +259,23 @@ export const ConsoleProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchGames();
     fetchGenres();
   }, [auth]);
+
+  // Polling: silently re-fetch console games every 30 seconds
+  useEffect(() => {
+    if (pollIntervalRef.current !== null) {
+      clearInterval(pollIntervalRef.current);
+    }
+    pollIntervalRef.current = setInterval(() => {
+      silentFetchGames();
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollIntervalRef.current !== null) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [silentFetchGames]);
 
   const setFilters = (newFilters: Partial<FilterState>) => {
     setFiltersState((prev) => ({ ...prev, ...newFilters }));

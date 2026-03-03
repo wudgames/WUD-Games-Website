@@ -2,8 +2,18 @@
 body {
   margin: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -15,60 +25,68 @@ code {
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(222.2 84% 4.9%);
+  --background: hsl(250 20% 98%);
+  --foreground: hsl(250 30% 10%);
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(250 30% 10%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222.2 84% 4.9%);
-  --primary: hsl(222.2 47.4% 11.2%);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(210 40% 96.1%);
-  --secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --muted: hsl(210 40% 96.1%);
-  --muted-foreground: hsl(215.4 16.3% 46.9%);
-  --accent: hsl(210 40% 96.1%);
-  --accent-foreground: hsl(222.2 47.4% 11.2%);
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(210 40% 98%);
-  --border: hsl(214.3 31.8% 80%);
-  --input: hsl(214.3 31.8% 80%);
-  --ring: hsl(222.2 84% 4.9%);
-  --chart-1: hsl(12 76% 61%);
+  --popover-foreground: hsl(250 30% 10%);
+  --primary: hsl(262 60% 45%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(255 20% 94%);
+  --secondary-foreground: hsl(262 40% 30%);
+  --muted: hsl(255 15% 93%);
+  --muted-foreground: hsl(250 10% 45%);
+  --accent: hsl(262 50% 92%);
+  --accent-foreground: hsl(262 60% 35%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(255 15% 87%);
+  --input: hsl(255 15% 87%);
+  --ring: hsl(262 60% 45%);
+  --chart-1: hsl(262 60% 55%);
   --chart-2: hsl(173 58% 39%);
   --chart-3: hsl(197 37% 24%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
-  --radius: 0.5rem;
-  --menubar: #2b195e;
+  --radius: 0.625rem;
+  --menubar: hsl(262 55% 25%);
+  --success: hsl(142 60% 40%);
+  --success-foreground: hsl(0 0% 100%);
+  --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(0 0% 100%);
 }
 
 .dark {
-  --background: hsl(222.2 47.4% 11.2%);
-  --foreground: hsl(210 40% 98%);
-  --card: hsl(222.2 47.4% 11.2%);
-  --card-foreground: hsl(210 40% 98%);
-  --popover: hsl(222.2 84% 4.9%);
-  --popover-foreground: hsl(210 40% 98%);
-  --primary: hsl(210 40% 98%);
-  --primary-foreground: hsl(222.2 47.4% 11.2%);
-  --secondary: hsl(217.2 32.6% 17.5%);
-  --secondary-foreground: hsl(210 40% 98%);
-  --muted: hsl(217.2 32.6% 17.5%);
-  --muted-foreground: hsl(215 20.2% 65.1%);
-  --accent: hsl(217.2 32.6% 17.5%);
-  --accent-foreground: hsl(210 40% 98%);
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(210 40% 98%);
-  --border: hsl(215 20.2% 40%);
-  --input: hsl(217.2 32.6% 17.5%);
-  --ring: hsl(212.7 26.8% 83.9%);
-  --chart-1: hsl(220 70% 50%);
+  --background: hsl(250 20% 9%);
+  --foreground: hsl(250 10% 93%);
+  --card: hsl(250 18% 13%);
+  --card-foreground: hsl(250 10% 93%);
+  --popover: hsl(250 20% 11%);
+  --popover-foreground: hsl(250 10% 93%);
+  --primary: hsl(262 55% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(255 15% 18%);
+  --secondary-foreground: hsl(262 30% 80%);
+  --muted: hsl(255 12% 18%);
+  --muted-foreground: hsl(250 10% 60%);
+  --accent: hsl(262 30% 22%);
+  --accent-foreground: hsl(262 40% 80%);
+  --destructive: hsl(0 62% 45%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(255 12% 25%);
+  --input: hsl(255 12% 20%);
+  --ring: hsl(262 55% 60%);
+  --chart-1: hsl(262 55% 60%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
-  --menubar: #483f60;
+  --menubar: hsl(262 30% 18%);
+  --success: hsl(142 50% 45%);
+  --success-foreground: hsl(0 0% 100%);
+  --warning: hsl(38 80% 55%);
+  --warning-foreground: hsl(0 0% 100%);
 }
 
 @theme inline {
@@ -100,15 +118,11 @@ code {
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
   --color-menubar: var(--menubar);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
 }
 
 @layer base {

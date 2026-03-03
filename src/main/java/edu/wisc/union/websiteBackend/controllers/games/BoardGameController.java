@@ -29,8 +29,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -153,6 +152,63 @@ public class BoardGameController {
         }
 
         return ResponseEntity.ok(gameDTO);
+    }
+
+    @GetMapping("/{id}/similar")
+    public ResponseEntity<List<GameDTO>> getSimilarGames(@PathVariable Long id) {
+        BoardGame sourceGame = boardGameRepository.findById(id)
+                .orElseThrow(() -> new InputErrorException("A105", "Game not found with ID: " + id));
+
+        List<BoardGame> allGames = boardGameRepository.findAll();
+
+        List<GameDTO> similarGames = allGames.stream()
+                .filter(game -> !game.getId().equals(id))
+                .map(game -> {
+                    int score = 0;
+
+                    // +3 points for same genre (case-insensitive)
+                    if (sourceGame.getGenre() != null && game.getGenre() != null
+                            && sourceGame.getGenre().equalsIgnoreCase(game.getGenre())) {
+                        score += 3;
+                    }
+
+                    // +2 points for overlapping player count range
+                    if (sourceGame.getMinPlayerCount() != null && sourceGame.getMaxPlayerCount() != null
+                            && game.getMinPlayerCount() != null && game.getMaxPlayerCount() != null) {
+                        int overlapMin = Math.max(sourceGame.getMinPlayerCount(), game.getMinPlayerCount());
+                        int overlapMax = Math.min(sourceGame.getMaxPlayerCount(), game.getMaxPlayerCount());
+                        if (overlapMin <= overlapMax) {
+                            score += 2;
+                        }
+                    }
+
+                    // +1 point for overlapping playtime range
+                    if (sourceGame.getMinPlaytime() != null && sourceGame.getMaxPlaytime() != null
+                            && game.getMinPlaytime() != null && game.getMaxPlaytime() != null) {
+                        int overlapMin = Math.max(sourceGame.getMinPlaytime(), game.getMinPlaytime());
+                        int overlapMax = Math.min(sourceGame.getMaxPlaytime(), game.getMaxPlaytime());
+                        if (overlapMin <= overlapMax) {
+                            score += 1;
+                        }
+                    }
+
+                    return new AbstractMap.SimpleEntry<>(game, score);
+                })
+                .filter(entry -> entry.getValue() > 0)
+                .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
+                .limit(5)
+                .map(entry -> {
+                    GameDTO dto = new GameDTO();
+                    BeanUtils.copyProperties(entry.getKey(), dto);
+                    if (JwtUtil.AccessLevel.ANONYMOUS.equals(jwtUtil.getCurrentAccessLevel())) {
+                        dto.setInternalNotes(null);
+                        dto.setCheckoutCount(null);
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(similarGames);
     }
 
     @PatchMapping("/{id}")
@@ -404,16 +460,29 @@ public class BoardGameController {
                 } catch (NumberFormatException e) {
                     // Let the error go
                 }
-                if (record.isMapped("Genres") && record.get("Genres") != null)
-                    game.setGenre(record.get("Genres").trim());
-                if (record.isMapped("Quick Description") && record.get("Quick Description") != null)
-                    game.setDescription(record.get("Quick Description").trim());
-                if (record.isMapped("Box Art URL") && record.get("Box Art URL") != null)
-                    game.setBoxImageUrl(record.get("Box Art URL").trim());
-                if (record.isMapped("Notes") && record.get("Notes") != null)
-                    game.setInternalNotes(record.get("Notes").trim());
-                if (record.isMapped("Location") && record.get("Location") != null)
-                    game.setLocation(record.get("Location").trim());
+                // Available Copies: prefer CSV value if present, otherwise keep default (Quantity)
+                if (record.isMapped("Available Copies")) {
+                    try {
+                        game.setAvailableCopies(parseQuantity(record.get("Available Copies")));
+                    } catch (NumberFormatException e) {
+                        // keep the default (Quantity)
+                    }
+                }
+                // Genre: accept "Genre" (export format) or "Genres" (legacy format)
+                String genre = getOptionalField(record, "Genre", "Genres");
+                if (genre != null) game.setGenre(genre);
+                // Description: accept "Description" (export format) or "Quick Description" (legacy)
+                String description = getOptionalField(record, "Description", "Quick Description");
+                if (description != null) game.setDescription(description);
+                // Box Art URL
+                String boxArtUrl = getOptionalField(record, "Box Art URL");
+                if (boxArtUrl != null) game.setBoxImageUrl(boxArtUrl);
+                // Internal Notes: accept "Internal Notes" (export format) or "Notes" (legacy)
+                String internalNotes = getOptionalField(record, "Internal Notes", "Notes");
+                if (internalNotes != null) game.setInternalNotes(internalNotes);
+                // Location
+                String location = getOptionalField(record, "Location");
+                if (location != null) game.setLocation(location);
 
                 // Save the entity in the DB
                 boardGameRepository.save(game);
@@ -425,6 +494,23 @@ public class BoardGameController {
     }
 
 
+
+    /**
+     * Returns the trimmed value from the first mapped and non-empty column name found,
+     * or null if none are present. This allows the import to accept both export-format
+     * column names and legacy column names.
+     */
+    private String getOptionalField(CSVRecord record, String... columnNames) {
+        for (String name : columnNames) {
+            if (record.isMapped(name)) {
+                String value = record.get(name);
+                if (value != null && !value.trim().isEmpty()) {
+                    return value.trim();
+                }
+            }
+        }
+        return null;
+    }
 
     private Integer parseQuantity(String quantity) {
         try {
