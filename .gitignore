@@ -3,7 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-application.yaml
+application-local.yml
 *.log
 .DS_Store
 node/
@@ -13,7 +13,6 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
-data/
 
 ## IntelliJ IDEA
 .idea
