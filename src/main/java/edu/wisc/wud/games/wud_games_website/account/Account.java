@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.account;
 
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDis;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -24,8 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Account {
-
+public class Account extends InventoryItem{
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(

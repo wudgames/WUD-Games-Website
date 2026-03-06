@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.video_game;
 
+import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItem;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class VideoGame {
+public class VideoGame extends DigitalItem{
 
     @Id
     @Column(nullable = false, updatable = false)

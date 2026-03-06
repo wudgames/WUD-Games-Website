@@ -1,6 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.game_console;
 
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDis;
+import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItem;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -23,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class GameConsole {
+public class GameConsole extends PhysicalItem {
 
     @Id
     @Column(nullable = false, updatable = false)

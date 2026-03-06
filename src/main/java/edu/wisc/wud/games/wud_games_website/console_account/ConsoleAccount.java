@@ -14,12 +14,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import edu.wisc.wud.games.wud_games_website.account.Account;
+
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class ConsoleAccount {
+public class ConsoleAccount extends Account{
 
     @Id
     @Column(nullable = false, updatable = false)

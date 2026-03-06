@@ -21,7 +21,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class GameConsoleDis extends GeneralDis{
+public class GameConsoleDis extends GeneralDis {
 
     @Id
     @Column(nullable = false, updatable = false)

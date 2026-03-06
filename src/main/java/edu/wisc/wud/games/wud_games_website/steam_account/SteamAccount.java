@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.steam_account;
 
+import edu.wisc.wud.games.wud_games_website.account.Account;
 import edu.wisc.wud.games.wud_games_website.steam_account_dis.SteamAccountDis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class SteamAccount {
+public class SteamAccount extends Account{
 
     @Id
     @Column(nullable = false, updatable = false)

@@ -1,6 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.digital_item;
 
 import edu.wisc.wud.games.wud_games_website.account.Account;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -25,7 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class DigitalItem {
+public class DigitalItem extends InventoryItem {
 
     @Id
     @Column(nullable = false, updatable = false)

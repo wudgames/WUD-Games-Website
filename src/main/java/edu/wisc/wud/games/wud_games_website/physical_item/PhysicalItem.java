@@ -1,6 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.physical_item;
 
 import edu.wisc.wud.games.wud_games_website.account_dis.ItemStatus;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import edu.wisc.wud.games.wud_games_website.location.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class PhysicalItem {
+public class PhysicalItem extends InventoryItem{
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -41,10 +42,6 @@ public class PhysicalItem {
             generator = "primary_sequence"
     )
     private Long id;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ItemStatus avaliblity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false)
