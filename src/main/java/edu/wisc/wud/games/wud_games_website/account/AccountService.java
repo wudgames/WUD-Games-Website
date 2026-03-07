@@ -2,11 +2,8 @@ package edu.wisc.wud.games.wud_games_website.account;
 
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDis;
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDisRepository;
-import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
-import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccount;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccountDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;
@@ -24,16 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final CheckoutRecordRepository checkoutRecordRepository;
     private final AccountDisRepository accountDisRepository;
     private final ApplicationEventPublisher publisher;
 
     public AccountService(final AccountRepository accountRepository,
-            final CheckoutRecordRepository checkoutRecordRepository,
             final AccountDisRepository accountDisRepository,
             final ApplicationEventPublisher publisher) {
         this.accountRepository = accountRepository;
-        this.checkoutRecordRepository = checkoutRecordRepository;
         this.accountDisRepository = accountDisRepository;
         this.publisher = publisher;
     }
@@ -73,15 +67,11 @@ public class AccountService {
 
     private AccountDTO mapToDTO(final Account account, final AccountDTO accountDTO) {
         accountDTO.setId(account.getId());
-        accountDTO.setCurrentCheckout(account.getCurrentCheckout() == null ? null : account.getCurrentCheckout().getId());
         accountDTO.setAccountDis(account.getAccountDis() == null ? null : account.getAccountDis().getId());
         return accountDTO;
     }
 
     private Account mapToEntity(final AccountDTO accountDTO, final Account account) {
-        final CheckoutRecord currentCheckout = accountDTO.getCurrentCheckout() == null ? null : checkoutRecordRepository.findById(accountDTO.getCurrentCheckout())
-                .orElseThrow(() -> new NotFoundException("currentCheckout not found"));
-        account.setCurrentCheckout(currentCheckout);
         final AccountDis accountDis = accountDTO.getAccountDis() == null ? null : accountDisRepository.findById(accountDTO.getAccountDis())
                 .orElseThrow(() -> new NotFoundException("accountDis not found"));
         account.setAccountDis(accountDis);
@@ -92,17 +82,6 @@ public class AccountService {
         return accountRepository.findAll(Sort.by("id"))
                 .stream()
                 .collect(CustomCollectors.toSortedMap(Account::getId, Account::getId));
-    }
-
-    @EventListener(BeforeDeleteCheckoutRecord.class)
-    public void on(final BeforeDeleteCheckoutRecord event) {
-        final ReferencedException referencedException = new ReferencedException();
-        final Account currentCheckoutAccount = accountRepository.findFirstByCurrentCheckoutId(event.getId());
-        if (currentCheckoutAccount != null) {
-            referencedException.setKey("checkoutRecord.account.currentCheckout.referenced");
-            referencedException.addParam(currentCheckoutAccount.getId());
-            throw referencedException;
-        }
     }
 
     @EventListener(BeforeDeleteAccountDis.class)

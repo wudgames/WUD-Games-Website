@@ -1,5 +1,8 @@
 package edu.wisc.wud.games.wud_games_website.inventory_item;
 
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteInventoryItem;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
@@ -22,13 +25,16 @@ public class InventoryItemService {
 
     private final InventoryItemRepository inventoryItemRepository;
     private final GeneralDisRepository generalDisRepository;
+    private final CheckoutRecordRepository checkoutRecordRepository;
     private final ApplicationEventPublisher publisher;
 
     public InventoryItemService(final InventoryItemRepository inventoryItemRepository,
             final GeneralDisRepository generalDisRepository,
+            final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher) {
         this.inventoryItemRepository = inventoryItemRepository;
         this.generalDisRepository = generalDisRepository;
+        this.checkoutRecordRepository = checkoutRecordRepository;
         this.publisher = publisher;
     }
 
@@ -70,6 +76,7 @@ public class InventoryItemService {
         inventoryItemDTO.setId(inventoryItem.getId());
         inventoryItemDTO.setDateAdded(inventoryItem.getDateAdded());
         inventoryItemDTO.setNotes(inventoryItem.getNotes());
+        inventoryItemDTO.setCurrentCheckout(inventoryItem.getCurrentCheckout() == null ? null : inventoryItem.getCurrentCheckout().getId());
         inventoryItemDTO.setGenDis(inventoryItem.getGenDis() == null ? null : inventoryItem.getGenDis().getId());
         return inventoryItemDTO;
     }
@@ -81,6 +88,9 @@ public class InventoryItemService {
         final GeneralDis genDis = inventoryItemDTO.getGenDis() == null ? null : generalDisRepository.findById(inventoryItemDTO.getGenDis())
                 .orElseThrow(() -> new NotFoundException("genDis not found"));
         inventoryItem.setGenDis(genDis);
+        final CheckoutRecord currentCheckout = inventoryItemDTO.getCurrentCheckout() == null ? null : checkoutRecordRepository.findById(inventoryItemDTO.getCurrentCheckout())
+                .orElseThrow(() -> new NotFoundException("currentCheckout not found"));
+        inventoryItem.setCurrentCheckout(currentCheckout);
         return inventoryItem;
     }
 
@@ -101,5 +111,15 @@ public class InventoryItemService {
         }
     }
 
+    @EventListener(BeforeDeleteCheckoutRecord.class)
+    public void on(final BeforeDeleteCheckoutRecord event) {
+        final ReferencedException referencedException = new ReferencedException();
+        final InventoryItem currentCheckoutInventoryItem = inventoryItemRepository.findFirstByCurrentCheckoutId(event.getId());
+        if (currentCheckoutInventoryItem != null) {
+            referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
+            referencedException.addParam(currentCheckoutInventoryItem.getId());
+            throw referencedException;
+        }
+    }
 }
 

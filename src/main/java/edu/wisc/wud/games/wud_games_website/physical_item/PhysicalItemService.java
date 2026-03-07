@@ -58,14 +58,12 @@ public class PhysicalItemService {
     private PhysicalItemDTO mapToDTO(final PhysicalItem physicalItem,
             final PhysicalItemDTO physicalItemDTO) {
         physicalItemDTO.setId(physicalItem.getId());
-        physicalItemDTO.setAvaliblity(physicalItem.getAvaliblity());
         physicalItemDTO.setLocation(physicalItem.getLocation() == null ? null : physicalItem.getLocation().getId());
         return physicalItemDTO;
     }
 
     private PhysicalItem mapToEntity(final PhysicalItemDTO physicalItemDTO,
             final PhysicalItem physicalItem) {
-        physicalItem.setAvaliblity(physicalItemDTO.getAvaliblity());
         final Location location = physicalItemDTO.getLocation() == null ? null : locationRepository.findById(physicalItemDTO.getLocation())
                 .orElseThrow(() -> new NotFoundException("location not found"));
         physicalItem.setLocation(location);

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 public class InventoryItemDTO {
@@ -17,6 +16,8 @@ public class InventoryItemDTO {
 
     @Size(max = 1024)
     private String notes;
+
+    private Long currentCheckout;
 
     @NotNull
     private Long genDis;

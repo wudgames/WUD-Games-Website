@@ -7,5 +7,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
     InventoryItem findFirstByGenDisId(Long id);
 
+    InventoryItem findFirstByCurrentCheckoutId(Long id);
+
 }
 

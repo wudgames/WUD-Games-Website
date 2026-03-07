@@ -3,8 +3,6 @@ package edu.wisc.wud.games.wud_games_website.account_dis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +21,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class AccountDis extends GeneralDis{
+public class AccountDis extends GeneralDis {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -41,10 +39,6 @@ public class AccountDis extends GeneralDis{
 
     @Column(nullable = false)
     private String username;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ItemStatus avalible;
 
     @Column
     private String notes;

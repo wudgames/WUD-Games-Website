@@ -11,8 +11,6 @@ public class AccountDTO {
 
     private Long id;
 
-    private Long currentCheckout;
-
     @NotNull
     private Long accountDis;
 

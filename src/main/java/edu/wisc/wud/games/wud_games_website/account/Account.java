@@ -1,7 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.account;
 
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDis;
-import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Account extends InventoryItem{
+public class Account extends InventoryItem {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
@@ -39,10 +38,6 @@ public class Account extends InventoryItem{
             generator = "primary_sequence"
     )
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "current_checkout_id")
-    private CheckoutRecord currentCheckout;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_dis_id", nullable = false)

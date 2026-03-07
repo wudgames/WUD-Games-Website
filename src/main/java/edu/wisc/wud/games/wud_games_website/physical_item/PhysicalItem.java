@@ -1,13 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.physical_item;
 
-import edu.wisc.wud.games.wud_games_website.account_dis.ItemStatus;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import edu.wisc.wud.games.wud_games_website.location.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

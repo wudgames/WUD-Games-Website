@@ -58,14 +58,12 @@ public class AccountDisService {
     private AccountDisDTO mapToDTO(final AccountDis accountDis, final AccountDisDTO accountDisDTO) {
         accountDisDTO.setId(accountDis.getId());
         accountDisDTO.setUsername(accountDis.getUsername());
-        accountDisDTO.setAvalible(accountDis.getAvalible());
         accountDisDTO.setNotes(accountDis.getNotes());
         return accountDisDTO;
     }
 
     private AccountDis mapToEntity(final AccountDisDTO accountDisDTO, final AccountDis accountDis) {
         accountDis.setUsername(accountDisDTO.getUsername());
-        accountDis.setAvalible(accountDisDTO.getAvalible());
         accountDis.setNotes(accountDisDTO.getNotes());
         return accountDis;
     }

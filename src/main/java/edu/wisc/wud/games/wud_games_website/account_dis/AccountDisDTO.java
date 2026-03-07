@@ -16,9 +16,6 @@ public class AccountDisDTO {
     @Size(max = 255)
     private String username;
 
-    @NotNull
-    private ItemStatus avalible;
-
     private String notes;
 
 }

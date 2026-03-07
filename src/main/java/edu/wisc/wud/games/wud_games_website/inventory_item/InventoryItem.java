@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.inventory_item;
 
-import edu.wisc.wud.games.wud_games_website.account_dis.ItemStatus;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +54,10 @@ public class InventoryItem {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ItemStatus avaliblity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_checkout_id")
+    private CheckoutRecord currentCheckout;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gen_dis_id", nullable = false)
