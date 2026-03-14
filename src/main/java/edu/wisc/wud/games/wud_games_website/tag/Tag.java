@@ -7,20 +7,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+//import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+/*
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+*/
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Entity
+//@Document(indexName = "tag")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class Tag {
-
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
@@ -33,9 +39,11 @@ public class Tag {
             strategy = GenerationType.SEQUENCE,
             generator = "primary_sequence"
     )
+    //@Id
     private Long id;
 
     @Column(nullable = false)
+    //@Field
     private String name;
 
     @CreatedDate

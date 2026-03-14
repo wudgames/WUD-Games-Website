@@ -2,6 +2,11 @@ package edu.wisc.wud.games.wud_games_website.tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +26,9 @@ public class TagResource {
 
     private final TagService tagService;
 
+    @Autowired
+    ElasticsearchOperations operations;  
+
     public TagResource(final TagService tagService) {
         this.tagService = tagService;
     }
@@ -28,6 +36,19 @@ public class TagResource {
     @GetMapping
     public ResponseEntity<List<TagDTO>> getAllTags() {
         return ResponseEntity.ok(tagService.findAll());
+    }
+
+    @GetMapping("/elasticsearch/{name}")
+    public ResponseEntity<List<TagDTO>> searchTagsWithElasticsearch(@PathVariable(name = "name") final String name) {
+        Criteria criteria = new Criteria("name")
+            .fuzzy(name);
+        CriteriaQuery query = new CriteriaQuery(criteria);
+        return ResponseEntity.ok(operations.search(query, Tag.class)
+            .map(searchHit -> {
+                Tag tag = searchHit.getContent();
+                return tagService.get(tag.getId());
+            })
+            .toList());
     }
 
     @GetMapping("/{id}")

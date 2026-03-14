@@ -43,7 +43,7 @@ java -Dspring.profiles.active=production -jar ./target/WUD-Games-Webcite-0.0.1-S
 If required, a Docker image can be created with the Spring Boot plugin. Add `SPRING_PROFILES_ACTIVE=production` as environment variable when running the container.
 
 ```
-mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=edu.wisc.wud.games.websitebackend/w-u-d-games-webcite
+mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=edu.wisc.wud.games.websitebackend/wud-games-website
 ```
 
 ## Further readings
