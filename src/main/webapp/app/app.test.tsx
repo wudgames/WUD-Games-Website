@@ -1,6 +1,6 @@
 import React from 'react';
 import { act } from '@testing-library/react';
-import App from './app';
+import App from './App';
 
 
 test('should create the app', async () => {
