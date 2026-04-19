@@ -1,0 +1,30 @@
+meta {
+  name: POST general description
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL}}/api/generalDiss
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCatchPhraseAdjective}} {{$randomCatchPhraseNoun}}",
+    "description": "{{$randomCatchPhraseAdjective}}",
+    "imageUrl": null,
+    "tags": []
+  }
+}
+
+vars:post-response {
+  responseID: res.body
+  genDiscName: req.body.name
+  genDiscDescription: req.body.description
+}
+
+assert {
+  res.status: eq 201
+}

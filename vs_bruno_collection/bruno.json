@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "name": "vs_bruno_collection",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.0004558563232421875,
+  "filesCount": 4,
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "{{baseURL}}"
+  }
+}

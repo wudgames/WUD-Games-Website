@@ -1,0 +1,23 @@
+meta {
+  name: GET Game Discription by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/api/gameDiss/{{responseID}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq {{responseID}}
+  res.body.minPlayers: eq {{minPlayers}}
+  res.body.maxPlayers: eq {{maxPlayers}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

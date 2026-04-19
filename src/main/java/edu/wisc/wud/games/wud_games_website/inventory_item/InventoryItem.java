@@ -52,8 +52,8 @@ public class InventoryItem {
     @Column(length = 1024)
     private String notes;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    //@Column(nullable = false)
+    //@Enumerated(EnumType.STRING)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_checkout_id")

@@ -1,0 +1,22 @@
+meta {
+  name: GET general discription by id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/api/generalDiss/{{responseID}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.name: eq "{{genDiscName}}"
+  res.body.description: eq "{{genDiscDescription}}"
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
