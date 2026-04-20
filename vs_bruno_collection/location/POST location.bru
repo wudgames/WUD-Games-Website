@@ -1,0 +1,31 @@
+meta {
+  name: POST location
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL}}/api/locations
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "{{$randomCountry}}"
+  }
+}
+
+vars:post-response {
+  name: req.body.name
+  id: res.body
+}
+
+assert {
+  res.status: eq 201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

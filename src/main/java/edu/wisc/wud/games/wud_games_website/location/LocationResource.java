@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping(value = "/api/locations", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LocationResource {
@@ -53,6 +52,5 @@ public class LocationResource {
         locationService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }
 
