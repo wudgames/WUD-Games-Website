@@ -1,7 +1,7 @@
 meta {
   name: POST general description
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -14,8 +14,8 @@ body:json {
   {
     "name": "{{$randomCatchPhraseAdjective}} {{$randomCatchPhraseNoun}}",
     "description": "{{$randomCatchPhraseAdjective}}",
-    "imageUrl": null,
-    "tags": []
+    "imageUrl": "{{$randomCatsImage}}",
+    "tags": [{{tag_id}}]
   }
 }
 
@@ -23,6 +23,7 @@ vars:post-response {
   id: res.body
   name: req.body.name
   description: req.body.description
+  imageUrl: req.body.imageUrl
 }
 
 assert {

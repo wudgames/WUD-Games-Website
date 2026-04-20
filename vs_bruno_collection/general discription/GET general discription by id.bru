@@ -1,7 +1,7 @@
 meta {
   name: GET general discription by id
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
@@ -14,6 +14,7 @@ assert {
   res.status: eq 200
   res.body.name: eq "{{name}}"
   res.body.description: eq "{{description}}"
+  res.body.imageUrl: eq "{{imageUrl}}"
 }
 
 settings {

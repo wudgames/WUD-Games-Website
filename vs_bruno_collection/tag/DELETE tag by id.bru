@@ -1,18 +1,17 @@
 meta {
-  name: GET tag by id
+  name: DELETE tag by id
   type: http
-  seq: 3
+  seq: 4
 }
 
-get {
+delete {
   url: {{baseURL}}/api/tags/{{id}}
   body: none
   auth: inherit
 }
 
 assert {
-  res.status: eq 200
-  res.body.name: eq "{{name}}"
+  res.status: eq 204
 }
 
 settings {

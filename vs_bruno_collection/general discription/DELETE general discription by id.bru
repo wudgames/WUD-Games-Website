@@ -1,0 +1,20 @@
+meta {
+  name: DELETE general discription by id
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseURL}}/api/generalDiss/{{id}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 204
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
