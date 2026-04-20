@@ -1,18 +1,18 @@
 meta {
-  name: GET Game Discription by ID
+  name: GET game discription by id
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
-  url: {{baseURL}}/api/gameDiss/{{responseID}}
+  url: {{baseURL}}/api/gameDiss/{{id}}
   body: none
   auth: inherit
 }
 
 assert {
   res.status: eq 200
-  res.body.id: eq {{responseID}}
+  res.body.id: eq {{id}}
   res.body.minPlayers: eq {{minPlayers}}
   res.body.maxPlayers: eq {{maxPlayers}}
 }
