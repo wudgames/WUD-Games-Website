@@ -15,6 +15,7 @@ assert {
   res.body.name: eq "{{name}}"
   res.body.description: eq "{{description}}"
   res.body.imageUrl: eq "{{imageUrl}}"
+  res.body.tags: contains {{tag_id}}
 }
 
 settings {

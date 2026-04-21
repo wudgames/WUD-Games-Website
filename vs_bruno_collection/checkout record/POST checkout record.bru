@@ -1,7 +1,7 @@
 meta {
   name: POST checkout record
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -16,14 +16,15 @@ body:json {
     "returnedTime": null,
     "peoplePlaying": {{$randomInt}},
     "resipeantName": "{{$randomFullName}}",
-    "inventoryItems": []
+    "inventoryItems": [{{inventoryItem_id}}]
   }
 }
 
 vars:post-response {
-  resipeantName: req.body.resipeantName
   id: res.body
-  peoplePlaying: res.body.peoplePlaying
+  checkoutTime: req.body.checkoutTime
+  peoplePlaying: req.body.peoplePlaying
+  resipeantName: req.body.resipeantName
 }
 
 assert {
