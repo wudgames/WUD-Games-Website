@@ -2,7 +2,8 @@ package edu.wisc.wud.games.wud_games_website.inventory_item;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ public class InventoryItemDTO {
 
     private Long id;
 
-    private LocalDate dateAdded;
+    private OffsetDateTime dateAdded;
 
     @Size(max = 1024)
     private String notes;

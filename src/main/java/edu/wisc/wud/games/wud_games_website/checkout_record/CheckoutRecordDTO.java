@@ -2,7 +2,8 @@ package edu.wisc.wud.games.wud_games_website.checkout_record;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +16,9 @@ public class CheckoutRecordDTO {
     private Long id;
 
     @NotNull
-    private LocalDateTime checkoutTime;
+    private OffsetDateTime checkoutTime;
 
-    private LocalDateTime returnedTime;
+    private OffsetDateTime returnedTime;
 
     private Integer peoplePlaying;
 

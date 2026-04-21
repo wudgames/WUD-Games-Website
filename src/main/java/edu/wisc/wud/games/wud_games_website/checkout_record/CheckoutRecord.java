@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDateTime;
+
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +20,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 
 @Entity
@@ -43,10 +44,10 @@ public class CheckoutRecord {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime checkoutTime;
+    private OffsetDateTime checkoutTime;
 
     @Column
-    private LocalDateTime returnedTime;
+    private OffsetDateTime returnedTime;
 
     @Column
     private Integer peoplePlaying;

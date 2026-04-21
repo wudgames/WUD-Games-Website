@@ -1,0 +1,15 @@
+meta {
+  name: GET inventory items
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseURL}}/api/inventoryItems
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

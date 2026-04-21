@@ -1,0 +1,20 @@
+meta {
+  name: DELETE checkout record by id
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseURL}}/api/checkoutRecords/{{currentCheckout_id}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 409
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

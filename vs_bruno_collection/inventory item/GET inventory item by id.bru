@@ -1,0 +1,23 @@
+meta {
+  name: GET inventory item by id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseURL}}/api/inventoryItems/{{id}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.dateAdded: eq {{dateAdded}}
+  res.body.notes: eq {{notes}}
+  res.body.genDis: eq {{genDis_id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

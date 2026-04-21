@@ -1,3 +1,9 @@
 meta {
   name: vs_bruno_collection
 }
+
+script:pre-request {
+  const moment = require("moment");
+  const now = moment().format("yyyy-MM-DDTHH:mm:ss.SSS");
+  bru.setEnvVar("now", now);
+}

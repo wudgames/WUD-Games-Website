@@ -1,0 +1,20 @@
+meta {
+  name: GET checkout records
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseURL}}/api/checkoutRecords
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

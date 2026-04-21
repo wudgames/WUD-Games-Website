@@ -5,8 +5,6 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +14,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,7 +44,7 @@ public class InventoryItem {
     private Long id;
 
     @Column
-    private LocalDate dateAdded;
+    private OffsetDateTime dateAdded;
 
     @Column(length = 1024)
     private String notes;
