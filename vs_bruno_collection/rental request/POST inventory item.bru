@@ -1,7 +1,7 @@
 meta {
-  name: POST inventory item copy
+  name: POST inventory item
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -20,9 +20,7 @@ body:json {
 }
 
 vars:post-response {
-  inventoryItem_id: res.body
-  dateAdded: req.body.dateAdded
-  notes: req.body.notes
+  inventoryitem_id: res.body
 }
 
 assert {

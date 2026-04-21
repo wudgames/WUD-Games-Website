@@ -1,17 +1,17 @@
 meta {
   name: DELETE checkout record by id
   type: http
-  seq: 7
+  seq: 5
 }
 
 delete {
-  url: {{baseURL}}/api/checkoutRecords/{{id}}
+  url: {{baseURL}}/api/checkoutRecords/{{checkoutrecord_id}}
   body: none
   auth: inherit
 }
 
 assert {
-  res.status: eq 204
+  res.status: eq 409
 }
 
 settings {

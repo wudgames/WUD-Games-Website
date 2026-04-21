@@ -1,11 +1,11 @@
 meta {
-  name: DELETE checkout record by id
+  name: DELETE rental requests by id
   type: http
-  seq: 7
+  seq: 10
 }
 
 delete {
-  url: {{baseURL}}/api/checkoutRecords/{{id}}
+  url: {{baseURL}}/api/rentalRequests/{{id}}
   body: none
   auth: inherit
 }

@@ -16,8 +16,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,13 +53,13 @@ public class RentalRequest {
     private String requesterEmail;
 
     @Column(nullable = false)
-    private LocalDateTime submissionTime;
+    private OffsetDateTime submissionTime;
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private OffsetDateTime startDate;
 
     @Column(nullable = false)
-    private LocalDate endDate;
+    private OffsetDateTime endDate;
 
     @Column
     private String requesterComments;

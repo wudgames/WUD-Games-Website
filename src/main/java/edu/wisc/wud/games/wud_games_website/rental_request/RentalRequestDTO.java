@@ -2,8 +2,7 @@ package edu.wisc.wud.games.wud_games_website.rental_request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,13 +23,13 @@ public class RentalRequestDTO {
     private String requesterEmail;
 
     @NotNull
-    private LocalDateTime submissionTime;
+    private OffsetDateTime submissionTime;
 
     @NotNull
-    private LocalDate startDate;
+    private OffsetDateTime startDate;
 
     @NotNull
-    private LocalDate endDate;
+    private OffsetDateTime endDate;
 
     private String requesterComments;
 
