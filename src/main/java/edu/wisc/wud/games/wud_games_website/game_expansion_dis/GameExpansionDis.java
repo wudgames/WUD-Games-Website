@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.game_expansion_dis;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class GameExpansionDis extends GeneralDis {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "base_game_dis_id", nullable = false)
-    private BoardGameDis baseGameDis;
+    private GameDis baseGameDis;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

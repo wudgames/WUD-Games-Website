@@ -6,6 +6,10 @@ spring:
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
+  security:
+    user:
+      name: user
+      password: NDbCsYL"AH264ZJ:T^T#
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,3 +30,4 @@ error:
       5xx: ERROR
     codes:
       RentalRequestCheckoutRecordUnique: RENTAL_REQUEST_CHECKOUT_RECORD_UNIQUE
+  

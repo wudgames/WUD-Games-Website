@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,7 @@ public class TagResource {
         this.tagService = tagService;
     }
 
+    //@PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<TagDTO>> getAllTags() {
         return ResponseEntity.ok(tagService.findAll());
@@ -56,12 +58,14 @@ public class TagResource {
         return ResponseEntity.ok(tagService.get(id));
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Long> createTag(@RequestBody @Valid final TagDTO tagDTO) {
         final Long createdId = tagService.create(tagDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateTag(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final TagDTO tagDTO) {
@@ -69,6 +73,7 @@ public class TagResource {
         return ResponseEntity.ok(id);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable(name = "id") final Long id) {
         tagService.delete(id);

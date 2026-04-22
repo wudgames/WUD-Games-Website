@@ -1,0 +1,33 @@
+meta {
+  name: POST game description
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL}}/api/gameDiss
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "minPlayers": {{$randomInt}},
+    "maxPlayers": {{$randomInt}}
+  }
+}
+
+vars:post-response {
+  gameDis_id: res.body
+  minPlayers: req.body.minPlayers
+  maxPlayers: req.body.maxPlayers
+}
+
+assert {
+  res.status: eq 201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

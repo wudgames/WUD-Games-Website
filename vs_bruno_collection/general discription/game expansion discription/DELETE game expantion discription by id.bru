@@ -1,0 +1,20 @@
+meta {
+  name: DELETE game expantion discription by id
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseURL}}/api/gameExpansionDiss/{{id}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 204
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

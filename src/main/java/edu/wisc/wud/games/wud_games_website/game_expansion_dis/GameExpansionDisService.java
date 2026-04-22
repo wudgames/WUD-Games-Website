@@ -1,7 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.game_expansion_dis;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDisRepository;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameDis;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
@@ -19,14 +19,14 @@ import org.springframework.stereotype.Service;
 public class GameExpansionDisService {
 
     private final GameExpansionDisRepository gameExpansionDisRepository;
-    private final BoardGameDisRepository boardGameDisRepository;
+    private final GameDisRepository GameDisRepository;
     private final ApplicationEventPublisher publisher;
 
     public GameExpansionDisService(final GameExpansionDisRepository gameExpansionDisRepository,
-            final BoardGameDisRepository boardGameDisRepository,
+            final GameDisRepository GameDisRepository,
             final ApplicationEventPublisher publisher) {
         this.gameExpansionDisRepository = gameExpansionDisRepository;
-        this.boardGameDisRepository = boardGameDisRepository;
+        this.GameDisRepository = GameDisRepository;
         this.publisher = publisher;
     }
 
@@ -72,7 +72,7 @@ public class GameExpansionDisService {
 
     private GameExpansionDis mapToEntity(final GameExpansionDisDTO gameExpansionDisDTO,
             final GameExpansionDis gameExpansionDis) {
-        final BoardGameDis baseGameDis = gameExpansionDisDTO.getBaseGameDis() == null ? null : boardGameDisRepository.findById(gameExpansionDisDTO.getBaseGameDis())
+        final GameDis baseGameDis = gameExpansionDisDTO.getBaseGameDis() == null ? null : GameDisRepository.findById(gameExpansionDisDTO.getBaseGameDis())
                 .orElseThrow(() -> new NotFoundException("baseGameDis not found"));
         gameExpansionDis.setBaseGameDis(baseGameDis);
         return gameExpansionDis;

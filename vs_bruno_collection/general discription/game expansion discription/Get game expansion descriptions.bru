@@ -1,0 +1,20 @@
+meta {
+  name: Get game expansion descriptions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/api/gameExpansionDiss
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
