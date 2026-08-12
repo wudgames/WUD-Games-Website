@@ -1,0 +1,7 @@
+info:
+  name: board game discription
+  type: folder
+  seq: 6
+
+request:
+  auth: inherit

@@ -1,0 +1,45 @@
+info:
+  name: PUT rental request by id
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{baseURL}}/api/rentalRequests/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "requesterName": "{{requesterName}}",
+        "requesterEmail": "{{requesterEmail}}",
+        "submissionTime": "{{submissionTime}}",
+        "startDate": "{{startDate}}",
+        "endDate": "{{endDate}}",
+        "requesterComments": "{{requesterComments}}",
+        "adminComments": "{{adminComments}}",
+        "status": "APPROVED",
+        "checkoutRecord": {{checkoutrecord_id}},
+        "requestedInventory": [{{inventoryitem_id}}]
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.status
+        method: jsonq
+      variable:
+        name: status
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

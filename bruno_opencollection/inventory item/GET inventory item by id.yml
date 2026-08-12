@@ -1,0 +1,30 @@
+info:
+  name: GET inventory item by id
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/inventoryItems/{{id}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.dateAdded
+      operator: eq
+      value: "{{dateAdded}}"
+    - expression: res.body.notes
+      operator: eq
+      value: "{{notes}}"
+    - expression: res.body.genDis
+      operator: eq
+      value: "{{genDis_id}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

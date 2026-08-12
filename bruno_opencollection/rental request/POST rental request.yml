@@ -1,0 +1,109 @@
+info:
+  name: POST rental request
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/rentalRequests"
+  body:
+    type: json
+    data: |-
+      {
+        "requesterName": "{{$randomFullName}}",
+        "requesterEmail": "{{$randomEmail}}",
+        "submissionTime": "{{$randomDateRecent}}",
+        "startDate": "{{$isoTimestamp}}",
+        "endDate": "{{$randomDateFuture}}",
+        "requesterComments": "{{$randomAdjective}}",
+        "adminComments": "{{$randomAdjective}}",
+        "status": "PENDING",
+        "checkoutRecord": {{checkoutrecord_id}},
+        "requestedInventory": [{{inventoryitem_id}}]
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body
+        method: jsonq
+      variable:
+        name: id
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.requesterName
+        method: jsonq
+      variable:
+        name: requesterName
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.requesterEmail
+        method: jsonq
+      variable:
+        name: requesterEmail
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.submissionTime
+        method: jsonq
+      variable:
+        name: submissionTime
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.startDate
+        method: jsonq
+      variable:
+        name: startDate
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.endDate
+        method: jsonq
+      variable:
+        name: endDate
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.requesterComments
+        method: jsonq
+      variable:
+        name: requesterComments
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.adminComments
+        method: jsonq
+      variable:
+        name: adminComments
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.status
+        method: jsonq
+      variable:
+        name: status
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

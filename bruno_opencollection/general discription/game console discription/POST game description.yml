@@ -1,0 +1,53 @@
+info:
+  name: POST game description
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/gameDiss"
+  body:
+    type: json
+    data: |-
+      {
+        "minPlayers": {{$randomInt}},
+        "maxPlayers": {{$randomInt}}
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body
+        method: jsonq
+      variable:
+        name: gameDis_id
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.minPlayers
+        method: jsonq
+      variable:
+        name: minPlayers
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.maxPlayers
+        method: jsonq
+      variable:
+        name: maxPlayers
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,44 @@
+info:
+  name: POST tag
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/tags"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "{{$randomCatchPhraseAdjective}} {{$randomCatchPhraseNoun}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.name
+        method: jsonq
+      variable:
+        name: tag_name
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body
+        method: jsonq
+      variable:
+        name: tag_id
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

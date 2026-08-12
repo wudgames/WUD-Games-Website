@@ -1,0 +1,58 @@
+info:
+  name: PUT inventory item
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseURL}}/api/inventoryItems/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "dateAdded": "{{dateAdded}}",
+        "notes": "{{notes}}",
+        "currentCheckout": {{currentCheckout_id}},
+        "genDis": {{genDis_id}}
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body
+      operator: eq
+      value: "{{id}}"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.name
+        method: jsonq
+      variable:
+        name: name
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.description
+        method: jsonq
+      variable:
+        name: description
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.imageUrl
+        method: jsonq
+      variable:
+        name: imageUrl
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

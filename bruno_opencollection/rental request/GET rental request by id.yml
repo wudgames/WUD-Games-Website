@@ -1,0 +1,51 @@
+info:
+  name: GET rental request by id
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/rentalRequests/{{id}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.requesterName
+      operator: eq
+      value: '"{{requesterName}}"'
+    - expression: res.body.requesterEmail
+      operator: eq
+      value: '"{{requesterEmail}}"'
+    - expression: res.body.submissionTime
+      operator: eq
+      value: '"{{submissionTime}}"'
+    - expression: res.body.startDate
+      operator: eq
+      value: '"{{startDate}}"'
+    - expression: res.body.endDate
+      operator: eq
+      value: '"{{endDate}}"'
+    - expression: res.body.requesterComments
+      operator: eq
+      value: '"{{requesterComments}}"'
+    - expression: res.body.adminComments
+      operator: eq
+      value: '"{{adminComments}}"'
+    - expression: res.body.status
+      operator: eq
+      value: '"{{status}}"'
+    - expression: res.body.checkoutRecord
+      operator: eq
+      value: "{{checkoutrecord_id}}"
+    - expression: res.body.requestedInventory
+      operator: contains
+      value: "{{inventoryitem_id}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

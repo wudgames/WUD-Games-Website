@@ -1,0 +1,21 @@
+info:
+  name: DELETE tag by id
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/api/tags/{{id}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "204"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

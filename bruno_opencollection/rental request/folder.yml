@@ -1,0 +1,7 @@
+info:
+  name: rental request
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit

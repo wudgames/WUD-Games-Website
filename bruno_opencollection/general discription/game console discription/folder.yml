@@ -1,0 +1,7 @@
+info:
+  name: game console discription
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit

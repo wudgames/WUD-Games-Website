@@ -1,0 +1,7 @@
+info:
+  name: physical item
+  type: folder
+  seq: 11
+
+request:
+  auth: inherit

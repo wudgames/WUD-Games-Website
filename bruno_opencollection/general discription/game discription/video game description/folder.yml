@@ -1,0 +1,7 @@
+info:
+  name: video game description
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit

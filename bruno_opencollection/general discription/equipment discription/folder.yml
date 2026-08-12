@@ -1,0 +1,7 @@
+info:
+  name: equipment discription
+  type: folder
+  seq: 8
+
+request:
+  auth: inherit

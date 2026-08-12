@@ -1,0 +1,36 @@
+info:
+  name: GET checkout record by id
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/checkoutRecords/{{id}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.checkoutTime
+      operator: eq
+      value: "{{checkoutTime}}"
+    - expression: res.body.returnedTime
+      operator: eq
+      value: "null"
+    - expression: res.body.peoplePlaying
+      operator: eq
+      value: "{{peoplePlaying}}"
+    - expression: res.body.resipeantName
+      operator: eq
+      value: "{{resipeantName}}"
+    - expression: res.body.inventoryItems
+      operator: contains
+      value: "{{inventoryItem_id}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

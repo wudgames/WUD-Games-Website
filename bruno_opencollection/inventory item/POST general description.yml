@@ -1,0 +1,65 @@
+info:
+  name: POST general description
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/generalDiss"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "{{$randomCatchPhraseAdjective}} {{$randomCatchPhraseNoun}}",
+        "description": "{{$randomCatchPhraseAdjective}}",
+        "imageUrl": "{{$randomCatsImage}}",
+        "tags": []
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body
+        method: jsonq
+      variable:
+        name: genDis_id
+        scope: runtime
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.name
+        method: jsonq
+      variable:
+        name: name
+        scope: runtime
+      disabled: true
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.description
+        method: jsonq
+      variable:
+        name: description
+        scope: runtime
+      disabled: true
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.imageUrl
+        method: jsonq
+      variable:
+        name: imageUrl
+        scope: runtime
+      disabled: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

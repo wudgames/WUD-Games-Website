@@ -1,0 +1,40 @@
+info:
+  name: PUT checkout record by id
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{baseURL}}/api/checkoutRecords/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "checkoutTime": "{{checkoutTime}}",
+        "returnedTime": "{{$isoTimestamp}}",
+        "peoplePlaying": {{peoplePlaying}},
+        "resipeantName": "{{resipeantName}}",
+        "inventoryItems": [{{inventoryItem_id}}]
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: req.body.returnedTime
+        method: jsonq
+      variable:
+        name: returnedTime
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
