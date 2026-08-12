@@ -1,7 +1,7 @@
 info:
   name: GET rental requests
   type: http
-  seq: 1
+  seq: 10
 
 http:
   method: GET

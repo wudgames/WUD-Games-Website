@@ -1,7 +1,7 @@
 info:
   name: DELETE checkout record by id
   type: http
-  seq: 1
+  seq: 6
 
 http:
   method: DELETE

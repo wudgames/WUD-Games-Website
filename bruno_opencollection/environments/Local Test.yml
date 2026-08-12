@@ -1,0 +1,5 @@
+name: Local Test
+variables:
+  - name: baseURL
+    value: 127.0.0.1:8080
+    description: Default URL of app when running localy

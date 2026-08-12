@@ -1,7 +1,7 @@
 info:
   name: "GET inventory item by id #2"
   type: http
-  seq: 4
+  seq: 7
 
 http:
   method: GET
