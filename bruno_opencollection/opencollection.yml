@@ -13,6 +13,27 @@ config:
         username: ""
         password: ""
       bypassProxy: ""
+
+request:
+  auth:
+    type: oauth2
+    flow: authorization_code
+    authorizationUrl: https://github.com/login/oauth/authorize
+    accessTokenUrl: https://github.com/login/oauth/access_token
+    callbackUrl: "{{baseURL}}/login/oauth2/code/github"
+    credentials:
+      clientId: Ov23lio6fxrWQDzdEIva
+      clientSecret: "{{clientSecret}}"
+      placement: basic_auth_header
+    pkce:
+      disabled: true
+    tokenConfig:
+      id: credentials
+      placement:
+        header: ""
+      source: access_token
+    settings:
+      autoFetchToken: false
 bundled: false
 extensions:
   bruno:
