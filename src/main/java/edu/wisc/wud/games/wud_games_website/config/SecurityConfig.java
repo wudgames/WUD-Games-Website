@@ -9,10 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -56,14 +52,14 @@ public class SecurityConfig {
 		System.out.println("Hello from securityFilterChain");
 //		httpSecurity.csrf(csrf->csrf.ignoringRequestMatchers("/logout"));
 
-		/* 
+		
 		httpSecurity.formLogin(login->{
-			login.loginPage("/")
+			login.loginPage("/login")
 			.loginProcessingUrl("/authenticate")
 			.usernameParameter("email")
 			.passwordParameter("password");
 		});
-		*/
+		
 
 		httpSecurity.logout(logout->{
 			logout.logoutUrl("/logout")

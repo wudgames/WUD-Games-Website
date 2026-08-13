@@ -3,8 +3,6 @@ package edu.wisc.wud.games.wud_games_website.oauth2;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
