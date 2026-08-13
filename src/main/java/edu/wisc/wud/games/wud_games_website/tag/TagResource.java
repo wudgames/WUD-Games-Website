@@ -27,8 +27,8 @@ public class TagResource {
 
     private final TagService tagService;
 
-    @Autowired
-    ElasticsearchOperations operations;  
+    //@Autowired
+    //ElasticsearchOperations operations;  
 
     public TagResource(final TagService tagService) {
         this.tagService = tagService;
@@ -39,7 +39,7 @@ public class TagResource {
     public ResponseEntity<List<TagDTO>> getAllTags() {
         return ResponseEntity.ok(tagService.findAll());
     }
-
+    /*
     @GetMapping("/elasticsearch/{name}")
     public ResponseEntity<List<TagDTO>> searchTagsWithElasticsearch(@PathVariable(name = "name") final String name) {
         Criteria criteria = new Criteria("name")
@@ -52,7 +52,7 @@ public class TagResource {
             })
             .toList());
     }
-
+    */
     @GetMapping("/{id}")
     public ResponseEntity<TagDTO> getTag(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(tagService.get(id));

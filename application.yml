@@ -6,6 +6,13 @@ spring:
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: Ov23lio6fxrWQDzdEIva
+            clientSecret: 619a4e33aac5333b3cde736c60abc213149bedae
   jpa:
     hibernate:
       ddl-auto: update
