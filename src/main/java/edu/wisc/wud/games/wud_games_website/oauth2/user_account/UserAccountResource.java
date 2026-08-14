@@ -3,15 +3,19 @@ package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @EnableMethodSecurity
 public class UserAccountResource {
     private final UserAccountService userAccountService;
@@ -23,13 +27,21 @@ public class UserAccountResource {
     @GetMapping("/user")
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
         System.out.println("principal is null: " + (null == principal));
-        System.out.println("principal attribute: " + principal.getAttributes().keySet());
+
+        Set<String> keyset = principal.getAttributes().keySet();
+
+        System.out.println("principal attribute: " + keyset);
         
-        System.out.println("principal login: " + principal.getAttribute("login"));// Display name
-        System.out.println("principal id: " + principal.getAttribute("id"));// Identifyer
+        for (String key : keyset) {
+            System.out.println(key + ": " + principal.getAttribute(key));
+        }
+
+        System.out.println("principal email: " + principal.getAttribute("email"));
+        System.out.println("api email query: " + principal.getAttribute("email"));
+        
 
         System.out.println("principal authorities: " + principal.getAuthorities());// This might me the authorities with respect to github not the authorities of the user in the database.
-        return Collections.singletonMap("login", principal.getAttribute("login"));
+        return Collections.singletonMap("login", principal.getAttribute("email"));
     }
 
     @GetMapping("/users")
@@ -38,4 +50,6 @@ public class UserAccountResource {
     }
 
     // TODO Add way to edit users
+
+    // TODO user should be able to deleate account
 }

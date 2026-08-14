@@ -13,6 +13,8 @@ spring:
           github:
             clientId: Ov23lio6fxrWQDzdEIva
             clientSecret: 619a4e33aac5333b3cde736c60abc213149bedae
+            scope:
+            - user:email
   jpa:
     hibernate:
       ddl-auto: update

@@ -44,9 +44,8 @@ public class SecurityConfig {
 			authorize.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 			.requestMatchers("/error", "/webjars/**").permitAll()
 			.requestMatchers("/login/**").permitAll()
-			.requestMatchers("/user/**").authenticated()
+			.requestMatchers("/api/user/**").authenticated()
 			.anyRequest().permitAll(); 
-			
 		});
 
 //		httpSecurity.csrf(csrf->csrf.ignoringRequestMatchers("/logout"));
@@ -62,7 +61,6 @@ public class SecurityConfig {
 		httpSecurity.logout(logout->{
 			logout.logoutUrl("/logout")
 			.logoutSuccessUrl("/?logout=true");
-			
 		});
 		
 		httpSecurity.oauth2Login(withDefaults());
