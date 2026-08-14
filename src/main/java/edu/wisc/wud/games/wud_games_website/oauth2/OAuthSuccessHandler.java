@@ -15,8 +15,8 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import edu.wisc.wud.games.wud_games_website.oauth2.user.User;
-import edu.wisc.wud.games.wud_games_website.oauth2.user.UserRepository;
+import edu.wisc.wud.games.wud_games_website.oauth2.user_account.UserAccount;
+import edu.wisc.wud.games.wud_games_website.oauth2.user_account.UserAccountRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAccountRepository userAccountRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -36,16 +36,16 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         String email = oauthUser.getAttribute("email");
 
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+        UserAccount userAccount = userAccountRepository.findByEmail(email);
+        if (userAccount == null) {
+            throw new UsernameNotFoundException("UserAccount not found");
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
 
         // Add the user's role from the database to the authorities
-        authorities.addAll(user.getAuthorities()); // eg- ADMIN
-        System.out.println(user.getAuthorities());
+        authorities.addAll(userAccount.getAuthorities()); // eg- ADMIN
+        System.out.println(userAccount.getAuthorities());
         
         // Create a new Authentication token with the merged authorities
         Authentication newAuth = new OAuth2AuthenticationToken(

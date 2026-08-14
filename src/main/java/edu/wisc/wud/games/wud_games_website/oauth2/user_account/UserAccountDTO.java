@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.oauth2.user;
+package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
 
 import java.time.OffsetDateTime;
 
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
+public class UserAccountDTO {
     
     private Long id;
 

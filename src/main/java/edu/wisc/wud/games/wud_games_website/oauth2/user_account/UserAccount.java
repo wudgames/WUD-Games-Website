@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.oauth2.user;
+package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class User implements UserDetails {
+public class UserAccount implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

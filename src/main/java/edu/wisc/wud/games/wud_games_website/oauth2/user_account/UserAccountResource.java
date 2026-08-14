@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.oauth2.user;
+package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @EnableMethodSecurity
-public class UserResource {
-    private final UserService userService;
+public class UserAccountResource {
+    private final UserAccountService userAccountService;
 
-    public UserResource(final UserService userService) {
-        this.userService = userService;
+    public UserAccountResource(final UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
     }
 
     @GetMapping("/user")
@@ -33,8 +33,8 @@ public class UserResource {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<UserAccountDTO>> getAllUserAccounts() {
+        return ResponseEntity.ok(userAccountService.findAll());
     }
 
     // TODO Add way to edit users
