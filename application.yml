@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:h2:mem:WUD-Games-Webcite}
+    url: ${JDBC_DATABASE_URL:jdbc:h2:file:./WUD-Games-Database}
     username: ${JDBC_DATABASE_USERNAME:sa}
     password: ${JDBC_DATABASE_PASSWORD:}
     hikari:
