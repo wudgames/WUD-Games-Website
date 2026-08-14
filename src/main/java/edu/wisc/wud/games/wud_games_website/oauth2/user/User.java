@@ -1,7 +1,8 @@
-package edu.wisc.wud.games.wud_games_website.oauth2;
+package edu.wisc.wud.games.wud_games_website.oauth2.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,11 +17,13 @@ import lombok.Setter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -32,8 +35,8 @@ public class User implements UserDetails {
 	@Column(unique = true, nullable = false)	
 	private String email;
 
-    @Column
-    private String password;
+    //@Column
+    //private String password;
 
 	@Column
     private boolean isHost;
@@ -44,26 +47,26 @@ public class User implements UserDetails {
     private float hoursHosted;
 
     @Column
-    private boolean canManagePhysicalInventory;
+    private boolean isPhysicalInventoryManager;
     // Allows creating, updating, and deleting: all physical items
     // Allows creating, updating, and deleting descriptions of: consoles, equipment, physical games and game expantion
 
     @Column
-    private boolean canManageDigitalInventory;
+    private boolean isDigitalInventoryManager;
     // Allows creating, updating, and deleting all digital items
     // Allows creating, updating, and deleting descriptions of: accounts, digital games
 
     @Column
-    private boolean canManageRentals;
+    private boolean isRentalsManager;
     // Allows reading, creating, updating, and deleting: some rental records
     // Allows reading, creating, updating, and deleting: some checkout records
 
     @Column
-    private boolean canManageEvents;
+    private boolean isEventsManager;
     // Allows reading, creating, updating, and deleting: some event records
 
     @Column
-    private boolean canManageMetaData;
+    private boolean isMetaDataManager;
     // Allows reading, creating, updating, and deleting: tags and locations
 
     @Column
@@ -89,7 +92,7 @@ public class User implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return this.password;
+        return null;
     }
 	
     @Override
@@ -98,11 +101,11 @@ public class User implements UserDetails {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         if(this.isAdmin) authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        if(this.canManageEvents) authorities.add(new SimpleGrantedAuthority("ROLE_EVENTS_MANAGER"));
-        if(this.canManageMetaData) authorities.add(new SimpleGrantedAuthority("ROLE_METADATA_MANAGER"));
-        if(this.canManagePhysicalInventory) authorities.add(new SimpleGrantedAuthority("ROLE_PHYSICAL_INVENTORY_MANAGER"));
-        if(this.canManageDigitalInventory) authorities.add(new SimpleGrantedAuthority("ROLE_DIGITAL_INVENTORY_MANAGER"));
-        if(this.canManageRentals) authorities.add(new SimpleGrantedAuthority("ROLE_RENTALS_MANAGER"));
+        if(this.isEventsManager) authorities.add(new SimpleGrantedAuthority("ROLE_EVENTS_MANAGER"));
+        if(this.isMetaDataManager) authorities.add(new SimpleGrantedAuthority("ROLE_METADATA_MANAGER"));
+        if(this.isPhysicalInventoryManager) authorities.add(new SimpleGrantedAuthority("ROLE_PHYSICAL_INVENTORY_MANAGER"));
+        if(this.isDigitalInventoryManager) authorities.add(new SimpleGrantedAuthority("ROLE_DIGITAL_INVENTORY_MANAGER"));
+        if(this.isRentalsManager) authorities.add(new SimpleGrantedAuthority("ROLE_RENTALS_MANAGER"));
         if(this.isHost) authorities.add(new SimpleGrantedAuthority("ROLE_HOST"));
 
 		return authorities;

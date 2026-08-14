@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import edu.wisc.wud.games.wud_games_website.oauth2.user.UserRepository;
+
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

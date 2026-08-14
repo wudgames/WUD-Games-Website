@@ -49,9 +49,7 @@ public class SecurityConfig {
 			
 		});
 
-		System.out.println("Hello from securityFilterChain");
 //		httpSecurity.csrf(csrf->csrf.ignoringRequestMatchers("/logout"));
-
 		
 		httpSecurity.formLogin(login->{
 			login.loginPage("/login")
