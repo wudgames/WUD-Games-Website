@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -27,6 +28,9 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private UserAccountRepository userAccountRepository;
 
+    @Autowired
+    private GitService gitService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -35,6 +39,15 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 
         String email = oauthUser.getAttribute("email");
+
+        if (null == email) {
+            if (authentication instanceof OAuth2AuthenticationToken token && token.getPrincipal() instanceof DefaultOidcUser user) {
+                email = gitService.getPrimaryEmail(user.getIdToken().getTokenValue());
+            } else {
+                throw new ServletException("Email not found in OAuth response");
+            }
+            
+        }
 
         UserAccount userAccount = userAccountRepository.findByEmail(email);
         if (userAccount == null) {
@@ -58,6 +71,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
         
         // Redirect the user
-        new DefaultRedirectStrategy().sendRedirect(request, response, "/user");
+        new DefaultRedirectStrategy().sendRedirect(request, response, "/api/user");
     }
 }
