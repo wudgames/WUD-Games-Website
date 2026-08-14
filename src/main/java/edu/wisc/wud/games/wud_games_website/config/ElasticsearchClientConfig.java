@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 
 @Configuration
-public class MyClientConfig extends ElasticsearchConfiguration {
+public class ElasticsearchClientConfig extends ElasticsearchConfiguration {
 
 	@Override
 	public ClientConfiguration clientConfiguration() {

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -41,12 +42,23 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         String email = oauthUser.getAttribute("email");
 
         if (null == email) {
-            if (authentication instanceof OAuth2AuthenticationToken token && token.getPrincipal() instanceof DefaultOidcUser user) {
-                email = gitService.getPrimaryEmail(user.getIdToken().getTokenValue());
-            } else {
-                throw new ServletException("Email not found in OAuth response");
+            System.out.println("public email is null");
+            /* 
+            if (authentication instanceof OAuth2AuthenticationToken token) {
+                System.out.println("found token " + token.getAuthorizedClientRegistrationId());
+                if (token.getPrincipal() instanceof OidcUser user) {// This step is the issue
+                    System.out.println("found user");
+                    email = gitService.getPrimaryEmail(user.getIdToken().getTokenValue());
+                    System.out.println("primary email is " + email);
+                } 
             }
-            
+            */
+           email = gitService.getPrimaryEmail();
+            System.out.println("primary email is " + email);
+        }
+
+        if (null == email) {
+            throw new ServletException("Email not found in OAuth response");
         }
 
         UserAccount userAccount = userAccountRepository.findByEmail(email);
