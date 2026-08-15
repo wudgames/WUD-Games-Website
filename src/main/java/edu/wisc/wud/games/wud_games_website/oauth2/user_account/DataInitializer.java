@@ -24,15 +24,18 @@ public class DataInitializer {
             long count = userAccountRepository.count();
             System.out.println("Number of users in the database: " + count);
 
-            if (count == 0) {
-                UserAccount defaultUserAccount = new UserAccount();
+            String defaultAdminEmail = System.getenv("ADMIN_EMAIL");
 
-                defaultUserAccount.setEmail("admin@example.com");
+            if (null == userAccountRepository.findByEmail(defaultAdminEmail)) {
+                UserAccount defaultAdminAccount = new UserAccount();
+
+                defaultAdminAccount.setEmail(System.getenv("DEFAULT_ADMIN_EMAIL"));
+                defaultAdminAccount.setAdmin(true);
                 
-                userAccountRepository.save(defaultUserAccount);
-                System.out.println("Default UserAccount saved successfully!");
+                userAccountRepository.save(defaultAdminAccount);
+                System.out.println("Default defaultAdminAccount added successfully!");
             } else {
-                System.out.println("UserAccounts already exist, skipping insertion.");
+                System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
         };
     }

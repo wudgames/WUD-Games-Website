@@ -3,10 +3,13 @@ package edu.wisc.wud.games.wud_games_website.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
@@ -29,18 +32,27 @@ public class SecurityConfig {
 
 	@Autowired
 	private OAuthSuccessHandler handler;
-
+	/*
 	@Bean
-	public PasswordEncoder encoder() {
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
+	public AuthenticationManager authenticationManager() throws Exception {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(authProvider);
+ 	}
+	
+	@Bean
 	public AuthenticationProvider authenticationProvider() {
+		System.out.println("regestering customUserDetailService");
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(customUserDetailService);
 		daoAuthenticationProvider.setPasswordEncoder(encoder());
 		return daoAuthenticationProvider;
 	}
+	*/
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -82,9 +94,8 @@ public class SecurityConfig {
 		
 		httpSecurity.oauth2Login(oauth -> {
 				oauth.successHandler(handler);
-				
 		    });
-
+		
 		//httpSecurity.oauth2Login(withDefaults());
 
 

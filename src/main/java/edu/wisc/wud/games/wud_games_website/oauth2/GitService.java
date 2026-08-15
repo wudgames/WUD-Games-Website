@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.oauth2;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.RequestHeadersSpec;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.json.Json;
@@ -13,15 +14,23 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.annotation.ClientRegistrationId;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import java.util.Collections;
 import java.util.List;
 
 @Service
 public class GitService {
+    private final CustomUserDetailsService customUserDetailsService;
+
     @Autowired
     private RestClient restClient;
 
@@ -29,8 +38,14 @@ public class GitService {
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     private static final String GITHUB_API_URL = "https://api.github.com";
+    private static final String REGISTRATION_ID = "github";
+
+    GitService(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     public String getPrimaryEmail() {
+        // This should be done in UsercustomUserDetailsService
         String url = GITHUB_API_URL + "/user/emails";
         System.out.println("Getting github emails");
         /*
@@ -47,10 +62,16 @@ public class GitService {
 
         //oAuth2AuthorizedClientManager.
 
+        //String accessToken = this.getAccessToken();
+        //System.out.println("Found accessToken");
+        RequestHeadersSpec<?> request = restClient.get()
+            .uri(url);
+        //System.out.println(request.);
         Json emails = restClient.get()
             .uri(url)
             //.attributes(clientRegistrationId("github"))
-            .attribute("clientRegistrationId", "github")
+            //.attribute("clientRegistrationId", "github")
+            //.headers().set
             .retrieve()
             .body(Json.class);// Getting authentication error
 
@@ -58,5 +79,9 @@ public class GitService {
 
         throw new UnsupportedOperationException("getPrimaryEmail, Feature incomplete.");
         //return emails[0].email;
+    }
+
+    private String getAccessToken(@RegisteredOAuth2AuthorizedClient(REGISTRATION_ID) OAuth2AuthorizedClient client) {
+        return client.getAccessToken().getTokenValue();
     }
 }
