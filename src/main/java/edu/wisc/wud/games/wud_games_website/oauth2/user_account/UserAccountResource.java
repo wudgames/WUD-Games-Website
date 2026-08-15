@@ -26,21 +26,20 @@ public class UserAccountResource {
 
     @GetMapping("/user")
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
-        System.out.println("principal is null: " + (null == principal));
 
+        // Code to debug info about user
+        System.out.println("debugging info about user:");
+        System.out.println("    principal is null: " + (null == principal));
         Set<String> keyset = principal.getAttributes().keySet();
-
-        System.out.println("principal attribute: " + keyset);
-        
+        System.out.println("    principal attribute: " + keyset);
         for (String key : keyset) {
-            System.out.println(key + ": " + principal.getAttribute(key));
+            System.out.println("    " + key + ": " + principal.getAttribute(key));
         }
+        System.out.println("    principal email: " + principal.getAttribute("email"));
+        System.out.println("    api email query: " + principal.getAttribute("email"));
+        System.out.println("    principal authorities: " + principal.getAuthorities());// This might me the authorities with respect to github not the authorities of the user in the database.
 
-        System.out.println("principal email: " + principal.getAttribute("email"));
-        System.out.println("api email query: " + principal.getAttribute("email"));
-        
-
-        System.out.println("principal authorities: " + principal.getAuthorities());// This might me the authorities with respect to github not the authorities of the user in the database.
+        // Return the email of the authenticated user to the browser
         return Collections.singletonMap("login", principal.getAttribute("email"));
     }
 
@@ -49,7 +48,7 @@ public class UserAccountResource {
         return ResponseEntity.ok(userAccountService.findAll());
     }
 
-    // TODO Add way to edit users
+    // TODO: Add way to edit users
 
-    // TODO user should be able to deleate account
+    // TODO: user should be able to deleate account
 }

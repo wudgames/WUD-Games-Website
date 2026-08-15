@@ -18,18 +18,20 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner dataLoader() {
         return args -> {
-            System.out.println("User itializer started...");
+            System.out.println("User initialization started...");
 
             // Log to verify if the count check is working
             long count = userAccountRepository.count();
             System.out.println("Number of users in the database: " + count);
 
-            String defaultAdminEmail = System.getenv("ADMIN_EMAIL");
+            String defaultAdminEmail = System.getenv("DEFAULT_ADMIN_EMAIL");
 
             if (null == userAccountRepository.findByEmail(defaultAdminEmail)) {
+                System.out.println("userAccountRepository.findByEmail(defaultAdminEmail) = " + userAccountRepository.findByEmail(defaultAdminEmail));
+                System.out.println("Did not find default admin account with email: " + defaultAdminEmail + ", creating...");
                 UserAccount defaultAdminAccount = new UserAccount();
 
-                defaultAdminAccount.setEmail(System.getenv("DEFAULT_ADMIN_EMAIL"));
+                defaultAdminAccount.setEmail(defaultAdminEmail);
                 defaultAdminAccount.setAdmin(true);
                 
                 userAccountRepository.save(defaultAdminAccount);

@@ -21,15 +21,11 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import edu.wisc.wud.games.wud_games_website.oauth2.CustomUserDetailsService;
 import edu.wisc.wud.games.wud_games_website.oauth2.OAuthSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	@Autowired
-	private CustomUserDetailsService customUserDetailService;
-
 	@Autowired
 	private OAuthSuccessHandler handler;
 	/*

@@ -9,7 +9,9 @@ application-local.yml
 node/
 node_modules/
 coverage/
+.env
 .env.local
+.env.development
 .env.development.local
 .env.test.local
 .env.production.local
@@ -42,7 +44,5 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-.env
-.env.development
 WUD-Games-Database.mv.db
 WUD-Games-Database.trace.db
