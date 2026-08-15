@@ -3,6 +3,7 @@ package edu.wisc.wud.games.wud_games_website.oauth2;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,16 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
             // There is no existing user account found for this email. Create a new one.
             userAccount = new UserAccount();
             userAccount.setEmail(email);
-            userAccountRepository.save(userAccount);
         }
         userAccount.setLastLogin(OffsetDateTime.now());
+        userAccountRepository.save(userAccount);
         
+        // Get authorities that are automatically set
         List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
+        
         // Add the user's role from UserAccount database to the authorities
-        authorities.addAll(userAccount.getAuthorities()); // eg- ADMIN
+        Collection<? extends GrantedAuthority> loadedAuthorities = userAccount.getAuthorities();
+        authorities.addAll(loadedAuthorities); // eg- ADMIN
 
         // Create a new Authentication token with the merged authorities
         Authentication newAuth = new OAuth2AuthenticationToken(

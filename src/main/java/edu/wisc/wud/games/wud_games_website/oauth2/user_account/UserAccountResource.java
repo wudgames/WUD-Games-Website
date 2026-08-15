@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -43,6 +44,7 @@ public class UserAccountResource {
         return Collections.singletonMap("login", principal.getAttribute("email"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<List<UserAccountDTO>> getAllUserAccounts() {
         return ResponseEntity.ok(userAccountService.findAll());
