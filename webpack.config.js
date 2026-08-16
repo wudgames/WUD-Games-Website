@@ -11,7 +11,7 @@ const WarningsToErrorsPlugin = require('warnings-to-errors-webpack-plugin');
 
 module.exports = (env, argv) => ({
   entry: {
-    bundle: 'index.tsx'
+    bundle: 'index.html'
   },
   output: {
     path: path.resolve(__dirname, './target/classes/static'),
@@ -49,6 +49,10 @@ module.exports = (env, argv) => ({
   ],
   module: {
     rules: [
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
       {
         test: /\.tsx?$/,
         use: ['ts-loader']

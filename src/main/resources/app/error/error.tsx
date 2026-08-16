@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import { useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -24,3 +25,4 @@ export default function Error() {
     <p>{t('error.page.message')}</p>
   </>);
 }
+*/

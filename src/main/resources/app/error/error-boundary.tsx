@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 
 
@@ -34,3 +35,4 @@ interface IErrorBoundaryState {
   readonly errorInfo: any;
 
 }
+*/

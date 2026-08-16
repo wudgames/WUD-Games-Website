@@ -1,6 +1,8 @@
+/*
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useDocumentTitle from 'app/common/use-document-title';
+import { Link } from 'react-router';
 //import './home.css';
 
 
@@ -10,6 +12,7 @@ export default function Home() {
 
   return (<>
     <div>WUD Games Website home.tsx</div>
-    <div>link to user page</div>
+    <Link to="/myuser">Visit /myuser</Link>
   </>);
 }
+*/

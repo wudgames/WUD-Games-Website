@@ -58,7 +58,7 @@ public class SecurityConfig {
 			authorize.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 			.requestMatchers("/error", "/webjars/**").permitAll()
 			.requestMatchers("/login/**").permitAll()
-			.requestMatchers("/api/user/**").authenticated()
+			.requestMatchers("/myuser/**", "/api/user/**").authenticated()
 			.anyRequest().permitAll(); 
 		});
 
