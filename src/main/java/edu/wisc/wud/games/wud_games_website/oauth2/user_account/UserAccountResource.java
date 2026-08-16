@@ -52,5 +52,7 @@ public class UserAccountResource {
 
     // TODO: Add way to edit users
 
+    // TODO: user should be able to change email/disable oauth2 login
+
     // TODO: user should be able to deleate account
 }

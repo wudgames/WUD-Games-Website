@@ -65,7 +65,7 @@ public class SecurityConfig {
 //		httpSecurity.csrf(csrf->csrf.ignoringRequestMatchers("/logout"));
 		
 		httpSecurity.formLogin(login->{
-			login.loginPage("/login")
+			login//.loginPage("/login")
 			.loginProcessingUrl("/authenticate")
 			.usernameParameter("email")
 			.passwordParameter("password");

@@ -35,9 +35,9 @@ public class UserAccount implements UserDetails {
 
 	@Column(unique = true, length = 255, nullable = false)
 	private String email;
-
-    //@Column
-    //private String password;
+    
+    @Column
+    private String password;
 
 	@Column
     private boolean isHost;
