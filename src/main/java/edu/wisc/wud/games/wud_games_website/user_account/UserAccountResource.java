@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
+package edu.wisc.wud.games.wud_games_website.user_account;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +26,8 @@ public class UserAccountResource {
         this.userAccountService = userAccountService;
     }
 
-    @GetMapping("/user")
-    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+    @GetMapping("/myuser")
+    public String myuser(@AuthenticationPrincipal OAuth2User principal, Model model) {
 
         // Code to debug info about user
         System.out.println("debugging info about user:");
@@ -41,7 +42,8 @@ public class UserAccountResource {
         System.out.println("    principal authorities: " + principal.getAuthorities());// This might me the authorities with respect to github not the authorities of the user in the database.
 
         // Return the email of the authenticated user to the browser
-        return Collections.singletonMap("login", principal.getAttribute("email"));
+        model.addAttribute("user_email", principal.getAttribute("email"));
+        return "string";
     }
 
     @PreAuthorize("hasRole('ADMIN')")

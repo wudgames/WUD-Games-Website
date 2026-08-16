@@ -16,8 +16,8 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import edu.wisc.wud.games.wud_games_website.oauth2.user_account.UserAccount;
-import edu.wisc.wud.games.wud_games_website.oauth2.user_account.UserAccountRepository;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

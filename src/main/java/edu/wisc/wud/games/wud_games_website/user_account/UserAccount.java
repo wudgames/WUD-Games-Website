@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.oauth2.user_account;
+package edu.wisc.wud.games.wud_games_website.user_account;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
