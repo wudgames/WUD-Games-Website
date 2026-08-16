@@ -6,7 +6,7 @@
     ],
     "outDir": "./target/classes/static/out-tsc",
     "removeComments": true,
-    "baseUrl": "src/main/webapp",
+    "baseUrl": "src/main/resources",
     "esModuleInterop": true,
     "jsx": "react",
     "moduleResolution": "bundler",

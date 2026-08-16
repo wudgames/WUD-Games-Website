@@ -38,11 +38,11 @@ module.exports = (env, argv) => ({
       path: argv.mode === 'production' ? '.env' : '.env.development'
     }),
     new HtmlWebpackPlugin({
-      template: './src/main/webapp/index.html'
+      template: './src/main/resources/templates/index.html'
     }),
     new CopyWebpackPlugin({
       patterns: [{
-        from: './src/main/webapp/public'
+        from: './src/main/resources/public'
       }],
     }),
     new WarningsToErrorsPlugin()
