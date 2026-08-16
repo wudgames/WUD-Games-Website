@@ -34,8 +34,8 @@ export default function Header() {
       <div className="container mx-auto px-4 md:px-6">
         <nav className="flex flex-wrap items-center justify-between py-2">
           <Link to="/" className="flex py-1.5 mr-4">
-            <img src="/images/logo.png" alt={t('app.title')} width="30" height="30" className="inline-block" />
-            <span className="text-xl pl-3">{t('app.title')}</span>
+            <img src="/images/logo.png" alt="logo image alt text" width="30" height="30" className="inline-block" />
+            <span className="text-xl pl-3">Some other text</span>
           </Link>
           <button type="button" className="js-dropdown md:hidden border rounded cursor-pointer" data-dropdown-keepopen="true"
               aria-label={t('navigation.toggle')} aria-controls="navbarToggle" aria-expanded="false">
@@ -48,7 +48,7 @@ export default function Header() {
           <div className="hidden md:block flex grow md:grow-0 justify-end basis-full md:basis-auto pt-3 md:pt-1 pb-1" id="navbarToggle">
             <ul className="flex">
               <li>
-                <Link to="/" className="block text-gray-500 p-2">{t('navigation.home')}</Link>
+                <Link to="/" className="block text-gray-500 p-2">navigation home</Link>
               </li>
             </ul>
           </div>
