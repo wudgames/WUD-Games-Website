@@ -7,7 +7,7 @@
     </head>
     <body id="root">
         <div>hello from resources/templates/index.html</div>
-        <div th:replace="header ::navbar">The header should go here</div>
+        <div th:replace="~{header ::navbar}">The header should go here</div>
         <div>now with live updates</div>
     </body>
 </html>

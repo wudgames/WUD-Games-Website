@@ -66,6 +66,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
         
         // Redirect the user
-        new DefaultRedirectStrategy().sendRedirect(request, response, "/api/user");
+        new DefaultRedirectStrategy().sendRedirect(request, response, "/myuser");
     }
 }
