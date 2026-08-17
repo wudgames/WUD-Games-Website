@@ -69,6 +69,15 @@ body {
     justify-content: space-evenly;
 }
 
+.navbar A:any-link {
+    text-decoration: none;
+    color: white;
+}
+
+.navbar A:hover {
+    color: var(--color-accent);
+}
+
 .navbar__links {
     float: right;
     width: 80%;
