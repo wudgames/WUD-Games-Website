@@ -37,3 +37,6 @@ error:
       5xx: ERROR
     codes:
       RentalRequestCheckoutRecordUnique: RENTAL_REQUEST_CHECKOUT_RECORD_UNIQUE
+logging:
+  level:
+    web: DEBUG
