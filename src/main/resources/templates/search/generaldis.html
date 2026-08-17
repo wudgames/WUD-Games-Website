@@ -13,7 +13,7 @@
             <p th:text="${param.original_invalid_uri}">Invalid URI</p>
         </div>
         <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
-        <div>Explore the WUD Games collection</div>
+        <div>This should be filter options</div>
         <div class="tilegrid">
             <div th:each="tiledata: ${generalDisDTOList}">
                 <div th:replace="~{fragments/tile :: tile(sometype)}"></div>
