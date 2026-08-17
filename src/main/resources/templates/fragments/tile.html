@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head xmlns:th="http://www.thymeleaf.org">
+  <title>WUDGames Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" user-scalable=yes />
+  <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body th:fragment="tile">
+  <div
+    class="rounded-xl border bg-card text-card-foreground shadow w-full max-w-sm relative flex flex-row cursor-pointer">
+    <div class="w-2/3 p-2 text-left">
+      <h3 class="text-lg font-bold">Avalon</h3>
+      <p class="text-sm">5-10 players | 30 minutes</p>
+      <p class="mt-2 text-sm">Genre: Social Deduction</p>
+      <p class="text-sm">Available: 3 / 3</p>
+    </div>
+    <div class="relative w-1/3"><img alt="Avalon" class="w-full h-40 object-contain rounded-tr-lg"
+        src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
+    </div>
+  </div>
+  <div>this is a tile</div>
+  <div th:text="${tiledata.name}">Name</div>
+</body>
+
+</html>

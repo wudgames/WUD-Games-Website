@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,9 @@ public class GeneralDisResource {
     }
     
     @GetMapping("/library")
-    public ModelAndView librarySearch() {
+    public ModelAndView librarySearch(Model model) {
+        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
+        model.addAttribute("generalDisDTOList", generalDisDTOList);
         return new ModelAndView("search/generaldis");
     }
 
