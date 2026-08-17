@@ -14,6 +14,10 @@
         </div>
         <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
         <div>Explore the WUD Games collection</div>
-        <tr th:each="tiledata: ${generalDisDTOList}" th:insert="~{fragments/tile :: tile}"></tr>
+        <div class="tilegrid">
+            <div th:each="tiledata: ${generalDisDTOList}">
+                <div th:replace="~{fragments/tile :: tile(sometype)}"></div>
+            </div>
+        </div>
     </body>
 </html>

@@ -29,6 +29,7 @@ public class GeneralDisResource {
     public ModelAndView librarySearch(Model model) {
         List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
         model.addAttribute("generalDisDTOList", generalDisDTOList);
+        System.out.println(generalDisDTOList);
         return new ModelAndView("search/generaldis");
     }
 
