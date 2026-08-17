@@ -8,6 +8,7 @@
     <body id="root">
         <div th:replace="~{header ::navbar}">The header should go here</div>
         <div>this is the my user page</div>
+        your email is <th th:text="${user_email}">user email</th>
         <div>it is at resource/templates/myuser.html</div>
     </body>
 </html>
