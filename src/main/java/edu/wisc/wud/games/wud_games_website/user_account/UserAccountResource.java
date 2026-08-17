@@ -15,9 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @EnableMethodSecurity
 public class UserAccountResource {
     private final UserAccountService userAccountService;
@@ -27,7 +27,7 @@ public class UserAccountResource {
     }
 
     @GetMapping("/myuser")
-    public String myuser(@AuthenticationPrincipal OAuth2User principal, Model model) {
+    public ModelAndView myuser(@AuthenticationPrincipal OAuth2User principal, Model model) {
 
         // Code to debug info about user
         System.out.println("debugging info about user:");
@@ -43,11 +43,11 @@ public class UserAccountResource {
 
         // Return the email of the authenticated user to the browser
         model.addAttribute("user_email", principal.getAttribute("email"));
-        return "string";
+        return new ModelAndView("myuser");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users")
+    @GetMapping("/api/users")
     public ResponseEntity<List<UserAccountDTO>> getAllUserAccounts() {
         return ResponseEntity.ok(userAccountService.findAll());
     }
