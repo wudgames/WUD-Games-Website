@@ -1,9 +1,6 @@
 spring:
   datasource:
-    #url: jdbc:mysql:file:./WUD-Games-Database
-    #url: jdbc:hsqldb:file:data/WUD-Games-Database;hsqldb.default_table_type=cached # works
-    #url: jdbc:sqlite:file:WUD-Games-Database
-    url: jdbc:sqlite:file:WUD-Games-Database?cache=shared 
+    url: jdbc:sqlite:file:data/WUD-Games-Database?cache=shared 
     username: ${JDBC_DATABASE_USERNAME:sa}
     password: ${JDBC_DATABASE_PASSWORD:}
     hikari:
@@ -32,15 +29,6 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
-error:
-  handling:
-    http-status-in-json-response: true
-    exception-logging: NO_LOGGING
-    full-stacktrace-http-statuses: 5xx
-    log-levels:
-      5xx: ERROR
-    codes:
-      RentalRequestCheckoutRecordUnique: RENTAL_REQUEST_CHECKOUT_RECORD_UNIQUE
 logging:
   level:
     web: DEBUG
