@@ -3,12 +3,14 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="style.css" />
         <title>WUDGames Website</title>
     </head>
     <body id="root">
-        <div th:replace="~{header ::navbar}">The header should go here</div>
+        <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
         <div>this is the my user page</div>
         your email is <th th:text="${user_email}">user email</th>
+        <a href="/logout">logout</a>
         <div>it is at resource/templates/myuser.html</div>
     </body>
 </html>

@@ -39,6 +39,8 @@ public class UserAccountResource {
 
         // Return the email of the authenticated user to the browser
         model.addAttribute("user_email", principal.getAttribute("email"));
+        model.addAttribute("user_name", principal.getAttribute("given_name"));// Controls the name show in the navbar.
+        model.addAttribute("user_profile_picture", principal.getAttribute("picture"));// Controls the picture show in the navbar.
         return new ModelAndView("myuser");
     }
 

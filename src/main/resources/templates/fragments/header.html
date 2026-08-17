@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head xmlns:th="http://www.thymeleaf.org">
+    <title>FreshBite - Meal Kit Delivery Service</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index,follow">
+    <meta name="generator" content="GrapesJS Studio">
+    <link rel="stylesheet" href="style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet" />
+  </head>
+
+  <body id="iuqk">
+    <div th:fragment="navbar" class="navbar" id="iga9zv">
+      <div data-gjs="navbar" class="navbar-cnt" id="ih1fiw">
+        <a href="/" class="navbar-brand" id="i0k3nv">
+          <img src="/images/logo.jpg" alt="Logo" width="70" height="50">
+        </a>
+        <div id="i1bbvp" class="navbar-menu-toggle">
+          <div data-type-icon class="gjs-icon" id="idz6uh">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="i0vh0a">
+              <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" id="ifub3k"></path>
+            </svg>
+          </div>
+        </div>
+        <div data-gjs="navbar-items" class="navbar-items-c" id="ivng6x">
+          <nav class="navbar-menu-nav" id="iaf0i9">
+            <a id="ih95im" href="/library">Library</a>
+            <a id="il2sgy">About</a>
+            <a id="i5016i">Contact</a>
+            <div data-type-role="flex-row" class="gjs-plg-flex-row" id="ioviuh">
+              <div data-type-role="flex-column" class="gjs-plg-flex-column" id="if880p"></div>
+            </div>
+            <a class="gjs-link-box" id="iavrp3" href="/myuser">
+              <div id="iogz6i">
+                <div th:if="${user_name != null}" th:text="${user_name}">User Name</div>
+                <div th:if="${user_name == null}">Sign In</div>
+              </div>
+              <img th:if="${user_name != null}" th:src="${user_profile_picture}" alt="User Profile Picture" width="50" height="50">
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
