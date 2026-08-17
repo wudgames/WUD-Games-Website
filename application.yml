@@ -1,6 +1,9 @@
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:h2:file:./WUD-Games-Database}
+    #url: jdbc:mysql:file:./WUD-Games-Database
+    #url: jdbc:hsqldb:file:data/WUD-Games-Database;hsqldb.default_table_type=cached # works
+    #url: jdbc:sqlite:file:WUD-Games-Database
+    url: jdbc:sqlite:file:WUD-Games-Database?cache=shared 
     username: ${JDBC_DATABASE_USERNAME:sa}
     password: ${JDBC_DATABASE_PASSWORD:}
     hikari:
@@ -18,6 +21,7 @@ spring:
               - email
               - profile
   jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
       ddl-auto: update
     open-in-view: false

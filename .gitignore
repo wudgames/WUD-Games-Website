@@ -44,5 +44,5 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-WUD-Games-Database.mv.db
-WUD-Games-Database.trace.db
+WUD-Games-Database.tmp
+data/*
