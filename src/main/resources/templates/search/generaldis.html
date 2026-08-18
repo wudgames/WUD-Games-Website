@@ -23,11 +23,12 @@
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This should be filter options</div>
     Some query text felid: <input name="searchterm" type="text" th:value="${param.searchterm}"/>
+    Tags (WIP): <input name="tags" type="text" th:value="${param.tags}"/>
     <button
         hx-target="next .searchresult"
         hx-get="/api/search"
         hx-trigger="click"
-        hx-include="[name='searchterm']"
+        hx-include="[name='searchterm'],[name='tags']"
         hx-ext="push-url-w-params"
         data-push-url="/library">
         Refresh
