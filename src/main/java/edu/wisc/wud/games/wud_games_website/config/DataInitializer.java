@@ -1,15 +1,22 @@
-package edu.wisc.wud.games.wud_games_website.user_account;
+package edu.wisc.wud.games.wud_games_website.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import edu.wisc.wud.games.wud_games_website.elasticsearch.ElasticsearchDataInitializer;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
+
 @Component
 public class DataInitializer {
 
 	@Autowired
     private final UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private ElasticsearchDataInitializer elasticsearchDataInitializer;
 
     public DataInitializer(UserAccountRepository userAccountRepository) {
         this.userAccountRepository = userAccountRepository;
@@ -39,6 +46,9 @@ public class DataInitializer {
             } else {
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
+
+            elasticsearchDataInitializer.sendAllDescriptionsToElasticSearch();
+            System.out.println("Elasticsearch data sent!");
         };
     }
 
