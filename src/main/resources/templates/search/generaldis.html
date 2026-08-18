@@ -21,12 +21,9 @@
     </div>
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This should be filter options</div>
-    <button hx-target="next .searchresult" hx-get="/api/search" hx-trigger="click">Refresh</button>
-    <div class="searchresult tilegrid">
-        <div th:each="tiledata: ${generalDisDTOList}">
-            <div th:replace="~{fragments/tile :: tile(sometype)}"></div>
-        </div>
-    </div>
+    Some query text felid: <input name="searchterm" type="text"/>
+    <button hx-target="next .searchresult" hx-get="/api/search" hx-trigger="click" hx-include="[name='searchterm']">Refresh</button>
+    <div th:insert="~{search/result :: searchresult}" class="searchresult"></div>
 </body>
 
 </html>
