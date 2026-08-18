@@ -28,11 +28,11 @@ public class GeneralDisResource {
 
     private final GeneralDisService generalDisService;
 
-    //@Autowired
-    //private ElasticsearchDocumentRepository elasticsearchDocumentRepository;
+    @Autowired
+    private ElasticsearchDocumentRepository elasticsearchDocumentRepository;
 
-    //@Autowired
-    //private ElasticsearchDocumentService elasticsearchDocumentService;
+    @Autowired
+    private ElasticsearchDocumentService elasticsearchDocumentService;
 
     public GeneralDisResource(final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
@@ -54,10 +54,10 @@ public class GeneralDisResource {
     private void attachResults(Model model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
 
-        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
-
-        //List<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll(Sort.unsorted());
-        //List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(elasticsearchDocumentList);
+        //List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
+        Iterable<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll();
+        System.out.println(elasticsearchDocumentList.getClass());    
+        List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(elasticsearchDocumentList);
 
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }
