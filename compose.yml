@@ -1,3 +1,4 @@
+# Note the docker container will need to be deleted ($docker rm wud-games-website-elasticsearch-1) before changes to this file will apply
 services:
   elasticsearch:
     image: 'docker.elastic.co/elasticsearch/elasticsearch:9.3.3'
@@ -6,6 +7,6 @@ services:
       - 'discovery.type=single-node'
       - 'xpack.security.enabled=false'
     ports:
-      - '9200'
-      - '9300'
+      - 9200:9200
+      - 9300:9300
 

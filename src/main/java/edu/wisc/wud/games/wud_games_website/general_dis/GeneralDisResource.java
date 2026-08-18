@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -17,10 +19,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.wisc.wud.games.wud_games_website.elasticsearch.ElasticsearchDocument;
+import edu.wisc.wud.games.wud_games_website.elasticsearch.ElasticsearchDocumentRepository;
+import edu.wisc.wud.games.wud_games_website.elasticsearch.ElasticsearchDocumentService;
+
 @RestController
 public class GeneralDisResource {
 
     private final GeneralDisService generalDisService;
+
+    //@Autowired
+    //private ElasticsearchDocumentRepository elasticsearchDocumentRepository;
+
+    //@Autowired
+    //private ElasticsearchDocumentService elasticsearchDocumentService;
 
     public GeneralDisResource(final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
@@ -41,7 +53,12 @@ public class GeneralDisResource {
 
     private void attachResults(Model model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
+
         List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
+
+        //List<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll(Sort.unsorted());
+        //List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(elasticsearchDocumentList);
+
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }
 
