@@ -22,7 +22,7 @@
     </div>
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This should be filter options</div>
-    Some query text felid: <input name="searchterm" type="text"/>
+    Some query text felid: <input name="searchterm" type="text" th:value="${param.searchterm}"/>
     <button
         hx-target="next .searchresult"
         hx-get="/api/search"
