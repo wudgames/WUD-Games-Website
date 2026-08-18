@@ -12,18 +12,3 @@ public interface ElasticsearchDocumentRepository extends ListPagingAndSortingRep
     })
     SearchHits<ElasticsearchDocument> findByNameOrDescription(String search);
 }
-/*
-Example
-interface ElasticsearchDocumentRepository extends Repository<ElasticsearchDocument, String> {
-
-    @Highlight(fields = {
-        @HighlightField(name = "name"),
-        @HighlightField(name = "summary")
-    })
-    SearchHits<ElasticsearchDocument> findByNameOrSummary(String text, String summary);
-}
-*/
-
-// extends ListPagingAndSortingRepository<ElasticsearchDocument, Long> { // add PagingAndSortingRepository
-
-
