@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -31,6 +33,12 @@ public class GeneralDisResource {
         model.addAttribute("generalDisDTOList", generalDisDTOList);
         System.out.println(generalDisDTOList);
         return new ModelAndView("search/generaldis");
+    }
+
+    /* This is called to refresh the the html for displaying a search result */
+    @GetMapping("/api/search")
+    public ModelAndView getMethodName() {
+        return new ModelAndView("search/result");
     }
 
     @GetMapping("/api/generalDiss")
