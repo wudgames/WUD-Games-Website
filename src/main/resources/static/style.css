@@ -96,9 +96,9 @@ body {
 .navbar__logo {
     vertical-align: top;
     display: inline-block;
-    padding: 5px;
-    min-height: 50px;
-    min-width: 50px;
+    margin: 5px;
+    max-height: 50px;
+    max-width: 10%;
 }
 
 .navbar__option {
@@ -112,13 +112,14 @@ body {
 }
 
 .tilegrid {
+    --max-tile-width: 500px;
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: repeat(auto-fill, var(--max-tile-width));
     margin: 5px;
     gap: 10px;
 
     .tile {
-        max-width: 500px;
+        max-width: var(--max-tile-width);
         height: 300px;
     }
 }
