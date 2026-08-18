@@ -69,7 +69,7 @@ body {
     width: 100%;
     background-color: var(--color-primary);
     color: white;
-    margin: 0 auto;
+    margin: 0 5px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
@@ -86,7 +86,7 @@ body {
 
 .navbar__links {
     float: right;
-    width: 80%;
+    flex-grow: 1;
     padding: 10px 0;
     display: flex;
     /*grid-template-columns: repeat(2, 1fr);*/
@@ -98,7 +98,7 @@ body {
     display: inline-block;
     margin: 5px;
     max-height: 50px;
-    max-width: 10%;
+    width: 200px;
 }
 
 .navbar__option {
