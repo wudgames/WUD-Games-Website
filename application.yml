@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlite:file:data/WUD-Games-Database?cache=shared 
+    url: jdbc:postgresql://localhost:5432/mydatabase
     username: ${JDBC_DATABASE_USERNAME:sa}
     password: ${JDBC_DATABASE_PASSWORD:}
     hikari:
@@ -33,12 +33,13 @@ spring:
         dimensions: 768
         index-type: hnsw
   jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
             non_contextual_creation: true
