@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 
-<head xmlns:th="http://www.thymeleaf.org" th:fragment="head_content">
-  <title>WUDGames Website</title>
-  <object th:fragment="head_content">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" user-scalable=yes />
-  <meta name="robots" content="index,follow">
-  <meta name="generator" content="GrapesJS Studio">
-  <link rel="stylesheet" href="style.css" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&amp;family=Open+Sans:wght@400;600&amp;display=swap"
-    rel="stylesheet" />
-    </object>
+<head th:fragment="head_base">
+    <title th:include=":: #pageTitle">WUDGames Website</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
+    <meta name="robots" content="index,follow">
+    <link rel="stylesheet" href="http://localhost:8080/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+        integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.js"
+        integrity="sha384-Q+Dky3iHVJOr6wUjQ4ulh6uQ76an/t+ak1+PjMVaxRjbZamFLAG+u9InkfjbsEQf"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/htmx.push-url-w-params.js"></script>
 </head>
 
 <body>
