@@ -68,7 +68,6 @@ public class DataInitializer {
         boardGameDis.setName("7 Wonders");
         boardGameDis.setDescription("Draft cards to develop your ancient civilization and build its Wonder of the World.");
         boardGameDis.setImageUrl("https://cf.geekdo-images.com/35h9Za_JvMMMtx_92kT0Jg__imagepage/img/WKlTys0Dc3F6x9r05Fwyvs82tz4=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7149798.jpg");
-        
         boardGameDisService.create(boardGameDis);
     }
 }

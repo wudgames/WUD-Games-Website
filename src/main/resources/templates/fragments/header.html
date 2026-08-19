@@ -22,6 +22,7 @@
       <a class="navbar__option" href="/library">Library</a>
       <a class="navbar__option">Option 2</a>
       <a class="navbar__option">Option 3</a>
+      <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option">Manage Inventory</a>
       <div class=navbar__separator></div>
       <a class="media media--flip" id="iavrp3" href="/myuser">
         <div class="content content--oneline">

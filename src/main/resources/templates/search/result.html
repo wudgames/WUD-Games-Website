@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
-        <meta name="robots" content="index,follow">
-        <link rel="stylesheet" href="style.css" />
-        <title>WUDGames Website</title>
-        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
-            integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
-            crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.js"
-            integrity="sha384-Q+Dky3iHVJOr6wUjQ4ulh6uQ76an/t+ak1+PjMVaxRjbZamFLAG+u9InkfjbsEQf"
-            crossorigin="anonymous"></script>
-    </head>
-    <div th:fragment="searchresult" class="tilegrid">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
+    <meta name="robots" content="index,follow">
+    <link rel="stylesheet" href="style.css" />
+    <title>WUDGames Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+        integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.js"
+        integrity="sha384-Q+Dky3iHVJOr6wUjQ4ulh6uQ76an/t+ak1+PjMVaxRjbZamFLAG+u9InkfjbsEQf"
+        crossorigin="anonymous"></script>
+</head>
+
+<body th:fragment="searchresult">
+    <div>Filter summery will go here</div>
+    <div class="tilegrid">
+
         <div th:each="tiledata: ${generalDisDTOList}">
             <div th:replace="~{fragments/tile :: tile(sometype)}"></div>
         </div>
     </div>
+</body>
+
 </html>
