@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
-@RequestMapping(value = "/api/inventoryItems", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InventoryItemResource {
 
     private final InventoryItemService inventoryItemService;
@@ -25,32 +28,32 @@ public class InventoryItemResource {
         this.inventoryItemService = inventoryItemService;
     }
 
-    @GetMapping
+    @GetMapping("/api/inventoryItems")
     public ResponseEntity<List<InventoryItemDTO>> getAllInventoryItems() {
         return ResponseEntity.ok(inventoryItemService.findAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/inventoryItems/{id}")
     public ResponseEntity<InventoryItemDTO> getInventoryItem(
             @PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(inventoryItemService.get(id));
     }
 
-    @PostMapping
+    @PostMapping("/api/inventoryItems")
     public ResponseEntity<Long> createInventoryItem(
             @RequestBody @Valid final InventoryItemDTO inventoryItemDTO) {
         final Long createdId = inventoryItemService.create(inventoryItemDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/inventoryItems/{id}")
     public ResponseEntity<Long> updateInventoryItem(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final InventoryItemDTO inventoryItemDTO) {
         inventoryItemService.update(id, inventoryItemDTO);
         return ResponseEntity.ok(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/inventoryItems/{id}")
     public ResponseEntity<Void> deleteInventoryItem(@PathVariable(name = "id") final Long id) {
         inventoryItemService.delete(id);
         return ResponseEntity.noContent().build();

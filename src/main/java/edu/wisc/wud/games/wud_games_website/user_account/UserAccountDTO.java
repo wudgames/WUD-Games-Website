@@ -13,8 +13,7 @@ public class UserAccountDTO {
     private Long id;
 
     private String email;
-    @Nullable
-    private String password;
+    // password is never sent to client
 
     private boolean isHost;
     private float hoursHosted;

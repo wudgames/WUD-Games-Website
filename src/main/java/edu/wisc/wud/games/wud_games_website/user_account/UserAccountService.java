@@ -41,7 +41,6 @@ public class UserAccountService {
         return mapToDTO(
             userAccountRepository.findById(id).orElseThrow(NotFoundException::new),
             new UserAccountDTO());
-                
     }
 
     public Long create(final UserAccountDTO userAccountDTO) {
@@ -49,14 +48,18 @@ public class UserAccountService {
         mapToEntity(userAccountDTO, userAccount);
         return userAccountRepository.save(userAccount).getId();
     }
-    /*
-    public void update(final Long id, final UserAccountDTO userAccountDTO) {
+    
+    public void update(final Long id, final UserAccountDTO userAccountDTO) throws NotFoundException {
         final UserAccount userAccount = userAccountRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(userAccountDTO, userAccount);
         userAccountRepository.save(userAccount);
     }
 
+    public void update(final UserAccount userAccount) throws NotFoundException {
+        userAccountRepository.save(userAccount);
+    }
+    /*
     public void delete(final Long id) {
         final UserAccount userAccount = userAccountRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -73,7 +76,7 @@ public class UserAccountService {
     private UserAccount mapToEntity(final UserAccountDTO userAccountDTO, final UserAccount userAccount) {
         userAccount.setId(userAccountDTO.getId());
         userAccount.setEmail(userAccountDTO.getEmail());
-        userAccount.setPassword(userAccountDTO.getPassword());
+        //userAccount.setPassword(userAccountDTO.getPassword());
         userAccount.setHost(userAccountDTO.isHost());
         userAccount.setHoursHosted(userAccountDTO.getHoursHosted());
         userAccount.setPhysicalInventoryManager(userAccountDTO.isPhysicalInventoryManager());
@@ -89,7 +92,7 @@ public class UserAccountService {
     private UserAccountDTO mapToDTO(final UserAccount userAccount, final UserAccountDTO userAccountDTO) {
         userAccountDTO.setId(userAccount.getId());
         userAccountDTO.setEmail(userAccount.getEmail());
-        userAccountDTO.setPassword(userAccount.getPassword());
+        //userAccountDTO.setPassword(userAccount.getPassword());
         userAccountDTO.setHost(userAccount.isHost());
         userAccountDTO.setHoursHosted(userAccount.getHoursHosted());
         userAccountDTO.setPhysicalInventoryManager(userAccount.isPhysicalInventoryManager());
