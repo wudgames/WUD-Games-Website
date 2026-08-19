@@ -26,6 +26,9 @@ public class ElasticsearchDocument {
     @Field(type = FieldType.Text)
     private String description;
 
+    @Field(type = FieldType.Dense_Vector)
+    private double[] descriptionVector;
+
     @Field(type = FieldType.Keyword)
     private String[] tags;
 }

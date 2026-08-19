@@ -56,8 +56,10 @@ public class GeneralDisResource {
     }
 
     private void attachResults(Model model, Map<String, String> queryParameters) {
-        System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
-        String query = queryParameters.get("searchterm");
+        String searchString = queryParameters.get("searchterm");
+        System.out.println("this could do something based on: " + searchString);
+        /*
+        
 
         //List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
         SearchHits<ElasticsearchDocument> searchHits = elasticsearchDocumentRepository.findByNameOrDescription(query, query);
@@ -68,7 +70,11 @@ public class GeneralDisResource {
         }
         Iterable<ElasticsearchDocument> iterator = elasticsearchDocumentList;
         //Iterable<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll();
-        List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(iterator);
+
+        */
+
+        List<ElasticsearchDocument> elasticsearchDocumentsList = elasticsearchDocumentService.queryDescriptions(searchString);
+        List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(elasticsearchDocumentsList);
 
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }

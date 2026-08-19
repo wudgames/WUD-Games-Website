@@ -17,6 +17,11 @@ spring:
               - openid
               - email
               - profile
+  ai:
+    ollama:
+      embedding:
+        model: all-minilm
+        base-url: http://localhost:11434
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
