@@ -11,6 +11,10 @@
     your email is <th th:text="${user_email}">user email</th>
     <a href="/logout">logout</a>
     <div>it is at resource/templates/myuser.html</div>
+    #ctx.session.size() = <div th:text="${#ctx.session.size()}"></div>
+    #ctx.session = <div th:text="${#ctx.session}"></div>
+    ${#ctx.session.given_name} = <div th:text="${#ctx.session.given_name}"></div>
+    ${#ctx.session.user_name} = <div th:text="${#ctx.session.user_name}"></div>
 </body>
 
 </html>

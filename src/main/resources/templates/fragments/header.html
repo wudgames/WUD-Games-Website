@@ -30,8 +30,8 @@
       <div class=navbar__separator></div>
       <a class="media media--flip" id="iavrp3" href="/myuser">
         <div class="content content--oneline">
-          <div th:if="${user_name != null}" th:text="${user_name}">User Name</div>
-          <div th:if="${user_name == null}">Sign In</div>
+          <div th:if="${session.user_name != null}" th:text="${session.user_name}">User Name</div>
+          <div th:if="${session.user_name == null}">Sign In</div>
         </div>
         <img th:if="${user_name != null}" th:src="${user_profile_picture}" alt="User Profile Picture" width="50"
           height="50" class="img">

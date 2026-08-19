@@ -21,6 +21,7 @@ import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Component
 public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
@@ -64,8 +65,17 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         // Setting the updated authentication in the SecurityContext
         SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        setSessionAttributes(request, oauthUser);
         
         // Redirect the user
         new DefaultRedirectStrategy().sendRedirect(request, response, "/myuser");
+    }
+
+    private void setSessionAttributes(HttpServletRequest request, OAuth2User oauthUser) {
+        System.out.println("setting system attributes");
+        HttpSession session = request.getSession();
+        session.setAttribute("user_name", oauthUser.getAttribute("given_name"));// Controls the name show in the navbar.
+        session.setAttribute("user_profile_picture", oauthUser.getAttribute("picture"));
     }
 }

@@ -56,7 +56,7 @@ public class DataInitializer {
             }
             defaultAdminAccount.setEmail(defaultAdminEmail);
             defaultAdminAccount.setAdmin(true);
-            defaultAdminAccount.setPhysicalInventoryManager(true);
+            defaultAdminAccount.setPhysicalInventoryManager(false);
 
             userAccountService.update(defaultAdminAccount);
 

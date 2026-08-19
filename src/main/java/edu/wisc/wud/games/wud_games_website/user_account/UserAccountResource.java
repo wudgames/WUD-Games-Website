@@ -10,10 +10,19 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 @RestController
+//@SessionAttributes("visitor")
 @EnableMethodSecurity
 public class UserAccountResource {
     private final UserAccountService userAccountService;
@@ -41,9 +50,23 @@ public class UserAccountResource {
         model.addAttribute("user_email", principal.getAttribute("email"));
         model.addAttribute("user_name", principal.getAttribute("given_name"));// Controls the name show in the navbar.
         model.addAttribute("user_profile_picture", principal.getAttribute("picture"));// Controls the picture show in the navbar.
+        //setSessionAttributes(principal.);
         return new ModelAndView("myuser");
     }
+    /* 
+    // For testing
+    @ModelAttribute("user_name")
+    public String getUserName(@AuthenticationPrincipal OAuth2User principal) {
+        return principal.getAttribute("given_name");
+    }
 
+    // For testing
+    private void setSessionAttributes(HttpServletRequest request, OAuth2User oauthUser) {
+        System.out.println("setting system attributes");
+        HttpSession session = request.getSession();
+        session.setAttribute("user_name", oauthUser.getAttribute("given_name"));// Controls the name show in the navbar.
+    }
+    */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/users")
     public ResponseEntity<List<UserAccountDTO>> getAllUserAccounts() {
