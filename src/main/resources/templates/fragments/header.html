@@ -2,7 +2,7 @@
 <html>
 
 <head th:fragment="head_base">
-    <title th:include=":: #pageTitle">WUDGames Website</title>
+    <title th:include="~{:: #pageTitle}">WUDGames Website</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
     <meta name="robots" content="index,follow">
@@ -28,12 +28,12 @@
       <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory/physicalItems">Manage
         Inventory</a>
       <div class=navbar__separator></div>
-      <a class="media media--flip" id="iavrp3" href="/myuser">
+      <a class="media media--flip media navbar__option" href="/myuser">
         <div class="content content--oneline">
           <div th:if="${session.user_name != null}" th:text="${session.user_name}">User Name</div>
           <div th:if="${session.user_name == null}">Sign In</div>
         </div>
-        <img th:if="${user_name != null}" th:src="${user_profile_picture}" alt="User Profile Picture" width="50"
+        <img th:if="${session.user_profile_picture != null}" th:src="${session.user_profile_picture}" alt="User Profile Picture" width="50"
           height="50" class="img">
       </a>
     </nav>
