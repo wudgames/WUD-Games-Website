@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.user_account;
 
 import java.time.OffsetDateTime;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,8 @@ public class UserAccountDTO {
     private Long id;
 
     private String email;
-    //private String password;
+    @Nullable
+    private String password;
 
     private boolean isHost;
     private float hoursHosted;

@@ -17,6 +17,21 @@ spring:
               - openid
               - email
               - profile
+  ai:
+    ollama:
+      init:
+        pull-model-strategy: when_missing
+        chat:
+          include: true
+      embedding:
+        # info on models https://ollama.com/blog/embedding-models
+        model: nomic-embed-text
+      base-url: localhost:11435
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        dimensions: 768
+        index-type: hnsw
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:

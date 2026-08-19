@@ -1,0 +1,16 @@
+# Note updates to this file will only be applied when generating a new docker container.
+services:
+  ollama:
+    image: 'ollama/ollama:latest'
+    ports:
+      - 11435:11434
+  pgvector:
+    image: 'pgvector/pgvector:pg18' # I think this is some sort of version number
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    labels:
+      - "org.springframework.boot.service-connection=postgres"
+    ports:
+      - 5432:5432

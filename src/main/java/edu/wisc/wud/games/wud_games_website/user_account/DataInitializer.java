@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializer {
 
-	@Autowired
+	private final UserAccountService userAccountService;
+    @Autowired
     private final UserAccountRepository userAccountRepository;
 
-    public DataInitializer(UserAccountRepository userAccountRepository) {
+    public DataInitializer(UserAccountRepository userAccountRepository, UserAccountService userAccountService) {
         this.userAccountRepository = userAccountRepository;
+        this.userAccountService = userAccountService;
     }
 
     @Bean
@@ -29,12 +31,12 @@ public class DataInitializer {
             if (null == userAccountRepository.findByEmail(defaultAdminEmail)) {
                 System.out.println("userAccountRepository.findByEmail(defaultAdminEmail) = " + userAccountRepository.findByEmail(defaultAdminEmail));
                 System.out.println("Did not find default admin account with email: " + defaultAdminEmail + ", creating...");
-                UserAccount defaultAdminAccount = new UserAccount();
+                UserAccountDTO defaultAdminAccount = new UserAccountDTO();
 
                 defaultAdminAccount.setEmail(defaultAdminEmail);
                 defaultAdminAccount.setAdmin(true);
                 
-                userAccountRepository.save(defaultAdminAccount);
+                userAccountService.create(defaultAdminAccount);
                 System.out.println("Default defaultAdminAccount added successfully!");
             } else {
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");

@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -30,13 +31,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UserAccount implements UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	@SequenceGenerator(
+            name = "primary_sequence",
+            sequenceName = "primary_sequence",
+            allocationSize = 1,
+            initialValue = 10000
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "primary_sequence"
+    )
+	private Long id;
 
 	@Column(unique = true, length = 255, nullable = false)
 	private String email;
     
     @Column
+    @Nullable
     private String password;
 
 	@Column
