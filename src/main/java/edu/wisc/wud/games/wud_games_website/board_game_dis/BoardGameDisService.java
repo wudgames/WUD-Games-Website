@@ -1,10 +1,14 @@
 package edu.wisc.wud.games.wud_games_website.board_game_dis;
 
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameDis;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDisService;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,9 @@ public class BoardGameDisService {
 
     private final BoardGameDisRepository boardGameDisRepository;
     private final ApplicationEventPublisher publisher;
+
+    @Autowired
+    private GameDisService gameDisService;
 
     public BoardGameDisService(final BoardGameDisRepository boardGameDisRepository,
             final ApplicationEventPublisher publisher) {
@@ -35,10 +42,17 @@ public class BoardGameDisService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final BoardGameDisDTO boardGameDisDTO) {
+    Long create(final BoardGameDisDTO boardGameDisDTO) {
         final BoardGameDis boardGameDis = new BoardGameDis();
         mapToEntity(boardGameDisDTO, boardGameDis);
         return boardGameDisRepository.save(boardGameDis).getId();
+    }
+
+    public Long create(final BoardGameDis boardGameDis) {
+        // this would work well with super(), something to consider
+        gameDisService.create(boardGameDis);
+        final BoardGameDisDTO boardGameDisDTO = mapToDTO(boardGameDis, new BoardGameDisDTO());
+        return create(boardGameDisDTO);
     }
 
     public void update(final Long id, final BoardGameDisDTO boardGameDisDTO) {
@@ -63,8 +77,11 @@ public class BoardGameDisService {
         return boardGameDisDTO;
     }
 
-    private BoardGameDis mapToEntity(final BoardGameDisDTO boardGameDisDTO,
+    public BoardGameDis mapToEntity(final BoardGameDisDTO boardGameDisDTO,
             final BoardGameDis boardGameDis) {
+        // properties from game description
+        gameDisService.mapToEntity(boardGameDisDTO, boardGameDis);
+        // properties from board game description
         boardGameDis.setMinPlaytime(boardGameDisDTO.getMinPlaytime());
         boardGameDis.setMaxPlaytime(boardGameDisDTO.getMaxPlaytime());
         return boardGameDis;

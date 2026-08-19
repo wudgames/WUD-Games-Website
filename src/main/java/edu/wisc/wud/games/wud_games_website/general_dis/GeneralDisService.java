@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
 import edu.wisc.wud.games.wud_games_website.tag.TagRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
@@ -44,10 +45,16 @@ public class GeneralDisService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    // This is the root type of the DTO so this can be public
     public Long create(final GeneralDisDTO generalDisDTO) {
         final GeneralDis generalDis = new GeneralDis();
         mapToEntity(generalDisDTO, generalDis);
         return generalDisRepository.save(generalDis).getId();
+    }
+
+    public Long create(final GeneralDis generalDis) {
+        final GeneralDisDTO generalDisDTO = mapToDTO(generalDis, new GeneralDisDTO());
+        return create(generalDisDTO);
     }
 
     public void update(final Long id, final GeneralDisDTO generalDisDTO) {

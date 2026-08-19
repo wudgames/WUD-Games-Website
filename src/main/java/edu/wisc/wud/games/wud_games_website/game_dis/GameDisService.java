@@ -1,7 +1,11 @@
 package edu.wisc.wud.games.wud_games_website.game_dis;
 
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +14,9 @@ import org.springframework.stereotype.Service;
 public class GameDisService {
 
     private final GameDisRepository gameDisRepository;
+
+    @Autowired
+    private GeneralDisService generalDisService;
 
     public GameDisService(final GameDisRepository gameDisRepository) {
         this.gameDisRepository = gameDisRepository;
@@ -34,6 +41,12 @@ public class GameDisService {
         return gameDisRepository.save(gameDis).getId();
     }
 
+    public Long create(final GameDis gameDis) {
+        generalDisService.create(gameDis);
+        final GameDisDTO gameDisDTO = mapToDTO(gameDis, new GameDisDTO());
+        return create(gameDisDTO);
+    }
+
     public void update(final Long id, final GameDisDTO gameDisDTO) {
         final GameDis gameDis = gameDisRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -54,7 +67,7 @@ public class GameDisService {
         return gameDisDTO;
     }
 
-    private GameDis mapToEntity(final GameDisDTO gameDisDTO, final GameDis gameDis) {
+    public GameDis mapToEntity(final GameDisDTO gameDisDTO, final GameDis gameDis) {
         gameDis.setMinPlayers(gameDisDTO.getMinPlayers());
         gameDis.setMaxPlayers(gameDisDTO.getMaxPlayers());
         return gameDis;
