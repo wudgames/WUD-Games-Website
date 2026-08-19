@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-<head xmlns:th="http://www.thymeleaf.org">
+<head xmlns:th="http://www.thymeleaf.org" th:fragment="head_content">
   <title>WUDGames Website</title>
+  <object th:fragment="head_content">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" user-scalable=yes />
   <meta name="robots" content="index,follow">
@@ -11,18 +12,20 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&amp;family=Open+Sans:wght@400;600&amp;display=swap"
     rel="stylesheet" />
+    </object>
 </head>
 
 <body>
   <div th:fragment="navbar" class="navbar">
     <a href="/" class="navbar__logo">
-      <img src="images/WhiteColorLogo.png" alt="Logo" height="100%">
+      <img src="http://localhost:8080/images/WhiteColorLogo.png" alt="Logo" height="100%">
     </a>
     <nav class="navbar__links">
       <a class="navbar__option" href="/library">Library</a>
       <a class="navbar__option">Option 2</a>
       <a class="navbar__option">Option 3</a>
-      <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory">Manage Inventory</a>
+      <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory/physicalItems">Manage
+        Inventory</a>
       <div class=navbar__separator></div>
       <a class="media media--flip" id="iavrp3" href="/myuser">
         <div class="content content--oneline">

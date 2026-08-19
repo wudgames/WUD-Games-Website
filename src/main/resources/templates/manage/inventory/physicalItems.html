@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head th:replace="~{index ::header}">
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
-        <meta name="robots" content="index,follow">
-        <meta name="generator" content="GrapesJS Studio">
-        <link rel="stylesheet" href="style.css" />
-        <title>WUDGames Some other Thing</title>
+    <head th:include="~{index ::head_base}">
+        <title id="pageTitle">Manage Items</title>
     </head>
     <body id="root">
         <div th:if="${param.original_invalid_uri != null}">
             <p th:text="${param.original_invalid_uri}">Invalid URI</p>
         </div>
         <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
-        <div>This is the main landing page.</div>
+        <div>This is the manage physical items page.</div>
     </body>
 </html>
