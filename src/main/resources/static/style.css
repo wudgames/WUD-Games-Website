@@ -8,8 +8,10 @@
     --color-warning: #ffc107;
     --color-error: #dc3545;
 
-    --text-color: #333333;
     --background-color: #ffffff;
+
+    --text-on-background: #333333;
+    --text-on-primary: #ffffff;
 }
 
 html {
@@ -20,7 +22,7 @@ body {
     font-family: Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.6;
-    color: var(--text-color);
+    color: var(--text-on-background);
     background-color: var(--background-color);
     margin: 0;
 }
@@ -73,7 +75,7 @@ img {
     height: 70px;
     width: 100%;
     background-color: var(--color-primary);
-    color: white;
+    color: var(--text-on-primary);
     margin: 0;
     display: flex;
     flex-wrap: wrap;
@@ -82,7 +84,7 @@ img {
 
 .navbar A:any-link {
     text-decoration: none;
-    color: white;
+    color: var(--text-on-primary);
 }
 
 .navbar A:hover {
@@ -131,7 +133,7 @@ img {
 .tile {
     border: 5px solid var(--color-secondary);
     border-radius: 20px;
-    box-shadow: var(--text-color);
+    box-shadow: var(--text-on-background);
     padding: auto;
     overflow: hidden;
     .img {
