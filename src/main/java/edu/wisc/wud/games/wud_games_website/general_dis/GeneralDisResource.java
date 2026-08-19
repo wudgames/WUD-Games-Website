@@ -1,11 +1,15 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import jakarta.validation.Valid;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -53,11 +57,18 @@ public class GeneralDisResource {
 
     private void attachResults(Model model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
+        String query = queryParameters.get("searchterm");
 
         //List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
-        Iterable<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll();
-        System.out.println(elasticsearchDocumentList.getClass());    
-        List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(elasticsearchDocumentList);
+        SearchHits<ElasticsearchDocument> searchHits = elasticsearchDocumentRepository.findByNameOrDescription(query, query);
+        List<ElasticsearchDocument> elasticsearchDocumentList = new ArrayList<>();
+        for (SearchHit<ElasticsearchDocument> searchHit : searchHits) {
+            System.out.println(searchHit.getContent().getName() + " had a score of " + searchHit.getScore());
+            elasticsearchDocumentList.add(searchHit.getContent());
+        }
+        Iterable<ElasticsearchDocument> iterator = elasticsearchDocumentList;
+        //Iterable<ElasticsearchDocument> elasticsearchDocumentList = elasticsearchDocumentRepository.findAll();
+        List<GeneralDisDTO> generalDisDTOList = elasticsearchDocumentService.mapAllToGeneralDis(iterator);
 
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }

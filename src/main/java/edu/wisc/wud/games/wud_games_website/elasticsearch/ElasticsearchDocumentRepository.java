@@ -15,5 +15,5 @@ public interface ElasticsearchDocumentRepository extends ElasticsearchRepository
         @HighlightField(name = "name"),
         @HighlightField(name = "description")
     })
-    SearchHits<ElasticsearchDocument> findByNameOrDescription(String search);
+    SearchHits<ElasticsearchDocument> findByNameOrDescription(String search, String othertext);
 }
