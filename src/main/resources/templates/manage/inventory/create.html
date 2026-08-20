@@ -9,11 +9,11 @@
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This is the create items page.</div>
     <form action="/api/description/create" method="post" th:object="${new_item}">
-        <div th:each="typeoption: ${type_options}">
-            <div th:text="${typeoption}"></div>
-        </div>
-        Name: <input type="text" th:field="*{name}" />
-        Description: <input type="text" th:field="*{description}" />
+        <select>
+            <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
+        </select>
+        <label for="name">Name</label>: <input id="name" type="text" th:field="*{name}" />
+        <label for="description">Description</label>: <input id="description" type="text" th:field="*{description}" />
         <input type="submit" value="Create">
     </form>
 </body>
