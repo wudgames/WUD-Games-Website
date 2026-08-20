@@ -13,7 +13,7 @@
         name="descriptionType"
         hx-target="next #formoptions"
         hx-get="/api/manage/inventory/formoptions"
-        hx-trigger="change">
+        hx-trigger="load, change">
         <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
     </select>
     <div th:replace="~{manage/inventory/formoptions :: formoptions}"></div>

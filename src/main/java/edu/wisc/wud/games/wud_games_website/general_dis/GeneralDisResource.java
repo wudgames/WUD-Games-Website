@@ -74,7 +74,7 @@ public class GeneralDisResource {
         Set<String> itemTypeOptions = typeOptionsFor(request).keySet();
         model.addAttribute("type_options", itemTypeOptions);
         System.out.println("set type_options to " + itemTypeOptions);
-        model.addAttribute("new_item", new GeneralDisDTO());
+        //model.addAttribute("new_item", new GeneralDisDTO());
         return new ModelAndView("manage/inventory/create");
     }
 
@@ -94,7 +94,9 @@ public class GeneralDisResource {
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
     public ModelAndView createNewItem(@RequestParam Map<String, String> queryParameters) {
+        // This is what run when the form is submitted
         System.out.println("ran createNewItem with parameters: " + queryParameters);
+        
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
