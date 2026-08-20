@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.config;
 
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class DataInitializer {
     private final BoardGameDisService boardGameDisService;
 
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
-            UserAccountRepository userAccountRepository, BoardGameDisService boardGame) {
+            UserAccountRepository userAccountRepository, @Qualifier("BoardGameDisService") BoardGameDisService boardGame) {
         this.boardGameDisRepository = boardGameDisRepository;
         this.userAccountService = userAccountService;
         this.userAccountRepository = userAccountRepository;

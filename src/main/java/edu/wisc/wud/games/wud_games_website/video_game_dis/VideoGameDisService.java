@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
-@Service
+@Service("VideoGameDisService")
 public class VideoGameDisService {
 
     private final VideoGameDisRepository videoGameDisRepository;

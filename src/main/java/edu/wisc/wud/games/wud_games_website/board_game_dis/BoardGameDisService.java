@@ -14,19 +14,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
-@Service
+@Service("BoardGameDisService")
 public class BoardGameDisService {
+    @Autowired
+    private BoardGameDisRepository boardGameDisRepository;
 
-    private final BoardGameDisRepository boardGameDisRepository;
-    private final ApplicationEventPublisher publisher;
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @Autowired
     private GameDisService gameDisService;
 
-    public BoardGameDisService(final BoardGameDisRepository boardGameDisRepository,
-            final ApplicationEventPublisher publisher) {
-        this.boardGameDisRepository = boardGameDisRepository;
-        this.publisher = publisher;
+    public BoardGameDisService() {
     }
 
     public List<BoardGameDisDTO> findAll() {
@@ -42,7 +41,7 @@ public class BoardGameDisService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    Long create(final BoardGameDisDTO boardGameDisDTO) {
+    public Long create(final BoardGameDisDTO boardGameDisDTO) {
         final BoardGameDis boardGameDis = new BoardGameDis();
         mapToEntity(boardGameDisDTO, boardGameDis);
         return boardGameDisRepository.save(boardGameDis).getId();

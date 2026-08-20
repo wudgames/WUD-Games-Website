@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +24,25 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException.NotImplemented;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisRepository;
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDisService;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
+import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 
 @RestController
 public class GeneralDisResource {
@@ -48,30 +57,33 @@ public class GeneralDisResource {
         physicalDescriptionTypes.put("Game Console", () -> new GameConsoleDisDTO());
     }
 
-    private final GameDisRepository GAME_DIS_REPOSITORY;
-    private final BoardGameDisRepository BOARD_GAME_DIS_REPOSITORY;
-    private final BoardGameExpansionDisRepository BOARD_GAME_EXPANSION_DIS_REPOSITORY;
-    private final VideoGameDisRepository VIDEO_GAME_DIS_REPOSITORY;
-    // private static final VideoGameExpansionDisRepository // Not made currently
+    private final GameDisService GAME_DIS_SERVICE;
+    private final BoardGameDisService BOARD_GAME_DIS_SERVICE;
+    private final BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE;
+    private final VideoGameDisService VIDEO_GAME_DIS_SERVICE;
+    // private static final VideoGameExpansionDisService // Not made currently
 
     private final Map<Class<? extends GameDisDTO>, JpaRepository<? extends GeneralDis, Long>> descriptionsRepositories = new HashMap<>();
 
-    public GeneralDisResource(final GeneralDisService generalDisService, final GameDisRepository GAME_DIS_REPOSITORY,
-            final BoardGameDisRepository BOARD_GAME_DIS_REPOSITORY,
-            BoardGameExpansionDisRepository BOARD_GAME_EXPANSION_DIS_REPOSITORY,
-            VideoGameDisRepository VIDEO_GAME_DIS_REPOSITORY) {
+    //private final Map<T, Consumer<T>> saveDTOFunctions = new HashMap<>();
+
+    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService, final GameDisService GAME_DIS_SERVICE,
+            @Qualifier("BoardGameDisService")final BoardGameDisService BOARD_GAME_DIS_SERVICE,
+            @Qualifier("BoardGameExpansionDisService")final BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE,
+            @Qualifier("VideoGameDisService")final VideoGameDisService VIDEO_GAME_DIS_SERVICE) {
         this.generalDisService = generalDisService;
 
-        this.GAME_DIS_REPOSITORY = GAME_DIS_REPOSITORY;
-        this.BOARD_GAME_DIS_REPOSITORY = BOARD_GAME_DIS_REPOSITORY;
-        this.BOARD_GAME_EXPANSION_DIS_REPOSITORY = BOARD_GAME_EXPANSION_DIS_REPOSITORY;
-        this.VIDEO_GAME_DIS_REPOSITORY = VIDEO_GAME_DIS_REPOSITORY;
-
+        this.GAME_DIS_SERVICE = GAME_DIS_SERVICE;
+        this.BOARD_GAME_DIS_SERVICE = BOARD_GAME_DIS_SERVICE;
+        this.BOARD_GAME_EXPANSION_DIS_SERVICE = BOARD_GAME_EXPANSION_DIS_SERVICE;
+        this.VIDEO_GAME_DIS_SERVICE = VIDEO_GAME_DIS_SERVICE;
+        /* 
         descriptionsRepositories.put(GameDisDTO.class, GAME_DIS_REPOSITORY);
         descriptionsRepositories.put(BoardGameDisDTO.class, BOARD_GAME_DIS_REPOSITORY);
         descriptionsRepositories.put(BoardGameExpansionDisDTO.class, BOARD_GAME_EXPANSION_DIS_REPOSITORY);
         descriptionsRepositories.put(VideoGameDisDTO.class, VIDEO_GAME_DIS_REPOSITORY);
         // VIDEO_GAME_DIS_REPOSITORY);
+        */
     }
 
     @GetMapping("/library")
@@ -165,6 +177,24 @@ public class GeneralDisResource {
          * );
          */
         // TODO identify the right repository to save to
+        // JpaRepository<? extends GeneralDis, Long> repository = descriptionsRepositories.get(generalDisDTO.getClass());
+        //repository.save(generalDisDTO);
+
+        // Make sure to check all sub-class before a parent
+        if (generalDisDTO instanceof BoardGameExpansionDisDTO) {
+            BOARD_GAME_EXPANSION_DIS_SERVICE.create((BoardGameExpansionDisDTO) generalDisDTO);
+            System.out.println("Created a board game expansion description.");
+        } else if (generalDisDTO instanceof BoardGameDisDTO) {
+            BOARD_GAME_DIS_SERVICE.create((BoardGameDisDTO) generalDisDTO);
+            System.out.println("Created a board game description.");
+        } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
+            VIDEO_GAME_DIS_SERVICE.create((VideoGameDisDTO) generalDisDTO);
+            System.out.println("Created a video game description.");
+        } else if (generalDisDTO instanceof EquipmentDisDTO) {
+            throw new UnsupportedOperationException("EquipmentDisDTO is not supported yet.");
+        } else {
+            throw new UnsupportedOperationException("Unsupported type: " + generalDisDTO.getClass().getName());
+        }
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 

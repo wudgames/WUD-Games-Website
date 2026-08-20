@@ -2,6 +2,8 @@ package edu.wisc.wud.games.wud_games_website.board_game_dis;
 
 import jakarta.validation.Valid;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ public class BoardGameDisResource {
 
     private final BoardGameDisService boardGameDisService;
 
-    public BoardGameDisResource(final BoardGameDisService boardGameDisService) {
+    public BoardGameDisResource(@Qualifier("BoardGameDisService") final BoardGameDisService boardGameDisService) {
         this.boardGameDisService = boardGameDisService;
     }
 
