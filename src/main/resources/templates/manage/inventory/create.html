@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:include="~{fragments/header ::head_base}">
+    <title id="pageTitle">Create Item</title>
+</head>
+
+<body id="root">
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    <div>This is the create items page.</div>
+    <form action="/api/description/create" method="post" th:object="${new_item}">
+        <div th:each="typeoption: ${type_options}">
+            <div th:text="${typeoption}"></div>
+        </div>
+        Name: <input type="text" th:field="*{name}" />
+        Description: <input type="text" th:field="*{description}" />
+        <input type="submit" value="Create">
+    </form>
+</body>
+
+</html>

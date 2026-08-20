@@ -30,6 +30,7 @@ public class PhysicalItemResource {
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER')")
     @GetMapping("/manage/inventory/physicalItems")
     public ModelAndView getMethodName() {
+        
         return new ModelAndView("/manage/inventory/physicalItems");
     }
 

@@ -21,6 +21,9 @@
         <p th:text="${param.original_invalid_uri}">Invalid URI</p>
     </div>
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" href="/manage/inventory/create">
+        <button >Create Item</button>
+    </a>
     <div>This should be filter options</div>
     Some query text felid: <input name="searchterm" type="text" th:value="${param.searchterm}"/>
     Tags (WIP): <input name="tags" type="text" th:value="${param.tags}"/>

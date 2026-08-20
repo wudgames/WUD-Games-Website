@@ -46,27 +46,15 @@ public class UserAccountResource {
         System.out.println("    api email query: " + principal.getAttribute("email"));
         System.out.println("    principal authorities: " + principal.getAuthorities());// This might me the authorities with respect to github not the authorities of the user in the database.
 
-        // Return the email of the authenticated user to the browser
+        
         model.addAttribute("user_email", principal.getAttribute("email"));
-        model.addAttribute("user_name", principal.getAttribute("given_name"));// Controls the name show in the navbar.
-        model.addAttribute("user_profile_picture", principal.getAttribute("picture"));// Controls the picture show in the navbar.
+
+        // These are now set at the session level in OAuthSuccessHandler
+        //model.addAttribute("user_name", principal.getAttribute("given_name"));// Controls the name show in the navbar.
+        //model.addAttribute("user_profile_picture", principal.getAttribute("picture"));// Controls the picture show in the navbar.
         //setSessionAttributes(principal.);
         return new ModelAndView("myuser");
     }
-    /* 
-    // For testing
-    @ModelAttribute("user_name")
-    public String getUserName(@AuthenticationPrincipal OAuth2User principal) {
-        return principal.getAttribute("given_name");
-    }
-
-    // For testing
-    private void setSessionAttributes(HttpServletRequest request, OAuth2User oauthUser) {
-        System.out.println("setting system attributes");
-        HttpSession session = request.getSession();
-        session.setAttribute("user_name", oauthUser.getAttribute("given_name"));// Controls the name show in the navbar.
-    }
-    */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/users")
     public ResponseEntity<List<UserAccountDTO>> getAllUserAccounts() {

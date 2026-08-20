@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable=yes />
-        <title>WUDGames Website</title>
-    </head>
-    <body id="root">
-        <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
-        <div>something went wrong, this is in templates</div>
-        <div>now with live updates</div>
-    </body>
+
+<head th:include="~{fragments/header ::head_base}">
+    <title id="pageTitle">WUD Games Error</title>
+</head>
+
+<body id="root">
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    <div>something went wrong, this is in templates</div>
+    <div>now with live updates</div>
+</body>
+
 </html>

@@ -1,11 +1,23 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +29,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
+import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
+import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
+
+
 @RestController
 public class GeneralDisResource {
 
     private final GeneralDisService generalDisService;
+
+    private final static Map<String, Supplier<GeneralDisDTO>> physicalDescriptionTypes = new HashMap<String, Supplier<GeneralDisDTO>>();
+    static {
+        physicalDescriptionTypes.put("Board Game", () -> new BoardGameDisDTO());
+        physicalDescriptionTypes.put("Board Game Expansion", () -> new BoardGameExpansionDisDTO());
+        physicalDescriptionTypes.put("Equipment", () -> new EquipmentDisDTO());
+        physicalDescriptionTypes.put("Game Console", () -> new GameConsoleDisDTO());
+    }
 
     public GeneralDisResource(final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
@@ -29,7 +55,30 @@ public class GeneralDisResource {
     @GetMapping("/library")
     public ModelAndView librarySearch(Model model, @RequestParam Map<String, String> queryParameters) {
         attachResults(model, queryParameters);
-        return new ModelAndView("search/generaldis");
+        return new ModelAndView("search/library");
+    }
+
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+    @GetMapping("manage/inventory/create")
+    public ModelAndView getMethodName(Model model, @RequestParam Map<String, String> queryParameters, HttpServletRequest request) {
+        // Not @AuthenticationPrincipal Principal principal
+        
+        // TODO add item type dropdown
+        List<String> itemTypeOptions = new ArrayList<>();
+        if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
+            itemTypeOptions.addAll(physicalDescriptionTypes.keySet());
+        }
+        model.addAttribute("type_options", itemTypeOptions);
+        System.out.println("set type_options to " + itemTypeOptions);
+        model.addAttribute("new_item", new GeneralDisDTO());
+        return new ModelAndView("manage/inventory/create");
+    }
+
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+    @PostMapping("/api/description/create")
+    public ModelAndView createNewItem(@RequestParam Map<String, String> queryParameters) {
+        System.out.println("ran createNewItem with parameters: " + queryParameters);
+        return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
     /* This is called to refresh the the html for displaying a search result */

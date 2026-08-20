@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.board_game_expansion;
 
+import edu.wisc.wud.games.wud_games_website.board_game.BoardGame;
 import edu.wisc.wud.games.wud_games_website.game_expansion_dis.GameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItem;
 import jakarta.persistence.Column;
@@ -24,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class BoardGameExpansion extends PhysicalItem{
+public class BoardGameExpansion extends BoardGame {
 
     @Id
     @Column(nullable = false, updatable = false)
