@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.springframework.http.HttpStatus;
@@ -58,20 +59,36 @@ public class GeneralDisResource {
         return new ModelAndView("search/library");
     }
 
+    private Map<String, Supplier<GeneralDisDTO>> typeOptionsFor(HttpServletRequest request) {
+        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = new HashMap<>();
+        if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
+            itemTypeOptions.putAll(physicalDescriptionTypes);
+        }
+        // TODO add digitanal inventory options
+        return itemTypeOptions;
+    }
+
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/create")
     public ModelAndView getMethodName(Model model, @RequestParam Map<String, String> queryParameters, HttpServletRequest request) {
-        // Not @AuthenticationPrincipal Principal principal
-        
-        // TODO add item type dropdown
-        List<String> itemTypeOptions = new ArrayList<>();
-        if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
-            itemTypeOptions.addAll(physicalDescriptionTypes.keySet());
-        }
+        Set<String> itemTypeOptions = typeOptionsFor(request).keySet();
         model.addAttribute("type_options", itemTypeOptions);
         System.out.println("set type_options to " + itemTypeOptions);
         model.addAttribute("new_item", new GeneralDisDTO());
         return new ModelAndView("manage/inventory/create");
+    }
+
+    @GetMapping("/api/manage/inventory/formoptions")
+    public ModelAndView getItemForm(Model model, @RequestParam Map<String, String> queryParameters, HttpServletRequest request) {
+        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = typeOptionsFor(request);
+        String descriptionType = queryParameters.get("descriptionType");
+        if (itemTypeOptions.containsKey(descriptionType)) {
+            model.addAttribute("new_item", itemTypeOptions.get(descriptionType).get());
+            model.addAttribute("description_type", descriptionType);
+        } else {
+            throw new IllegalArgumentException("Invalid item type: " + descriptionType);
+        }
+        return new ModelAndView("manage/inventory/formoptions");
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")

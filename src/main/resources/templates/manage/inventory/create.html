@@ -8,14 +8,15 @@
 <body id="root">
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This is the create items page.</div>
-    <form action="/api/description/create" method="post" th:object="${new_item}">
-        <select>
-            <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
-        </select>
-        <label for="name">Name</label>: <input id="name" type="text" th:field="*{name}" />
-        <label for="description">Description</label>: <input id="description" type="text" th:field="*{description}" />
-        <input type="submit" value="Create">
-    </form>
+    <base href="<scheme>://<netloc>/api/">
+    <select
+        name="descriptionType"
+        hx-target="next #formoptions"
+        hx-get="/api/manage/inventory/formoptions"
+        hx-trigger="change">
+        <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
+    </select>
+    <div th:replace="~{manage/inventory/formoptions :: formoptions}"></div>
 </body>
 
 </html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:include="~{fragments/header ::head_base}">
+    <title id="pageTitle">Create Item</title>
+</head>
+
+<body id="root" th:fragment="formoptions">
+    <div id="formoptions">
+        <div>This is the create form options page.</div>
+        Description type is <object th:text="${description_type}"></object>
+        <form action="/api/description/create" method="post" th:object="${new_item}">
+            <label for="name">Name</label>: <input id="name" type="text" th:field="*{name}" />
+            <label for="description">Description</label>: <input id="description" type="text" th:field="*{description}" />
+            <input type="submit" value="Create">
+        </form>
+    </div>
+</body>
+
+</html>
