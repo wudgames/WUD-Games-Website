@@ -18,8 +18,8 @@
 
 <body>
   <div th:fragment="navbar" class="navbar">
-    <a href="/" class="navbar__logo">
-      <img src="http://localhost:8080/images/WhiteColorLogo.png" alt="Logo" height="100%">
+    <a href="/" class="navbar__logo" >
+      <img class="img--heightconstrained" src="http://localhost:8080/images/WhiteColorLogo.png" alt="Games Committee Wisconsin Union Directorate">
     </a>
     <nav class="navbar__links">
       <a class="navbar__option" href="/library">Library</a>
@@ -28,13 +28,13 @@
       <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory/physicalItems">Manage
         Inventory</a>
       <div class=navbar__separator></div>
-      <a class="media media--flip media navbar__option" href="/myuser">
-        <div class="content content--oneline">
+      <a class="navbar__option" href="/myuser">
+        <div class="navbar__username">
           <div th:if="${session.user_name != null}" th:text="${session.user_name}">User Name</div>
           <div th:if="${session.user_name == null}">Sign In</div>
         </div>
         <img th:if="${session.user_profile_picture != null}" th:src="${session.user_profile_picture}" alt="User Profile Picture" width="50"
-          height="50" class="img">
+          height="50" class="img profileIcon">
       </a>
     </nav>
   </div>
