@@ -47,13 +47,6 @@ public class BoardGameDisService {
         return boardGameDisRepository.save(boardGameDis).getId();
     }
 
-    public Long create(final BoardGameDis boardGameDis) {
-        // this would work well with super(), something to consider
-        gameDisService.create(boardGameDis);
-        final BoardGameDisDTO boardGameDisDTO = mapToDTO(boardGameDis, new BoardGameDisDTO());
-        return create(boardGameDisDTO);
-    }
-
     public void update(final Long id, final BoardGameDisDTO boardGameDisDTO) {
         final BoardGameDis boardGameDis = boardGameDisRepository.findById(id)
                 .orElseThrow(NotFoundException::new);

@@ -13,6 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +47,9 @@ public class GeneralDis {
     )
     private Long id;
 
-    @Column
+    @Column(unique = true)
+    @NotBlank
+    @NotNull(message = "Name cannot be null")
     private String name;
 
     @Column(length = 2048)

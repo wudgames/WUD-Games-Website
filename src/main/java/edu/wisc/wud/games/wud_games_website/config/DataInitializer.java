@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
@@ -71,12 +72,12 @@ public class DataInitializer {
     }
 
     private void addEntriesForTesting() {
-        BoardGameDis boardGameDis = new BoardGameDis();
-        boardGameDis.setName("7 Wonders");
-        boardGameDis
+        BoardGameDisDTO boardGameDisDTO = new BoardGameDisDTO();
+        boardGameDisDTO.setName("7 Wonders");
+        boardGameDisDTO
                 .setDescription("Draft cards to develop your ancient civilization and build its Wonder of the World.");
-        boardGameDis.setImageUrl(
+        boardGameDisDTO.setImageUrl(
                 "https://cf.geekdo-images.com/35h9Za_JvMMMtx_92kT0Jg__imagepage/img/WKlTys0Dc3F6x9r05Fwyvs82tz4=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7149798.jpg");
-        boardGameDisService.create(boardGameDis);
+        boardGameDisService.create(boardGameDisDTO);
     }
 }

@@ -49,34 +49,19 @@ public class GeneralDisResource {
 
     private final GeneralDisService generalDisService;
 
-    private final static Map<String, Supplier<GeneralDisDTO>> physicalDescriptionTypes = new HashMap<String, Supplier<GeneralDisDTO>>();
-    static {
-        physicalDescriptionTypes.put("Board Game", () -> new BoardGameDisDTO());
-        physicalDescriptionTypes.put("Board Game Expansion", () -> new BoardGameExpansionDisDTO());
-        physicalDescriptionTypes.put("Equipment", () -> new EquipmentDisDTO());
-        physicalDescriptionTypes.put("Game Console", () -> new GameConsoleDisDTO());
-    }
-
     private final GameDisService GAME_DIS_SERVICE;
-    private final BoardGameDisService BOARD_GAME_DIS_SERVICE;
-    private final BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE;
-    private final VideoGameDisService VIDEO_GAME_DIS_SERVICE;
+    
     // private static final VideoGameExpansionDisService // Not made currently
 
     private final Map<Class<? extends GameDisDTO>, JpaRepository<? extends GeneralDis, Long>> descriptionsRepositories = new HashMap<>();
 
     //private final Map<T, Consumer<T>> saveDTOFunctions = new HashMap<>();
 
-    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService, final GameDisService GAME_DIS_SERVICE,
-            @Qualifier("BoardGameDisService")final BoardGameDisService BOARD_GAME_DIS_SERVICE,
-            @Qualifier("BoardGameExpansionDisService")final BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE,
-            @Qualifier("VideoGameDisService")final VideoGameDisService VIDEO_GAME_DIS_SERVICE) {
+    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService, final GameDisService GAME_DIS_SERVICE) {
         this.generalDisService = generalDisService;
 
         this.GAME_DIS_SERVICE = GAME_DIS_SERVICE;
-        this.BOARD_GAME_DIS_SERVICE = BOARD_GAME_DIS_SERVICE;
-        this.BOARD_GAME_EXPANSION_DIS_SERVICE = BOARD_GAME_EXPANSION_DIS_SERVICE;
-        this.VIDEO_GAME_DIS_SERVICE = VIDEO_GAME_DIS_SERVICE;
+        
         /* 
         descriptionsRepositories.put(GameDisDTO.class, GAME_DIS_REPOSITORY);
         descriptionsRepositories.put(BoardGameDisDTO.class, BOARD_GAME_DIS_REPOSITORY);
@@ -92,26 +77,11 @@ public class GeneralDisResource {
         return new ModelAndView("search/library");
     }
 
-    private Map<String, Supplier<GeneralDisDTO>> typeOptionsFor(HttpServletRequest request) {
-        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = new HashMap<>();
-        if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
-            itemTypeOptions.putAll(physicalDescriptionTypes);
-        }
-        // TODO add digitanal inventory options
-        return itemTypeOptions;
-    }
-
-    private void validateType(@RequestParam String description_type, HttpServletRequest request) {
-        if (!typeOptionsFor(request).containsKey(description_type)) {
-            throw new IllegalArgumentException("Invalid description type: " + description_type);
-        }
-    }
-
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/create")
     public ModelAndView getMethodName(Model model, @RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
-        Set<String> itemTypeOptions = typeOptionsFor(request).keySet();
+        Set<String> itemTypeOptions = generalDisService.typeOptionsFor(request).keySet();
         model.addAttribute("type_options", itemTypeOptions);
         System.out.println("set type_options to " + itemTypeOptions);
         // model.addAttribute("new_item", new GeneralDisDTO());
@@ -122,7 +92,7 @@ public class GeneralDisResource {
     @GetMapping("/api/manage/inventory/formoptions")
     public ModelAndView getItemForm(Model model, @RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
-        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = typeOptionsFor(request);
+        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = generalDisService.typeOptionsFor(request);
         String description_type = queryParameters.get("description_type");
         System.out.println("read descriptionType from query parameters: " + description_type);
         if (itemTypeOptions.containsKey(description_type)) {
@@ -136,65 +106,12 @@ public class GeneralDisResource {
         return new ModelAndView("manage/inventory/formoptions");
     }
 
-    private GeneralDisDTO getDTOFromRequest(HttpServletRequest request, Map<String, String> queryParameters) {
-        // This would be the use case for create generic mappers
-        System.out.println(
-                "called getDTOFromRequest with request: " + request + ", and queryParameters: " + queryParameters);
-        GeneralDisDTO generalDisDTO = typeOptionsFor(request).get(queryParameters.get("description_type")).get();
-        System.out.println("created generalDisDTO of type " + generalDisDTO.getClass());
-        generalDisDTO.setName(queryParameters.get("name"));
-        generalDisDTO.setDescription(queryParameters.get("description"));
-        generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
-        // TODO tags
-        if (generalDisDTO instanceof GameDisDTO) {
-            try {
-                ((GameDisDTO) generalDisDTO).setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers")));
-            } catch (NumberFormatException e) {
-            }
-            try {
-                ((GameDisDTO) generalDisDTO).setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers")));
-            } catch (NumberFormatException e) {
-            }
-        }
-        // TODO fields on other description types
-        return generalDisDTO;
-    }
+    
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
     public ModelAndView createNewItem(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
-        // This is what run when the form is submitted
-        System.out.println("ran createNewItem with queryParameters: " + queryParameters);
-        GeneralDisDTO generalDisDTO = getDTOFromRequest(request, queryParameters);
-        /*
-         * System.out.println("ran createNewItem with module attribute of class: " +
-         * generalDisDTO.getClass());
-         * BoardGameDisDTO boardGameDisDTO = (BoardGameDisDTO) generalDisDTO;
-         * System.out.println("module attribute values:\n" +
-         * "   name: " + generalDisDTO.getName() + "\n" +
-         * "   description: " + generalDisDTO.getDescription() + "\n" +
-         * "   min player: " + boardGameDisDTO.getMinPlayers() + "\n"
-         * );
-         */
-        // TODO identify the right repository to save to
-        // JpaRepository<? extends GeneralDis, Long> repository = descriptionsRepositories.get(generalDisDTO.getClass());
-        //repository.save(generalDisDTO);
-
-        // Make sure to check all sub-class before a parent
-        if (generalDisDTO instanceof BoardGameExpansionDisDTO) {
-            BOARD_GAME_EXPANSION_DIS_SERVICE.create((BoardGameExpansionDisDTO) generalDisDTO);
-            System.out.println("Created a board game expansion description.");
-        } else if (generalDisDTO instanceof BoardGameDisDTO) {
-            BOARD_GAME_DIS_SERVICE.create((BoardGameDisDTO) generalDisDTO);
-            System.out.println("Created a board game description.");
-        } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
-            VIDEO_GAME_DIS_SERVICE.create((VideoGameDisDTO) generalDisDTO);
-            System.out.println("Created a video game description.");
-        } else if (generalDisDTO instanceof EquipmentDisDTO) {
-            throw new UnsupportedOperationException("EquipmentDisDTO is not supported yet.");
-        } else {
-            throw new UnsupportedOperationException("Unsupported type: " + generalDisDTO.getClass().getName());
-        }
+        generalDisService.createNewDescription(request, queryParameters);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 

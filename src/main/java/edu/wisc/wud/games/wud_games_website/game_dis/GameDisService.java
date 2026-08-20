@@ -15,9 +15,6 @@ public class GameDisService {
 
     private final GameDisRepository gameDisRepository;
 
-    @Autowired
-    private GeneralDisService generalDisService;
-
     public GameDisService(final GameDisRepository gameDisRepository) {
         this.gameDisRepository = gameDisRepository;
     }
@@ -39,12 +36,6 @@ public class GameDisService {
         final GameDis gameDis = new GameDis();
         mapToEntity(gameDisDTO, gameDis);
         return gameDisRepository.save(gameDis).getId();
-    }
-
-    public Long create(final GameDis gameDis) {
-        generalDisService.create(gameDis);
-        final GameDisDTO gameDisDTO = mapToDTO(gameDis, new GameDisDTO());
-        return create(gameDisDTO);
     }
 
     public void update(final Long id, final GameDisDTO gameDisDTO) {
