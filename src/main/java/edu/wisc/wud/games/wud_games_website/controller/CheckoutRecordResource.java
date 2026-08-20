@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.checkout_record;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordService;
 
 
 @RestController

@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.general_dis;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -40,6 +40,9 @@ import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisRepository;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisService;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;

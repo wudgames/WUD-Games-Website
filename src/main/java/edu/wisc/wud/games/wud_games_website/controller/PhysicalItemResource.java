@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.physical_item;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO;
+import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemService;
 
 
 @RestController

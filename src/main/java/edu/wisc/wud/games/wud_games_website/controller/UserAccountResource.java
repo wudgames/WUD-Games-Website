@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.user_account;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import java.util.List;
 import java.util.Set;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 

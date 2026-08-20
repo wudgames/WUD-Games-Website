@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.inventory_item;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemService;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 

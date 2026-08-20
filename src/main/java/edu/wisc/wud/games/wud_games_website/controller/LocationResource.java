@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.location;
+package edu.wisc.wud.games.wud_games_website.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import edu.wisc.wud.games.wud_games_website.location.LocationDTO;
+import edu.wisc.wud.games.wud_games_website.location.LocationService;
 
 @RestController
 @RequestMapping(value = "/api/locations", produces = MediaType.APPLICATION_JSON_VALUE)
