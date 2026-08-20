@@ -74,7 +74,7 @@ public class UserAccountService {
     }
     */
     private UserAccount mapToEntity(final UserAccountDTO userAccountDTO, final UserAccount userAccount) {
-        userAccount.setId(userAccountDTO.getId());
+        //userAccount.setId(userAccountDTO.getId());
         userAccount.setEmail(userAccountDTO.getEmail());
         //userAccount.setPassword(userAccountDTO.getPassword());
         userAccount.setHost(userAccountDTO.isHost());

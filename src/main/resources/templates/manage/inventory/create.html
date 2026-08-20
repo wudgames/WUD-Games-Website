@@ -16,7 +16,7 @@
         hx-trigger="load, change">
         <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
     </select>
-    <div th:replace="~{manage/inventory/formoptions :: formoptions}"></div>
+    <form id="formoptions">This will be the create description form.</form>
 </body>
 
 </html>

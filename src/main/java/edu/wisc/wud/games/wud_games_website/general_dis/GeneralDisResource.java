@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -68,6 +69,12 @@ public class GeneralDisResource {
         return itemTypeOptions;
     }
 
+    private void validateType(@RequestParam String description_type, HttpServletRequest request) {
+        if (!typeOptionsFor(request).containsKey(description_type)) {
+            throw new IllegalArgumentException("Invalid description type: " + description_type);
+        }
+    }
+
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/create")
     public ModelAndView getMethodName(Model model, @RequestParam Map<String, String> queryParameters, HttpServletRequest request) {
@@ -78,12 +85,16 @@ public class GeneralDisResource {
         return new ModelAndView("manage/inventory/create");
     }
 
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("/api/manage/inventory/formoptions")
     public ModelAndView getItemForm(Model model, @RequestParam Map<String, String> queryParameters, HttpServletRequest request) {
         Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = typeOptionsFor(request);
         String descriptionType = queryParameters.get("descriptionType");
+        System.out.println("read descriptionType from query parameters: " + descriptionType);
         if (itemTypeOptions.containsKey(descriptionType)) {
-            model.addAttribute("new_item", itemTypeOptions.get(descriptionType).get());
+            GeneralDisDTO newDescription = itemTypeOptions.get(descriptionType).get();
+            model.addAttribute("new_description", newDescription);
+            System.out.println("set new_description to object of class " + newDescription.getClass());
             model.addAttribute("description_type", descriptionType);
         } else {
             throw new IllegalArgumentException("Invalid item type: " + descriptionType);
@@ -95,8 +106,16 @@ public class GeneralDisResource {
     @PostMapping("/api/description/create")
     public ModelAndView createNewItem(@RequestParam Map<String, String> queryParameters) {
         // This is what run when the form is submitted
-        System.out.println("ran createNewItem with parameters: " + queryParameters);
-        
+        System.out.println("ran createNewItem with queryParameters: " + queryParameters);
+        /* 
+        System.out.println("ran createNewItem with module attribute of class: " + generalDisDTO.getClass());
+        BoardGameDisDTO boardGameDisDTO = (BoardGameDisDTO) generalDisDTO;
+        System.out.println("module attribute values:\n" +
+            "   name: " + generalDisDTO.getName() + "\n" +
+            "   description: " + generalDisDTO.getDescription() + "\n" +
+            "   min player: " + boardGameDisDTO.getMinPlayers() + "\n"
+        );
+        */
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
