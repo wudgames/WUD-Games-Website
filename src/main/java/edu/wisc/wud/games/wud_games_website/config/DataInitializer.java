@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
@@ -23,14 +24,14 @@ public class DataInitializer {
 
     private final UserAccountRepository userAccountRepository;
 
-    private final BoardGameDisService boardGameDisService;
+    private final GeneralDisService generalDisService;
 
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
-            UserAccountRepository userAccountRepository, @Qualifier("BoardGameDisService") BoardGameDisService boardGame) {
+            UserAccountRepository userAccountRepository, @Qualifier("GeneralDisService") GeneralDisService generalDisService) {
         this.boardGameDisRepository = boardGameDisRepository;
         this.userAccountService = userAccountService;
         this.userAccountRepository = userAccountRepository;
-        this.boardGameDisService = boardGame;
+        this.generalDisService = generalDisService;
     }
 
     @Bean
@@ -78,6 +79,6 @@ public class DataInitializer {
                 .setDescription("Draft cards to develop your ancient civilization and build its Wonder of the World.");
         boardGameDisDTO.setImageUrl(
                 "https://cf.geekdo-images.com/35h9Za_JvMMMtx_92kT0Jg__imagepage/img/WKlTys0Dc3F6x9r05Fwyvs82tz4=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7149798.jpg");
-        boardGameDisService.create(boardGameDisDTO);
+        generalDisService.create(boardGameDisDTO);
     }
 }

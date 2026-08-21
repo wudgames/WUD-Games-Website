@@ -40,12 +40,14 @@ public class BoardGameDisService {
                 .map(boardGameDis -> mapToDTO(boardGameDis, new BoardGameDisDTO()))
                 .orElseThrow(NotFoundException::new);
     }
-
+    /*
+    Moved to src/main/java/edu/wisc/wud/games/wud_games_website/general_dis/GeneralDisService.java
     public Long create(final BoardGameDisDTO boardGameDisDTO) {
         final BoardGameDis boardGameDis = new BoardGameDis();
         mapToEntity(boardGameDisDTO, boardGameDis);
         return boardGameDisRepository.save(boardGameDis).getId();
     }
+    */
 
     public void update(final Long id, final BoardGameDisDTO boardGameDisDTO) {
         final BoardGameDis boardGameDis = boardGameDisRepository.findById(id)

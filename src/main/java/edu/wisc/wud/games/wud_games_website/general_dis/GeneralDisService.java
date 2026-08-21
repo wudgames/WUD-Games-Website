@@ -1,6 +1,8 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
+import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
@@ -37,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GeneralDisService {
 
     private final GeneralDisRepository generalDisRepository;
+    private final BoardGameDisRepository boardGameDisRepository;
+
     private final TagRepository tagRepository;
     private final ApplicationEventPublisher publisher;
 
@@ -48,9 +52,9 @@ public class GeneralDisService {
         physicalDescriptionTypes.put("Game Console", () -> new GameConsoleDisDTO());
     }
 
-    @Autowired
-    @Qualifier("BoardGameDisService")
-    private BoardGameDisService BOARD_GAME_DIS_SERVICE;
+    //@Autowired
+    //@Qualifier("BoardGameDisService")
+    //private BoardGameDisService BOARD_GAME_DIS_SERVICE;
     @Autowired
     @Qualifier("BoardGameExpansionDisService")
     private BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE;
@@ -59,8 +63,10 @@ public class GeneralDisService {
     private VideoGameDisService VIDEO_GAME_DIS_SERVICE;
 
     public GeneralDisService(final GeneralDisRepository generalDisRepository,
-            final TagRepository tagRepository, final ApplicationEventPublisher publisher) {
+            final TagRepository tagRepository, final ApplicationEventPublisher publisher, final BoardGameDisRepository boardGameDisRepository) {
         this.generalDisRepository = generalDisRepository;
+        this.boardGameDisRepository = boardGameDisRepository;
+
         this.tagRepository = tagRepository;
         this.publisher = publisher;
     }
@@ -128,7 +134,7 @@ public class GeneralDisService {
             BOARD_GAME_EXPANSION_DIS_SERVICE.create((BoardGameExpansionDisDTO) generalDisDTO);
             System.out.println("Created a board game expansion description.");
         } else if (generalDisDTO instanceof BoardGameDisDTO) {
-            BOARD_GAME_DIS_SERVICE.create((BoardGameDisDTO) generalDisDTO);
+            create((BoardGameDisDTO) generalDisDTO);
             System.out.println("Created a board game description.");
         } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
             VIDEO_GAME_DIS_SERVICE.create((VideoGameDisDTO) generalDisDTO);
@@ -140,7 +146,10 @@ public class GeneralDisService {
         }
     }
 
-    // Mostly Auto Generated Methods
+    // Mostly Auto Generated Methods Below
+
+    /* GeneralDisRepository Backed Methods */
+    
     public List<GeneralDisDTO> findAll() {
         final List<GeneralDis> generalDises = generalDisRepository.findAll(Sort.by("id"));
         return generalDises.stream()
@@ -159,11 +168,6 @@ public class GeneralDisService {
         final GeneralDis generalDis = new GeneralDis();
         mapToEntity(generalDisDTO, generalDis);
         return generalDisRepository.save(generalDis).getId();
-    }
-
-    public Long create(final GeneralDis generalDis) {
-        final GeneralDisDTO generalDisDTO = mapToDTO(generalDis, new GeneralDisDTO());
-        return create(generalDisDTO);
     }
 
     public void update(final Long id, final GeneralDisDTO generalDisDTO) {
@@ -217,4 +221,11 @@ public class GeneralDisService {
                 .forEach(generalDis -> generalDis.getTags().removeIf(tag -> tag.getId().equals(event.getId())));
     }
 
+    /* BoardGameDisRepository Backed Methods */
+
+    public Long create(final BoardGameDisDTO boardGameDisDTO) {
+        final BoardGameDis boardGameDis = new BoardGameDis();
+        mapToEntity(boardGameDisDTO, boardGameDis);
+        return boardGameDisRepository.save(boardGameDis).getId();
+    }
 }
