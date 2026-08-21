@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoardGameDTO extends PhysicalItemDTO {
+public class BoardGameDTO extends GameDisDTO {
     @NotNull
     private Integer minPlaytime;
 

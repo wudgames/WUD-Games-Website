@@ -79,6 +79,13 @@ public class GeneralDisService {
                 .addAll(physicalDescriptionTypes.values().stream().map(s -> s.get().getClass()).toList());
     }
 
+    private final static Map<Class<? extends GeneralDisDTO>, String> typeToDescriptionString = new HashMap<>();
+    static {
+        for (Map.Entry<String, Supplier<GeneralDisDTO>> entry : physicalDescriptionTypes.entrySet()) {
+            typeToDescriptionString.put(entry.getValue().get().getClass(), entry.getKey());
+        }
+    }
+
     private final Map<Class<? extends GeneralDis>, Supplier<GeneralDisDTO>> entityToDTO = new HashMap<>();
     private final Map<Class<? extends GeneralDisDTO>, Supplier<GeneralDis>> dtoToEntity = new HashMap<>();
 
@@ -144,6 +151,10 @@ public class GeneralDisService {
         }
         // TODO add digitanal inventory options
         return itemTypeOptions;
+    }
+
+    private String getTypeDescriptionFor(GeneralDisDTO generalDisDTO) {
+        return typeToDescriptionString.get(generalDisDTO.getClass());
     }
 
     private GeneralDisDTO getDTOFromRequest(HttpServletRequest request, Map<String, String> queryParameters) {
@@ -219,12 +230,16 @@ public class GeneralDisService {
 
     public void updateDescription(Long id, HttpServletRequest request, final ModelAndView model) {
         // lookup description by id
-        final GeneralDisDTO generalDisDTO = mapToDTO(generalDisRepository.findById(id)
+        final GeneralDisDTO generalDisDTO = generalDisToDTO(generalDisRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("There is no description with id: " + id)));
         // validate authorization for description type
         verifyAuthorizationForDescriptionType(request, generalDisDTO);
         // set model attribute
-        model.addObject("descriptionDTO", generalDisDTO);
+        model.addObject("description", generalDisDTO);
+        System.out.println("descriptionDTO.name is: " + generalDisDTO.getName());
+        String typeOption = getTypeDescriptionFor(generalDisDTO);
+        model.addObject("type_options", typeOption);
+        System.out.println("type_options is: " + generalDisDTO.getName());
     }
 
     public List<GeneralDisDTO> findAllDescriptions() {

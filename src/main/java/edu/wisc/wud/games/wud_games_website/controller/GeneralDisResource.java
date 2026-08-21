@@ -93,8 +93,8 @@ public class GeneralDisResource {
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/update/{id}")
-    public ModelAndView getMethodName(@RequestParam Long id, HttpServletRequest request) {
-        ModelAndView model = new ModelAndView("manage/descriptions/page");// TODO rename veiw
+    public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
+        ModelAndView model = new ModelAndView("manage/descriptions/page");
         generalDisService.updateDescription(id, request, model);
         return model;
     }
@@ -109,9 +109,9 @@ public class GeneralDisResource {
         String description_type = queryParameters.get("description_type");
         System.out.println("read descriptionType from query parameters: " + description_type);
         if (itemTypeOptions.containsKey(description_type)) {
-            GeneralDisDTO newDescription = itemTypeOptions.get(description_type).get();
-            model.addObject("new_description", newDescription);
-            System.out.println("set new_description to object of class " + newDescription.getClass());
+            GeneralDisDTO description = itemTypeOptions.get(description_type).get();
+            model.addObject("description", description);
+            System.out.println("set description to object of class " + description.getClass());
             model.addObject("description_type", description_type);
         } else {
             throw new IllegalArgumentException("Invalid item type: " + description_type);

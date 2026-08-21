@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head th:include="~{fragments/header ::head_base}">
+<head th:insert="~{fragments/header ::head_base}">
     <title id="pageTitle">Create Item</title>
 </head>
 
@@ -9,11 +9,13 @@
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>This is the create items page.</div>
     <base href="<scheme>://<netloc>/api/">
+    <input type="hidden" name="description_id" th:value="${description.id}"> <!-- th:value="${description.id} -->
     <select
         name="description_type"
         hx-target="next #formoptions"
         hx-get="/api/manage/descriptions/formoptions"
-        hx-trigger="load, change">
+        hx-trigger="load, change"
+        hx-include="[name='description_id']">
         <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
     </select>
     <form id="formoptions">This will be the create description form.</form>

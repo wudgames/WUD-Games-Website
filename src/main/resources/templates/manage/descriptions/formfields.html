@@ -9,18 +9,19 @@
     <div id="formoptions">
         <div>This is the create form options page.</div>
         Description type is <object th:text="${description_type}"></object>
-        <form action="/api/description/create" method="post" th:object="${new_description}">
+        <form action="/api/description/create" method="post" th:object="${description}">
             <input type="hidden" th:value="${description_type}" name="description_type">
-            <span th:if="${new_description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
+            <input type="hidden" th:value="${description_id}" name="description_id">
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
                 <div>GeneralDis fields</div>
                 <!-- add a prefill link option (link from steam or bgg) here -->
-                <label for="name">Name</label>: <input id="name" type="text" th:field="*{name}" />
+                <label for="name">Name</label>: <input id="name" type="text" th:field="*{name}" th:value="${name}"/>
                 <div></div>
                 <label for="description">Description</label>: <textarea id="description" type="text"
                     th:field="*{description}" ></textarea>
                 <label for="imageUrl">Image Url</label>: <input id="imageUrl" type="url" th:field="*{imageUrl}" />
             </span>
-            <span th:if="${new_description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
                 <div>GameDis fields</div>
                 <label for="minPlayers">Min player count</label>: <input id="minPlayers" type="number"
                     th:field="*{minPlayers}" />
@@ -28,19 +29,19 @@
                     th:field="*{maxPlayers}" />
                 <!-- Add image and tags fields here -->
             </span>
-            <span th:if="${new_description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
                 <div>BoardGameDis fields</div>
                 <label for="minPlaytime">Min playtime (minutes)</label>: <input id="minPlaytime" type="number"
                     th:field="*{minPlaytime}" />
                 <label for="maxPlaytime">Max playtime (minutes)</label>: <input id="maxPlaytime" type="number"
                     th:field="*{maxPlaytime}" />
             </span>
-            <span th:if="${new_description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO)}">
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO)}">
                 <div>BoardGameExpansionDis fields</div>
                 <!-- Add selecting what this is an expansion to here -->
             </span>
             <!--
-            <span th:if="${new_description instanceof T(edu.wisc.wud.games.wud_games_website.video_game_expansion_dis.VideoGameExpansionDisDTO)}">
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.video_game_expansion_dis.VideoGameExpansionDisDTO)}">
                 <div>VideoGameExpansionDis fields</div>
                 <!- - Add selecting what this is an expansion to here - ->
             </span>

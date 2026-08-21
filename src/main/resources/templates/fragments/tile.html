@@ -21,7 +21,7 @@
       <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">this is a BoardGameDTO</span>
       <span sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">user has role PHYSICAL_INVENTORY_MANAGER</span>
       <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}" sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
-        <a>
+        <a th:href="@{~/manage/inventory/update/{id}(id=${tiledata.id})}">
           <button>Edit</button>
         </a>
         <a>
