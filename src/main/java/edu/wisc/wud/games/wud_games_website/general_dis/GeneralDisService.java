@@ -228,8 +228,8 @@ public class GeneralDisService {
     }
 
     public List<GeneralDisDTO> findAllDescriptions() {
-        final List<GeneralDis> generalDescriptions = generalDisRepository.findAll(Sort.by("id"));// these are of the
-                                                                                                 // leaf types
+        final List<GeneralDis> generalDescriptions = generalDisRepository.findAll(Sort.by("id"));
+        // these are of the leaf types
         System.out.println("generalDises: " + generalDescriptions);
         List<GeneralDisDTO> generalDisDTOs = generalDescriptions.stream().map(entity -> {
             return mapToDTO(entity);
@@ -239,8 +239,9 @@ public class GeneralDisService {
 
     private GeneralDisDTO mapToDTO(final GeneralDis entity) {
         Class<? extends GeneralDis> type = entity.getClass();
-        System.out.println("Type: " + type);
+        System.out.print("Entity Type: " + type);
         GeneralDisDTO dto = ((Function<GeneralDis, GeneralDisDTO>) entityToDTOMapper.get(type)).apply(entity);
+        System.out.println(", DTO Type: " + dto.getClass());
         return dto;
     }
 
@@ -282,7 +283,7 @@ public class GeneralDisService {
 
     private GeneralDisDTO generalDisToDTO(final GeneralDis generalDis) {
         GeneralDisDTO dto = entityToDTO.get(generalDis.getClass()).get();// create dto of leaf type
-        System.out.println(generalDis + " general description values are being mapped to DTO");
+        //System.out.println(generalDis + " general description values are being mapped to DTO");
         dto.setId(generalDis.getId());
         dto.setName(generalDis.getName());
         dto.setDescription(generalDis.getDescription());
@@ -345,7 +346,7 @@ public class GeneralDisService {
 
     private GameDisDTO gameDisToDTO(final GameDis gameDis) {
         GameDisDTO gameDisDTO = (GameDisDTO) generalDisToDTO(gameDis);
-        System.out.println(gameDis + " game description values are being mapped to DTO");
+        //System.out.println(gameDis + " game description values are being mapped to DTO");
         gameDisDTO.setMinPlayers(gameDis.getMinPlayers());
         gameDisDTO.setMaxPlayers(gameDis.getMaxPlayers());
         return gameDisDTO;

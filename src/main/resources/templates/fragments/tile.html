@@ -18,9 +18,9 @@
       <a sec:authorize="hasRole('HOST')">
         <button>Return</button>
       </a>
-      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO)}">this is a BoardGameDTO</span>
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">this is a BoardGameDTO</span>
       <span sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">user has role PHYSICAL_INVENTORY_MANAGER</span>
-      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO)}" sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}" sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
         <a>
           <button>Edit</button>
         </a>
