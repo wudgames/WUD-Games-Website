@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 public class Equipment extends PhysicalItem{
-
+    /*
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
@@ -39,6 +39,7 @@ public class Equipment extends PhysicalItem{
             generator = "primary_sequence"
     )
     private Long id;
+    */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipment_dis_id", nullable = false)

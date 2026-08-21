@@ -82,34 +82,43 @@ public class GeneralDisResource {
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/create")
-    public ModelAndView getMethodName(Model model, @RequestParam Map<String, String> queryParameters,
+    public ModelAndView getMethodName(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
-        Set<String> itemTypeOptions = generalDisService.typeOptionsFor(request).keySet();
-        model.addAttribute("type_options", itemTypeOptions);
+        ModelAndView model = new ModelAndView("manage/descriptions/page");
+        Set<String> itemTypeOptions = generalDisService.typeStringMapFor(request).keySet();
+        model.addObject("type_options", itemTypeOptions);
         System.out.println("set type_options to " + itemTypeOptions);
         // model.addAttribute("new_item", new GeneralDisDTO());
-        return new ModelAndView("manage/inventory/create");
+        return model;
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
-    @GetMapping("/api/manage/inventory/formoptions")
-    public ModelAndView getItemForm(Model model, @RequestParam Map<String, String> queryParameters,
+    @GetMapping("manage/inventory/update/{id}")
+    public ModelAndView getMethodName(@RequestParam Long id, HttpServletRequest request) {
+        ModelAndView model = new ModelAndView("manage/descriptions/page");// TODO rename veiw
+        generalDisService.updateDescription(id, request, model);
+        return model;
+    }
+    
+
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+    @GetMapping("/api/manage/descriptions/formoptions")
+    public ModelAndView getItemForm(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
-        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = generalDisService.typeOptionsFor(request);
+        ModelAndView model = new ModelAndView("manage/descriptions/formfields");
+        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = generalDisService.typeStringMapFor(request);
         String description_type = queryParameters.get("description_type");
         System.out.println("read descriptionType from query parameters: " + description_type);
         if (itemTypeOptions.containsKey(description_type)) {
             GeneralDisDTO newDescription = itemTypeOptions.get(description_type).get();
-            model.addAttribute("new_description", newDescription);
+            model.addObject("new_description", newDescription);
             System.out.println("set new_description to object of class " + newDescription.getClass());
-            model.addAttribute("description_type", description_type);
+            model.addObject("description_type", description_type);
         } else {
             throw new IllegalArgumentException("Invalid item type: " + description_type);
         }
-        return new ModelAndView("manage/inventory/formoptions");
+        return model;
     }
-
-    
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
@@ -127,10 +136,10 @@ public class GeneralDisResource {
 
     private void attachResults(Model model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
-        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
+        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAllDescriptions();
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }
-
+    /*
     @GetMapping("/api/generalDiss")
     public ResponseEntity<List<GeneralDisDTO>> getAllGeneralDiss() {
         return ResponseEntity.ok(generalDisService.findAll());
@@ -160,5 +169,5 @@ public class GeneralDisResource {
         generalDisService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
+    */
 }

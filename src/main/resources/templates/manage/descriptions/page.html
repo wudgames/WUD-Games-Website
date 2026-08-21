@@ -12,7 +12,7 @@
     <select
         name="description_type"
         hx-target="next #formoptions"
-        hx-get="/api/manage/inventory/formoptions"
+        hx-get="/api/manage/descriptions/formoptions"
         hx-trigger="load, change">
         <option th:each="typeoption: ${type_options}" th:value="${typeoption}" th:text="${typeoption}"></option>
     </select>

@@ -66,6 +66,7 @@ public class BoardGameExpansionDisService extends BoardGameDisService {
         return boardGameDTO;
     }
     */
+    /*
     private BoardGameExpansionDis mapToEntity(final BoardGameExpansionDisDTO boardGameExpansionDisDTO, final BoardGameExpansionDis boardGameExpansionDis) {
         super.mapToEntity(boardGameExpansionDisDTO, boardGameExpansionDis);
         final BoardGameDis boardGameDis = boardGameExpansionDisDTO.getBaseGameDis() == null ? null : boardGameDisRepository.findById(boardGameExpansionDisDTO.getBaseGameDis())

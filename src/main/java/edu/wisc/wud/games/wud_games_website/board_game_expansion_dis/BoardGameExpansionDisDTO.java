@@ -15,5 +15,5 @@ public class BoardGameExpansionDisDTO extends BoardGameDisDTO {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_game_dis_id", nullable = false)
-    private Long baseGameDis;
+    private BoardGameDisDTO baseBoardGameDis;
 }

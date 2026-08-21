@@ -17,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BoardGameExpansionDis extends BoardGameDis {
+    /*
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
@@ -30,7 +31,8 @@ public class BoardGameExpansionDis extends BoardGameDis {
             generator = "primary_sequence"
     )
     private Long id;
-
+    */
+   
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "base_board_game_dis_id", nullable = false)
     private BoardGameDis baseBoardGameDis;

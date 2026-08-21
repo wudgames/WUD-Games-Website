@@ -13,17 +13,21 @@
   <div th:fragment="tile (type_displayed)" class="media tile overlay">
     <div class="overlay__content">
       <a sec:authorize="hasRole('HOST')">
-        <button>Checkout Game</button>
+        <button>Checkout</button>
       </a>
       <a sec:authorize="hasRole('HOST')">
-        <button>Return Game</button>
+        <button>Return</button>
       </a>
-      <a>
-        <button>Edit Description</button>
-      </a>
-      <a>
-        <button>Delete Description</button>
-      </a>
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO)}">this is a BoardGameDTO</span>
+      <span sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">user has role PHYSICAL_INVENTORY_MANAGER</span>
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO)}" sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
+        <a>
+          <button>Edit</button>
+        </a>
+        <a>
+          <button>Delete</button>
+        </a>
+      </span>
     </div>
     <div class="content">
       <h3 th:text="${tiledata.name}">Name</h3>
