@@ -169,8 +169,27 @@ img {
     box-shadow: var(--text-on-background);
     padding: auto;
     overflow: hidden;
-
     .img {
         max-width: 100%;
     }
+}
+
+.overlay {
+    
+}
+
+.overlay__content {
+    display: none;
+}
+
+.overlay:hover .overlay__content {
+    display: inherit;
+    position: absolute;
+    z-index: 2;
+}
+
+.overlay:focus-within .overlay__content {
+    display: inherit;
+    position: absolute;
+    z-index: 2;
 }

@@ -9,17 +9,31 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body >
-  <div th:fragment="tile (type_displayed)" class="media tile">
+<body>
+  <div th:fragment="tile (type_displayed)" class="media tile overlay">
+    <div class="overlay__content">
+      <a sec:authorize="hasRole('HOST')">
+        <button>Checkout Game</button>
+      </a>
+      <a sec:authorize="hasRole('HOST')">
+        <button>Return Game</button>
+      </a>
+      <a>
+        <button>Edit Description</button>
+      </a>
+      <a>
+        <button>Delete Description</button>
+      </a>
+    </div>
     <div class="content">
       <h3 th:text="${tiledata.name}">Name</h3>
       <p th:text="${tiledata.description}">description</p>
     </div>
     <img th:src="${tiledata.imageUrl}" alt="Game Box Art" class="img"
-        src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
-    </div>
+      src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
   </div>
-  
+  </div>
+
 </body>
 
 </html>
