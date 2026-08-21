@@ -6,7 +6,7 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepositor
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
 import edu.wisc.wud.games.wud_games_website.equipment.Equipment;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDis;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
@@ -17,11 +17,17 @@ import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDis;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.BoardGameExpansionDisToDTOWrapper;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.EquipmentDisToDTOWrapper;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.GameConsoleDisToDTOWrapper;
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
+import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
 import edu.wisc.wud.games.wud_games_website.tag.TagRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
+import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDis;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
+import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
@@ -34,6 +40,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,6 +59,8 @@ public class GeneralDisService {
 
     private final GeneralDisRepository generalDisRepository;
     private final BoardGameDisRepository boardGameDisRepository;
+    private final BoardGameExpansionDisRepository boardGameExpansionDisRepository;
+    final VideoGameDisRepository videoGameDisRepository;
 
     private final TagRepository tagRepository;
     private final ApplicationEventPublisher publisher;
@@ -70,45 +80,53 @@ public class GeneralDisService {
     }
 
     private final Map<Class<? extends GeneralDis>, Supplier<GeneralDisDTO>> entityToDTO = new HashMap<>();
+    private final Map<Class<? extends GeneralDisDTO>, Supplier<GeneralDis>> dtoToEntity = new HashMap<>();
 
     private final Map<Class<? extends GeneralDis>, Function<? extends GeneralDis, ? extends GeneralDisDTO>> entityToDTOMapper = new HashMap<>();
+    private final Map<Class<? extends GeneralDisDTO>, Function<? extends GeneralDisDTO, ? extends GeneralDis>> DTOToEntityMapper = new HashMap<>();
 
-    // @Autowired
-    // @Qualifier("BoardGameDisService")
-    // private BoardGameDisService BOARD_GAME_DIS_SERVICE;
-    @Autowired
-    @Qualifier("BoardGameExpansionDisService")
-    private BoardGameExpansionDisService BOARD_GAME_EXPANSION_DIS_SERVICE;
-    @Autowired
-    @Qualifier("VideoGameDisService")
-    private VideoGameDisService VIDEO_GAME_DIS_SERVICE;
+    private void pairEntityAndDTO(Supplier<GeneralDis> entitySupplier, Supplier<GeneralDisDTO> dtoSupplier,
+            Function<? extends GeneralDis, ? extends GeneralDisDTO> mapperEntityToDTO,
+            Function<? extends GeneralDisDTO, ? extends GeneralDis> mapperDTOToEntity) {
+        Class<? extends GeneralDis> entityType = entitySupplier.get().getClass();
+        Class<? extends GeneralDisDTO> dtoType = dtoSupplier.get().getClass();
+        entityToDTO.put(entityType, dtoSupplier);
+        dtoToEntity.put(dtoType, entitySupplier);
+
+        entityToDTOMapper.put(entityType, mapperEntityToDTO);
+        DTOToEntityMapper.put(dtoType, mapperDTOToEntity);
+    }
 
     public GeneralDisService(final GeneralDisRepository generalDisRepository,
             final TagRepository tagRepository, final ApplicationEventPublisher publisher,
-            final BoardGameDisRepository boardGameDisRepository) {
+            final BoardGameDisRepository boardGameDisRepository,
+            final BoardGameExpansionDisRepository boardGameExpansionDisRepository,
+            final VideoGameDisRepository videoGameDisRepository) {
         this.generalDisRepository = generalDisRepository;
         this.boardGameDisRepository = boardGameDisRepository;
+        this.boardGameExpansionDisRepository = boardGameExpansionDisRepository;
+        this.videoGameDisRepository = videoGameDisRepository;
 
         this.tagRepository = tagRepository;
         this.publisher = publisher;
 
-        entityToDTO.put(GeneralDis.class, () -> new GeneralDisDTO());
-        entityToDTOMapper.put(GeneralDis.class, this::mapGeneralDisToDTO);
+        pairEntityAndDTO(() -> new GeneralDis(), () -> new GeneralDisDTO(),
+                this::generalDisToDTO, this::generalDisToEntity);
 
-        entityToDTO.put(GameDis.class, () -> new GameDisDTO());
-        entityToDTOMapper.put(GameDis.class, new GameDisToDTOWrapper());
+        pairEntityAndDTO(() -> new GameDis(), () -> new GameDisDTO(),
+                new GameDisToDTOWrapper(), new GameDisToEntityWrapper());
+        // TODO:
+        pairEntityAndDTO(() -> new BoardGameDis(), () -> new BoardGameDisDTO(),
+                new BoardGameDisToDTOWrapper(), new BoardGameDisToEntityWrapper());
 
-        entityToDTO.put(BoardGameDis.class, () -> new BoardGameDisDTO());
-        entityToDTOMapper.put(BoardGameDis.class, new MapBoardGameDisToDTOWrapper());
+        pairEntityAndDTO(() -> new BoardGameExpansionDis(), () -> new BoardGameExpansionDisDTO(),
+                new BoardGameExpansionDisToDTOWrapper(), new BoardGameExpansionDisToEntityWrapper());
+        
+        pairEntityAndDTO(() -> new EquipmentDis(), () -> new EquipmentDisDTO(),
+                new EquipmentDisToDTOWrapper(), new EquipmentDisToEntityWrapper());
 
-        entityToDTO.put(BoardGameExpansionDis.class, () -> new BoardGameExpansionDisDTO());
-        entityToDTOMapper.put(BoardGameExpansionDis.class, new MapBoardGameExpansionDisToDTOWrapper());
-
-        entityToDTO.put(EquipmentDis.class, () -> new EquipmentDisDTO());
-        entityToDTOMapper.put(EquipmentDis.class, new MapEquipmentDisToDTOWrapper());
-
-        entityToDTO.put(GameConsoleDis.class, () -> new GameConsoleDisDTO());
-        entityToDTOMapper.put(GameConsoleDis.class, new MapGameConsoleDisToDTOWrapper());
+        pairEntityAndDTO(() -> new GameConsoleDis(), () -> new GameConsoleDisDTO(),
+                new GameConsoleDisToDTOWrapper(), new GameConsoleDisToEntityWrapper());
 
     }
 
@@ -173,14 +191,14 @@ public class GeneralDisService {
 
         // Make sure to check all sub-class before a parent
         if (generalDisDTO instanceof BoardGameExpansionDisDTO) {
-            BOARD_GAME_EXPANSION_DIS_SERVICE.create((BoardGameExpansionDisDTO) generalDisDTO);// TODO changed to not call other service
+            createBoardGameExpansionDis((BoardGameExpansionDisDTO) generalDisDTO);
             System.out.println("Created a board game expansion description.");
         } else if (generalDisDTO instanceof BoardGameDisDTO) {
             create((BoardGameDisDTO) generalDisDTO);
             System.out.println("Created a board game description.");
         } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
-            VIDEO_GAME_DIS_SERVICE.create((VideoGameDisDTO) generalDisDTO);
-            System.out.println("Created a video game description.");
+            throw new UnsupportedOperationException("Authentication for creating a video game description not implemented. Please contact an administrator.");
+            //System.out.println("Created a video game description.");
         } else if (generalDisDTO instanceof EquipmentDisDTO) {
             throw new UnsupportedOperationException("EquipmentDisDTO is not supported yet.");
         } else {
@@ -244,14 +262,14 @@ public class GeneralDisService {
     // This is the root type of the DTO so this can be public
     public Long create(final GeneralDisDTO generalDisDTO) {
         final GeneralDis generalDis = new GeneralDis();
-        mapToEntity(generalDisDTO, generalDis);
+        generalDisToEntity(generalDisDTO);
         return generalDisRepository.save(generalDis).getId();
     }
 
     public void update(final Long id, final GeneralDisDTO generalDisDTO) {
         final GeneralDis generalDis = generalDisRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(generalDisDTO, generalDis);
+        generalDisToEntity(generalDisDTO);
         generalDisRepository.save(generalDis);
     }
 
@@ -262,7 +280,7 @@ public class GeneralDisService {
         generalDisRepository.delete(generalDis);
     }
 
-    private GeneralDisDTO mapGeneralDisToDTO(final GeneralDis generalDis) {
+    private GeneralDisDTO generalDisToDTO(final GeneralDis generalDis) {
         GeneralDisDTO dto = entityToDTO.get(generalDis.getClass()).get();// create dto of leaf type
         System.out.println(generalDis + " general description values are being mapped to DTO");
         dto.setId(generalDis.getId());
@@ -270,24 +288,46 @@ public class GeneralDisService {
         dto.setDescription(generalDis.getDescription());
         dto.setImageUrl(generalDis.getImageUrl());
         dto.setTags(generalDis.getTags().stream()
-                .map(tag -> tag.getId())
+                .map(tag -> mapTagToDTO(tag))
                 .toList());
         return dto;
     }
 
-    private GeneralDis mapToEntity(final GeneralDisDTO generalDisDTO, final GeneralDis generalDis) {
-        generalDis.setName(generalDisDTO.getName());
-        generalDis.setDescription(generalDisDTO.getDescription());
-        generalDis.setImageUrl(generalDisDTO.getImageUrl());
-        final List<Tag> tags = tagRepository.findAllById(
-                generalDisDTO.getTags() == null ? List.of() : generalDisDTO.getTags());
-        if (tags.size() != (generalDisDTO.getTags() == null ? 0 : generalDisDTO.getTags().size())) {
-            throw new NotFoundException("one of tags not found");
-        }
-        generalDis.setTags(new HashSet<>(tags));
-        return generalDis;
+    private GeneralDis generalDisToEntity(final GeneralDisDTO generalDisDTO) {
+        GeneralDis entity = dtoToEntity.get(generalDisDTO.getClass()).get();// create dto of leaf type
+        entity.setId(generalDisDTO.getId());
+        entity.setName(generalDisDTO.getName());
+        entity.setDescription(generalDisDTO.getDescription());
+        entity.setImageUrl(generalDisDTO.getImageUrl());
+        entity.setTags(generalDisDTO.getTags().stream().map(
+                tagDTO -> {
+                    Long id = tagDTO.getId();
+                    Tag tag = tagRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException("failed to find a tag with id " + id));
+                    if (!tagDTO.getName().equals(tag.getName())) {
+                        throw new NotFoundException("The tag with the id submitted has a different name.");
+                    }
+                    return tag;
+                }).collect(Collectors.toSet()));
+        return entity;
     }
 
+    /*
+     * private GeneralDis mapToEntity(final GeneralDisDTO generalDisDTO, final
+     * GeneralDis generalDis) {
+     * generalDis.setName(generalDisDTO.getName());
+     * generalDis.setDescription(generalDisDTO.getDescription());
+     * generalDis.setImageUrl(generalDisDTO.getImageUrl());
+     * final List<Tag> tags = tagRepository.findAllById(
+     * generalDisDTO.getTags() == null ? List.of() : generalDisDTO.getTags());
+     * if (tags.size() != (generalDisDTO.getTags() == null ? 0 :
+     * generalDisDTO.getTags().size())) {
+     * throw new NotFoundException("one of tags not found");
+     * }
+     * generalDis.setTags(new HashSet<>(tags));
+     * return generalDis;
+     * }
+     */
     public Map<Long, Long> getGeneralDisValues() {
         return generalDisRepository.findAll(Sort.by("id"))
                 .stream()
@@ -303,8 +343,8 @@ public class GeneralDisService {
 
     /* GameDisRepository Backed Methods */
 
-    public GameDisDTO GameDisToDTO(final GameDis gameDis) {
-        GameDisDTO gameDisDTO = (GameDisDTO) GeneralDisService.this.mapGeneralDisToDTO(gameDis);
+    private GameDisDTO gameDisToDTO(final GameDis gameDis) {
+        GameDisDTO gameDisDTO = (GameDisDTO) generalDisToDTO(gameDis);
         System.out.println(gameDis + " game description values are being mapped to DTO");
         gameDisDTO.setMinPlayers(gameDis.getMinPlayers());
         gameDisDTO.setMaxPlayers(gameDis.getMaxPlayers());
@@ -313,83 +353,184 @@ public class GeneralDisService {
 
     class GameDisToDTOWrapper implements Function<GameDis, GameDisDTO> {
         public GameDisDTO apply(final GameDis gameDis) {
-            return GameDisToDTO(gameDis);
+            return gameDisToDTO(gameDis);
         }
     }
 
-    private GameDisDTO mapGameDisToDTO(final GameDis gameDis) {
-        GameDisDTO gameDisDTO = (GameDisDTO) mapGeneralDisToDTO(gameDis);
-        System.out.println(gameDis + " game description values are being mapped to DTO");
-        gameDisDTO.setMinPlayers(gameDis.getMinPlayers());
-        gameDisDTO.setMaxPlayers(gameDis.getMaxPlayers());
-        return gameDisDTO;
+    private GameDis gameDisToEntity(final GameDisDTO gameDisDTO) {
+        GameDis gameDis = (GameDis) generalDisToEntity(gameDisDTO);
+        gameDis.setMinPlayers(gameDisDTO.getMinPlayers());
+        gameDis.setMaxPlayers(gameDisDTO.getMaxPlayers());
+        return gameDis;
+    }
+
+    class GameDisToEntityWrapper implements Function<GameDisDTO, GameDis> {
+        public GameDis apply(final GameDisDTO gameDisTDO) {
+            return gameDisToEntity(gameDisTDO);
+        }
     }
 
     /* BoardGameDisRepository Backed Methods */
 
     public BoardGameDisDTO getBoardGameDis(final Long id) {
         return boardGameDisRepository.findById(id)
-                .map(boardGameDis -> mapBoardGameDisToDTO(boardGameDis))
+                .map(boardGameDis -> boardGameDisToDTO(boardGameDis))
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final BoardGameDisDTO boardGameDisDTO) {
-        final BoardGameDis boardGameDis = new BoardGameDis();
-        mapToEntity(boardGameDisDTO, boardGameDis);
+    public Long createBoardGameDis(final BoardGameDisDTO boardGameDisDTO) {
+        final BoardGameDis boardGameDis = boardGameDisToEntity(boardGameDisDTO);
         return boardGameDisRepository.save(boardGameDis).getId();
     }
 
-    private BoardGameDisDTO mapBoardGameDisToDTO(BoardGameDis boardGameDis) {
-        BoardGameDisDTO boardGameDisDTO = (BoardGameDisDTO) mapGameDisToDTO(boardGameDis);
+    private BoardGameDisDTO boardGameDisToDTO(BoardGameDis boardGameDis) {
+        BoardGameDisDTO boardGameDisDTO = (BoardGameDisDTO) gameDisToDTO(boardGameDis);
         boardGameDisDTO.setMinPlaytime(boardGameDis.getMinPlaytime());
         boardGameDisDTO.setMaxPlaytime(boardGameDis.getMaxPlaytime());
         return boardGameDisDTO;
     }
 
-    class MapBoardGameDisToDTOWrapper implements Function<BoardGameDis, BoardGameDisDTO> {
-        public BoardGameDisDTO apply(BoardGameDis boardGameDis) {
-            return mapBoardGameDisToDTO(boardGameDis);
+    class BoardGameDisToDTOWrapper implements Function<BoardGameDis, BoardGameDisDTO>  {
+        public BoardGameDisDTO apply(final BoardGameDis boardGameDis) {
+            return boardGameDisToDTO(boardGameDis);
+        }
+    }
+
+    private BoardGameDis boardGameDisToEntity(BoardGameDisDTO boardGameDisDTO) {
+        BoardGameDis boardGameDis = (BoardGameDis) gameDisToEntity(boardGameDisDTO);
+        boardGameDis.setMinPlaytime(boardGameDisDTO.getMinPlaytime());
+        boardGameDis.setMaxPlaytime(boardGameDisDTO.getMaxPlaytime());
+        return boardGameDis;
+    }
+
+    class BoardGameDisToEntityWrapper implements Function<BoardGameDisDTO, BoardGameDis> {
+        public BoardGameDis apply(BoardGameDisDTO boardGameDisDTO) {
+            return boardGameDisToEntity(boardGameDisDTO);
         }
     }
 
     /* BoardGameExpansionDisRepository Backed Methods */
 
-    private BoardGameExpansionDisDTO mapBoardGameExpansionDisToDTO(BoardGameExpansionDis boardGameExpansionDis) {
-        BoardGameExpansionDisDTO boardGameExpansionDisDTO = (BoardGameExpansionDisDTO) mapBoardGameDisToDTO(
+    public Long createBoardGameExpansionDis(final BoardGameExpansionDisDTO boardGameExpansionDisDTO) {
+        final BoardGameExpansionDis boardGameExpansionDis = boardGameExpansionDisToEntity(boardGameExpansionDisDTO);
+        return boardGameExpansionDisRepository.save(boardGameExpansionDis).getId();
+    }
+
+    private BoardGameExpansionDisDTO boardGameExpansionDisToDTO(BoardGameExpansionDis boardGameExpansionDis) {
+        BoardGameExpansionDisDTO boardGameExpansionDisDTO = (BoardGameExpansionDisDTO) boardGameDisToDTO(
                 boardGameExpansionDis);
-        boardGameExpansionDisDTO.setBaseBoardGameDis(mapBoardGameDisToDTO(boardGameExpansionDis.getBaseBoardGameDis()));
+        boardGameExpansionDisDTO.setBaseBoardGameDis(boardGameDisToDTO(boardGameExpansionDis.getBaseBoardGameDis()));
         return boardGameExpansionDisDTO;
     }
 
-    class MapBoardGameExpansionDisToDTOWrapper implements Function<BoardGameExpansionDis, BoardGameExpansionDisDTO> {
+    class BoardGameExpansionDisToDTOWrapper implements Function<BoardGameExpansionDis, BoardGameExpansionDisDTO> {
         public BoardGameExpansionDisDTO apply(BoardGameExpansionDis boardGameExpansionDis) {
-            return mapBoardGameExpansionDisToDTO(boardGameExpansionDis);
+            return boardGameExpansionDisToDTO(boardGameExpansionDis);
+        }
+    }
+
+    private BoardGameExpansionDis boardGameExpansionDisToEntity(BoardGameExpansionDisDTO boardGameExpansionDisDTO) {
+        BoardGameExpansionDis boardGameExpansionDis = (BoardGameExpansionDis) boardGameDisToEntity(
+                boardGameExpansionDisDTO);
+        return boardGameExpansionDis;
+    }
+
+    class BoardGameExpansionDisToEntityWrapper implements Function<BoardGameExpansionDisDTO, BoardGameExpansionDis> {
+        public BoardGameExpansionDis apply(BoardGameExpansionDisDTO boardGameExpansionDisDTO) {
+            return boardGameExpansionDisToEntity(boardGameExpansionDisDTO);
         }
     }
 
     /* EquipmentDisRepository Backed Methods */
 
-    private EquipmentDisDTO mapEquipmentDisToDTO(EquipmentDis equipmentDis) {
-        EquipmentDisDTO equipmentDisDTO = (EquipmentDisDTO) mapGeneralDisToDTO(equipmentDis);
+    private EquipmentDisDTO equipmentDisToDTO(EquipmentDis equipmentDis) {
+        EquipmentDisDTO equipmentDisDTO = (EquipmentDisDTO) generalDisToDTO(equipmentDis);
         return equipmentDisDTO;
     }
 
-    class MapEquipmentDisToDTOWrapper implements Function<EquipmentDis, EquipmentDisDTO> {
+    class EquipmentDisToDTOWrapper implements Function<EquipmentDis, EquipmentDisDTO> {
         public EquipmentDisDTO apply(EquipmentDis equipmentDis) {
-            return mapEquipmentDisToDTO(equipmentDis);
+            return equipmentDisToDTO(equipmentDis);
+        }
+    }
+
+    private EquipmentDis equipmentDisToEntity(EquipmentDisDTO equipmentDisDTO) {
+        EquipmentDis equipmentDis = (EquipmentDis) generalDisToEntity(equipmentDisDTO);
+        return equipmentDis;
+    }
+
+    class EquipmentDisToEntityWrapper implements Function<EquipmentDisDTO, EquipmentDis> {
+        public EquipmentDis apply(EquipmentDisDTO equipmentDisDTO) {
+            return equipmentDisToEntity(equipmentDisDTO);
         }
     }
 
     /* GameConsoleDisRepository Backed Methods */
 
-    private GameConsoleDisDTO mapGameConsoleDisToDTO(GameConsoleDis gameConsoleDis) {
-        GameConsoleDisDTO gameConsoleDisDTO = (GameConsoleDisDTO) mapGeneralDisToDTO(gameConsoleDis);
+    private GameConsoleDisDTO gameConsoleDisToDTO(GameConsoleDis gameConsoleDis) {
+        GameConsoleDisDTO gameConsoleDisDTO = (GameConsoleDisDTO) generalDisToDTO(gameConsoleDis);
         return gameConsoleDisDTO;
     }
 
-    class MapGameConsoleDisToDTOWrapper implements Function<GameConsoleDis, GameConsoleDisDTO> {
+    class GameConsoleDisToDTOWrapper implements Function<GameConsoleDis, GameConsoleDisDTO> {
         public GameConsoleDisDTO apply(GameConsoleDis gameConsoleDis) {
-            return mapGameConsoleDisToDTO(gameConsoleDis);
+            return gameConsoleDisToDTO(gameConsoleDis);
         }
+    }
+
+    private GameConsoleDis gameConsoleDisToEntity(GameConsoleDisDTO gameConsoleDisDTO) {
+        GameConsoleDis gameConsoleDis = (GameConsoleDis) generalDisToEntity(gameConsoleDisDTO);
+        return gameConsoleDis;
+    }
+
+    class GameConsoleDisToEntityWrapper implements Function<GameConsoleDisDTO, GameConsoleDis> {
+        public GameConsoleDis apply(GameConsoleDisDTO gameConsoleDisDTO) {
+            return gameConsoleDisToEntity(gameConsoleDisDTO);
+        }
+    }
+
+    /* VideoGameDisRepository Backed Methods */
+
+    public Long createVideoGameDis(final VideoGameDisDTO videoGameDisDTO) {
+        final VideoGameDis videoGameDis = videoGameDisToEntity(videoGameDisDTO);
+        return videoGameDisRepository.save(videoGameDis).getId();
+    }
+    
+    private VideoGameDisDTO videoGameDisToDTO(VideoGameDis videoGameDis) {
+        VideoGameDisDTO videoGameDisDTO = (VideoGameDisDTO) gameDisToDTO(videoGameDis);
+        return videoGameDisDTO;
+    }
+
+    class MapVideoGameDisToDTOWrapper implements Function<VideoGameDis, VideoGameDisDTO> {
+        public VideoGameDisDTO apply(VideoGameDis videoGameDis) {
+            return videoGameDisToDTO(videoGameDis);
+        }
+    }
+
+    private VideoGameDis videoGameDisToEntity(VideoGameDisDTO videoGameDisDTO) {
+        VideoGameDis videoGameDis = (VideoGameDis) gameDisToEntity(videoGameDisDTO);
+        return videoGameDis;
+    }
+
+    class VideoGameDisToEntityWrapper implements Function<VideoGameDisDTO, VideoGameDis> {
+        public VideoGameDis apply(VideoGameDisDTO videoGameDisDTO) {
+            return videoGameDisToEntity(videoGameDisDTO);
+        }
+    } 
+
+    /* TagRepository Backed Methods */
+
+    private TagDTO mapTagToDTO(Tag tag) {
+        TagDTO tagDTO = new TagDTO();
+        tagDTO.setId(tag.getId());
+        tagDTO.setName(tag.getName());
+        return tagDTO;
+    }
+
+    private Tag mapTagToEntity(TagDTO tagDTO) {
+        Tag tag = new Tag();
+        tag.setId(tagDTO.getId());
+        tag.setName(tagDTO.getName());
+        return tag;
     }
 }

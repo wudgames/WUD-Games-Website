@@ -34,7 +34,6 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;

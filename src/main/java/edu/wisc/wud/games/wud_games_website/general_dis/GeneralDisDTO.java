@@ -2,6 +2,8 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import jakarta.validation.constraints.Size;
 import java.util.List;
+
+import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +23,7 @@ public class GeneralDisDTO {
     @Size(max = 255)
     private String imageUrl;
 
-    private List<Long> tags;
+    private List<TagDTO> tags;
 
 }
 

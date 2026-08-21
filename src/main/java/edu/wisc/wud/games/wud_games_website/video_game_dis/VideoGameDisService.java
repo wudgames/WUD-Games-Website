@@ -21,7 +21,7 @@ public class VideoGameDisService {
         this.videoGameDisRepository = videoGameDisRepository;
         this.publisher = publisher;
     }
-
+    /*
     public List<VideoGameDisDTO> findAll() {
         final List<VideoGameDis> videoGameDises = videoGameDisRepository.findAll(Sort.by("id"));
         return videoGameDises.stream()
@@ -71,6 +71,6 @@ public class VideoGameDisService {
                 .stream()
                 .collect(CustomCollectors.toSortedMap(VideoGameDis::getId, VideoGameDis::getId));
     }
-
+    */
 }
 
