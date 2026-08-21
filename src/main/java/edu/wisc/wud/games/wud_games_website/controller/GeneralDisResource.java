@@ -105,17 +105,11 @@ public class GeneralDisResource {
     public ModelAndView getItemForm(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/formfields");
-        Map<String, Supplier<GeneralDisDTO>> itemTypeOptions = generalDisService.typeStringMapFor(request);
         String description_type = queryParameters.get("description_type");
+        Long description_id = Long.getLong(queryParameters.get("description_id"));
         System.out.println("read descriptionType from query parameters: " + description_type);
-        if (itemTypeOptions.containsKey(description_type)) {
-            GeneralDisDTO description = itemTypeOptions.get(description_type).get();
-            model.addObject("description", description);
-            System.out.println("set description to object of class " + description.getClass());
-            model.addObject("description_type", description_type);
-        } else {
-            throw new IllegalArgumentException("Invalid item type: " + description_type);
-        }
+        generalDisService.setCreateOrUpdateDescriptionData(description_type, request, model, description_id);
+        // generalDisService.
         return model;
     }
 

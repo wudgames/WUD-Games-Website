@@ -32,6 +32,8 @@ import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 
+import static org.mockito.Mockito.description;
+
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -250,6 +252,20 @@ public class GeneralDisService {
             return mapToDTO(entity);
         }).toList();
         return generalDisDTOs;
+    }
+
+    public void setCreateOrUpdateDescriptionData(final String description_type, HttpServletRequest request, final ModelAndView model, Long description_id) {
+        GeneralDisDTO generalDisDTO;
+        if (description_id != null) {
+            generalDisDTO = get(description_id);
+        } else {
+            // DOTO add other class types
+            generalDisDTO = physicalDescriptionTypes.get(description_type).get();
+        }
+        verifyAuthorizationForDescriptionType(request, generalDisDTO);
+        model.addObject("description", generalDisDTO);
+        System.out.println("set description to object of class " + generalDisDTO.getClass());
+        model.addObject("description_type", description_type);
     }
 
     private GeneralDisDTO mapToDTO(final GeneralDis entity) {
