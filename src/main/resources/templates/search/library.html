@@ -25,8 +25,8 @@
         <button >Create Item</button>
     </a>
     <div>This should be filter options</div>
-    Some query text felid: <input name="searchterm" type="text" th:value="${param.searchterm}"/>
-    Tags (WIP): <input name="tags" type="text" th:value="${param.tags}"/>
+    <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text" th:value="${param.searchterm}"/>
+    <label for="tags">Tags (WIP)</label>: <input id="tags" name="tags" type="text" th:value="${param.tags}"/>
     <button
         hx-target="next .searchresult"
         hx-get="/api/search"

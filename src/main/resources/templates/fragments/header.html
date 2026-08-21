@@ -33,8 +33,7 @@
           <div th:if="${session.user_name != null}" th:text="${session.user_name}">User Name</div>
           <div th:if="${session.user_name == null}">Sign In</div>
         </div>
-        <img th:if="${session.user_profile_picture != null}" th:src="${session.user_profile_picture}" alt="User Profile Picture" width="50"
-          height="50" class="img profileIcon">
+        <img th:if="${session.user_profile_picture != null}" th:src="${session.user_profile_picture}" alt="User Profile Picture" class="img profileIcon">
       </a>
     </nav>
   </div>

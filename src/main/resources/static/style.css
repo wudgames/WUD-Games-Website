@@ -1,5 +1,7 @@
 /* This is the default .css file for the website. These classes can be used anywhere on the website. */
 
+/* Helpful guild about flex boxes: https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+
 :root {
     --color-primary: #8872B3;
     --color-secondary: #008445;
@@ -9,6 +11,7 @@
     --color-error: #dc3545;
 
     --background-color: #ffffff;
+    --primary-background: hsl(260, 30%, 45%);
 
     --text-on-background: #333333;
     --text-on-primary: #ffffff;
@@ -80,6 +83,7 @@ img {
     --nav-bar-height: 65px;
     min-height: var(--nav-bar-height);
     /* Navbar wraps vertically for small display widths */
+    font-size: larger;
     width: 100%;
     background-color: var(--color-primary);
     color: var(--text-on-primary);
@@ -108,15 +112,33 @@ img {
 }
 
 .navbar__logo {
-    margin: 5px;
+    margin: 0px;
+    padding: 7px;
     height: var(--nav-bar-height);
+    background-color: var(--primary-background);
+    align-self: stretch;
 }
 
 .navbar__option {
     display: inline-flex;
     align-items: center;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
     margin: 5px 0.6rem;
     white-space: nowrap;
+    background-color: var(--primary-background);
+}
+
+.navbar__option:hover {
+    outline-width: 3px;
+    outline-style: solid;
+    outline-color: var(--color-accent);
+}
+
+.profileIcon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
 }
 
 /* Is in between the left (links) and right aligned (user profile name/image) elements */
