@@ -10,7 +10,7 @@
     <div>This is the create items page.</div>
     <base href="<scheme>://<netloc>/api/">
     <span th:if="${description != null}">
-        <input type="hidden" name="description_id" th:value="${description.id}"> <!-- th:value="${description.id} -->
+        <input type="hidden" name="description_id" th:value="${description.id}">
     </span>
     <select
         name="description_type"

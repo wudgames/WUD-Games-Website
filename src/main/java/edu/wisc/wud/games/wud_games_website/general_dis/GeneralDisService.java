@@ -32,8 +32,6 @@ import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 
-import static org.mockito.Mockito.description;
-
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -161,10 +159,10 @@ public class GeneralDisService {
 
     private GeneralDisDTO getDTOFromRequest(HttpServletRequest request, Map<String, String> queryParameters) {
         // This would be the use case for create generic mappers
-        System.out.println(
-                "called getDTOFromRequest with request: " + request + ", and queryParameters: " + queryParameters);
+        //System.out.println(
+        //        "called getDTOFromRequest with request: " + request + ", and queryParameters: " + queryParameters);
         GeneralDisDTO generalDisDTO = typeStringMapFor(request).get(queryParameters.get("description_type")).get();
-        System.out.println("created generalDisDTO of type " + generalDisDTO.getClass());
+        //System.out.println("created generalDisDTO of type " + generalDisDTO.getClass());
         generalDisDTO.setName(queryParameters.get("name"));
         generalDisDTO.setDescription(queryParameters.get("description"));
         generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
@@ -183,9 +181,9 @@ public class GeneralDisService {
         return generalDisDTO;
     }
 
-    public void createNewDescription(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
+    public void createOrUpdateDescription(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
         // This is what run when the form is submitted
-        System.out.println("ran createNewItem with queryParameters: " + queryParameters);
+        //System.out.println("ran createNewItem with queryParameters: " + queryParameters);
         GeneralDisDTO generalDisDTO = getDTOFromRequest(request, queryParameters);
         /*
          * System.out.println("ran createNewItem with module attribute of class: " +
@@ -205,10 +203,10 @@ public class GeneralDisService {
         // Make sure to check all sub-class before a parent
         if (generalDisDTO instanceof BoardGameExpansionDisDTO) {
             createBoardGameExpansionDis((BoardGameExpansionDisDTO) generalDisDTO);
-            System.out.println("Created a board game expansion description.");
+            //System.out.println("Created a board game expansion description.");
         } else if (generalDisDTO instanceof BoardGameDisDTO) {
             create((BoardGameDisDTO) generalDisDTO);
-            System.out.println("Created a board game description.");
+            //System.out.println("Created a board game description.");
         } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
             throw new UnsupportedOperationException("Authentication for creating a video game description not implemented. Please contact an administrator.");
             //System.out.println("Created a video game description.");
@@ -238,16 +236,16 @@ public class GeneralDisService {
         verifyAuthorizationForDescriptionType(request, generalDisDTO);
         // set model attribute
         model.addObject("description", generalDisDTO);
-        System.out.println("descriptionDTO.name is: " + generalDisDTO.getName());
+        //System.out.println("descriptionDTO.name is: " + generalDisDTO.getName());
         String typeOption = getTypeDescriptionFor(generalDisDTO);
         model.addObject("type_options", typeOption);
-        System.out.println("type_options is: " + generalDisDTO.getName());
+        //System.out.println("type_options is: " + generalDisDTO.getName());
     }
 
     public List<GeneralDisDTO> findAllDescriptions() {
         final List<GeneralDis> generalDescriptions = generalDisRepository.findAll(Sort.by("id"));
         // these are of the leaf types
-        System.out.println("generalDises: " + generalDescriptions);
+        //System.out.println("generalDises: " + generalDescriptions);
         List<GeneralDisDTO> generalDisDTOs = generalDescriptions.stream().map(entity -> {
             return mapToDTO(entity);
         }).toList();
@@ -264,7 +262,7 @@ public class GeneralDisService {
         }
         verifyAuthorizationForDescriptionType(request, generalDisDTO);
         model.addObject("description", generalDisDTO);
-        System.out.println("set description to object of class " + generalDisDTO.getClass());
+        //System.out.println("set description to object of class " + generalDisDTO.getClass());
         model.addObject("description_type", description_type);
     }
 
@@ -272,7 +270,7 @@ public class GeneralDisService {
         Class<? extends GeneralDis> type = entity.getClass();
         System.out.print("Entity Type: " + type);
         GeneralDisDTO dto = ((Function<GeneralDis, GeneralDisDTO>) entityToDTOMapper.get(type)).apply(entity);
-        System.out.println(", DTO Type: " + dto.getClass());
+        //System.out.println(", DTO Type: " + dto.getClass());
         return dto;
     }
 

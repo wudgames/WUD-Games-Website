@@ -11,6 +11,7 @@
         Description type is <object th:text="${description_type}"></object>
         <form action="/api/description/create" method="post" th:object="${description}">
             <input type="hidden" th:value="${description_type}" name="description_type">
+            <input type="hidden" th:value="${description_id}" name="description_id">
             <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
                 <div>GeneralDis fields</div>
                 <!-- add a prefill link option (link from steam or bgg) here -->

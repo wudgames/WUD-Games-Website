@@ -104,10 +104,12 @@ public class GeneralDisResource {
     @GetMapping("/api/manage/descriptions/formoptions")
     public ModelAndView getItemForm(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
+        //System.out.println("read queryParameters: " + queryParameters);
         ModelAndView model = new ModelAndView("manage/descriptions/formfields");
-        String description_type = queryParameters.get("description_type");
-        Long description_id = Long.getLong(queryParameters.get("description_id"));
-        System.out.println("read descriptionType from query parameters: " + description_type);
+        //String description_type = queryParameters.get("description_type");
+        System.out.println("read description_type from query parameters: " + description_type);
+        Long description_id = Long.decode(queryParameters.get("description_id"));
+        //System.out.println("read description_id from query parameters: " + description_id);
         generalDisService.setCreateOrUpdateDescriptionData(description_type, request, model, description_id);
         // generalDisService.
         return model;
@@ -116,7 +118,7 @@ public class GeneralDisResource {
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
     public ModelAndView createNewItem(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
-        generalDisService.createNewDescription(request, queryParameters);
+        generalDisService.createOrUpdateDescription(request, queryParameters);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
