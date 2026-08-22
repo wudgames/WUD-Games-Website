@@ -7,7 +7,7 @@
 
 <body id="root" th:fragment="formoptions">
     <div id="formoptions">
-        <div>This is the create form options page.</div>
+        <div>This is the create/update form options page.</div>
         Description type is <object th:text="${description_type}"></object>
         <form action="/api/description/create" method="post" th:object="${description}">
             <input type="hidden" th:value="${description_type}" name="description_type">
@@ -47,7 +47,7 @@
             </span>
             -->
             <div>
-                <input type="submit" value="Create">
+                <input type="submit" value="Submit">
             </div>
         </form>
     </div>

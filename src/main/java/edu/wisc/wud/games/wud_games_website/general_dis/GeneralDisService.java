@@ -3,23 +3,17 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
-import edu.wisc.wud.games.wud_games_website.equipment.Equipment;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDis;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
-import edu.wisc.wud.games.wud_games_website.game_console.GameConsole;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDis;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
-import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.BoardGameExpansionDisToDTOWrapper;
-import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.EquipmentDisToDTOWrapper;
-import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService.GameConsoleDisToDTOWrapper;
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
 import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
 import edu.wisc.wud.games.wud_games_website.tag.TagRepository;
@@ -28,9 +22,7 @@ import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDis;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -40,11 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
@@ -128,7 +117,7 @@ public class GeneralDisService {
 
         pairEntityAndDTO(() -> new BoardGameExpansionDis(), () -> new BoardGameExpansionDisDTO(),
                 new BoardGameExpansionDisToDTOWrapper(), new BoardGameExpansionDisToEntityWrapper());
-        
+
         pairEntityAndDTO(() -> new EquipmentDis(), () -> new EquipmentDisDTO(),
                 new EquipmentDisToDTOWrapper(), new EquipmentDisToEntityWrapper());
 
@@ -159,10 +148,12 @@ public class GeneralDisService {
 
     private GeneralDisDTO getDTOFromRequest(HttpServletRequest request, Map<String, String> queryParameters) {
         // This would be the use case for create generic mappers
-        //System.out.println(
-        //        "called getDTOFromRequest with request: " + request + ", and queryParameters: " + queryParameters);
+        // System.out.println(
+        // "called getDTOFromRequest with request: " + request + ", and queryParameters:
+        // " + queryParameters);
         GeneralDisDTO generalDisDTO = typeStringMapFor(request).get(queryParameters.get("description_type")).get();
-        //System.out.println("created generalDisDTO of type " + generalDisDTO.getClass());
+        // System.out.println("created generalDisDTO of type " +
+        // generalDisDTO.getClass());
         generalDisDTO.setName(queryParameters.get("name"));
         generalDisDTO.setDescription(queryParameters.get("description"));
         generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
@@ -181,9 +172,11 @@ public class GeneralDisService {
         return generalDisDTO;
     }
 
-    public void createOrUpdateDescription(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
+    public void createOrUpdateDescription(HttpServletRequest request,
+            @RequestParam Map<String, String> queryParameters) {
         // This is what run when the form is submitted
-        //System.out.println("ran createNewItem with queryParameters: " + queryParameters);
+        // System.out.println("ran createNewItem with queryParameters: " +
+        // queryParameters);
         GeneralDisDTO generalDisDTO = getDTOFromRequest(request, queryParameters);
         /*
          * System.out.println("ran createNewItem with module attribute of class: " +
@@ -199,22 +192,24 @@ public class GeneralDisService {
         // JpaRepository<? extends GeneralDis, Long> repository =
         // descriptionsRepositories.get(generalDisDTO.getClass());
         // repository.save(generalDisDTO);
-
+        System.out.println("pre-create");
         // Make sure to check all sub-class before a parent
         if (generalDisDTO instanceof BoardGameExpansionDisDTO) {
-            createBoardGameExpansionDis((BoardGameExpansionDisDTO) generalDisDTO);
-            //System.out.println("Created a board game expansion description.");
+            createBoardGameExpansionDis((BoardGameExpansionDisDTO) generalDisDTO);// This may not be needed
+            // System.out.println("Created a board game expansion description.");
         } else if (generalDisDTO instanceof BoardGameDisDTO) {
             create((BoardGameDisDTO) generalDisDTO);
-            //System.out.println("Created a board game description.");
+            // System.out.println("Created a board game description.");
         } else if (generalDisDTO instanceof VideoGameDisDTO) {// TODO add a check for VideoGameExpansionDisDTO
-            throw new UnsupportedOperationException("Authentication for creating a video game description not implemented. Please contact an administrator.");
-            //System.out.println("Created a video game description.");
+            throw new UnsupportedOperationException(
+                    "Authentication for creating a video game description not implemented. Please contact an administrator.");
+            // System.out.println("Created a video game description.");
         } else if (generalDisDTO instanceof EquipmentDisDTO) {
             throw new UnsupportedOperationException("EquipmentDisDTO is not supported yet.");
         } else {
             throw new UnsupportedOperationException("Unsupported type: " + generalDisDTO.getClass().getName());
         }
+        System.out.println("post-create");
     }
 
     private void verifyAuthorizationForDescriptionType(HttpServletRequest request, final GeneralDisDTO generalDisDTO) {
@@ -236,23 +231,24 @@ public class GeneralDisService {
         verifyAuthorizationForDescriptionType(request, generalDisDTO);
         // set model attribute
         model.addObject("description", generalDisDTO);
-        //System.out.println("descriptionDTO.name is: " + generalDisDTO.getName());
+        // System.out.println("descriptionDTO.name is: " + generalDisDTO.getName());
         String typeOption = getTypeDescriptionFor(generalDisDTO);
         model.addObject("type_options", typeOption);
-        //System.out.println("type_options is: " + generalDisDTO.getName());
+        // System.out.println("type_options is: " + generalDisDTO.getName());
     }
 
     public List<GeneralDisDTO> findAllDescriptions() {
         final List<GeneralDis> generalDescriptions = generalDisRepository.findAll(Sort.by("id"));
         // these are of the leaf types
-        //System.out.println("generalDises: " + generalDescriptions);
+        // System.out.println("generalDises: " + generalDescriptions);
         List<GeneralDisDTO> generalDisDTOs = generalDescriptions.stream().map(entity -> {
             return mapToDTO(entity);
         }).toList();
         return generalDisDTOs;
     }
 
-    public void setCreateOrUpdateDescriptionData(final String description_type, HttpServletRequest request, final ModelAndView model, Long description_id) {
+    public void setCreateOrUpdateDescriptionData(final String description_type, HttpServletRequest request,
+            final ModelAndView model, Long description_id) {
         GeneralDisDTO generalDisDTO;
         if (description_id != null) {
             generalDisDTO = get(description_id);
@@ -262,7 +258,8 @@ public class GeneralDisService {
         }
         verifyAuthorizationForDescriptionType(request, generalDisDTO);
         model.addObject("description", generalDisDTO);
-        //System.out.println("set description to object of class " + generalDisDTO.getClass());
+        // System.out.println("set description to object of class " +
+        // generalDisDTO.getClass());
         model.addObject("description_type", description_type);
     }
 
@@ -270,7 +267,7 @@ public class GeneralDisService {
         Class<? extends GeneralDis> type = entity.getClass();
         System.out.print("Entity Type: " + type);
         GeneralDisDTO dto = ((Function<GeneralDis, GeneralDisDTO>) entityToDTOMapper.get(type)).apply(entity);
-        //System.out.println(", DTO Type: " + dto.getClass());
+        // System.out.println(", DTO Type: " + dto.getClass());
         return dto;
     }
 
@@ -312,7 +309,8 @@ public class GeneralDisService {
 
     private GeneralDisDTO generalDisToDTO(final GeneralDis generalDis) {
         GeneralDisDTO dto = entityToDTO.get(generalDis.getClass()).get();// create dto of leaf type
-        //System.out.println(generalDis + " general description values are being mapped to DTO");
+        // System.out.println(generalDis + " general description values are being mapped
+        // to DTO");
         dto.setId(generalDis.getId());
         dto.setName(generalDis.getName());
         dto.setDescription(generalDis.getDescription());
@@ -329,16 +327,22 @@ public class GeneralDisService {
         entity.setName(generalDisDTO.getName());
         entity.setDescription(generalDisDTO.getDescription());
         entity.setImageUrl(generalDisDTO.getImageUrl());
-        entity.setTags(generalDisDTO.getTags().stream().map(
-                tagDTO -> {
-                    Long id = tagDTO.getId();
-                    Tag tag = tagRepository.findById(id)
-                            .orElseThrow(() -> new NotFoundException("failed to find a tag with id " + id));
-                    if (!tagDTO.getName().equals(tag.getName())) {
-                        throw new NotFoundException("The tag with the id submitted has a different name.");
-                    }
-                    return tag;
-                }).collect(Collectors.toSet()));
+        /* 
+        TODO enable tage
+        System.out.println("generalDisDTO: " + generalDisDTO + " generalDisDTO.getTags(): " + generalDisDTO.getTags());
+        if (generalDisDTO.getTags() != null && !generalDisDTO.getTags().isEmpty()) {
+            entity.setTags(generalDisDTO.getTags().stream().map(
+                    tagDTO -> {
+                        Long id = tagDTO.getId();
+                        Tag tag = tagRepository.findById(id)
+                                .orElseThrow(() -> new NotFoundException("failed to find a tag with id " + id));
+                        if (!tagDTO.getName().equals(tag.getName())) {
+                            throw new NotFoundException("The tag with the id submitted has a different name.");
+                        }
+                        return tag;
+                    }).collect(Collectors.toSet()));
+        }
+                    */
         return entity;
     }
 
@@ -375,13 +379,14 @@ public class GeneralDisService {
 
     private GameDisDTO gameDisToDTO(final GameDis gameDis) {
         GameDisDTO gameDisDTO = (GameDisDTO) generalDisToDTO(gameDis);
-        //System.out.println(gameDis + " game description values are being mapped to DTO");
+        // System.out.println(gameDis + " game description values are being mapped to
+        // DTO");
         gameDisDTO.setMinPlayers(gameDis.getMinPlayers());
         gameDisDTO.setMaxPlayers(gameDis.getMaxPlayers());
         return gameDisDTO;
     }
 
-    class GameDisToDTOWrapper implements Function<GameDis, GameDisDTO> {
+    private class GameDisToDTOWrapper implements Function<GameDis, GameDisDTO> {
         public GameDisDTO apply(final GameDis gameDis) {
             return gameDisToDTO(gameDis);
         }
@@ -394,7 +399,7 @@ public class GeneralDisService {
         return gameDis;
     }
 
-    class GameDisToEntityWrapper implements Function<GameDisDTO, GameDis> {
+    private class GameDisToEntityWrapper implements Function<GameDisDTO, GameDis> {
         public GameDis apply(final GameDisDTO gameDisTDO) {
             return gameDisToEntity(gameDisTDO);
         }
@@ -420,7 +425,7 @@ public class GeneralDisService {
         return boardGameDisDTO;
     }
 
-    class BoardGameDisToDTOWrapper implements Function<BoardGameDis, BoardGameDisDTO>  {
+    private class BoardGameDisToDTOWrapper implements Function<BoardGameDis, BoardGameDisDTO> {
         public BoardGameDisDTO apply(final BoardGameDis boardGameDis) {
             return boardGameDisToDTO(boardGameDis);
         }
@@ -433,7 +438,7 @@ public class GeneralDisService {
         return boardGameDis;
     }
 
-    class BoardGameDisToEntityWrapper implements Function<BoardGameDisDTO, BoardGameDis> {
+    private class BoardGameDisToEntityWrapper implements Function<BoardGameDisDTO, BoardGameDis> {
         public BoardGameDis apply(BoardGameDisDTO boardGameDisDTO) {
             return boardGameDisToEntity(boardGameDisDTO);
         }
@@ -453,7 +458,7 @@ public class GeneralDisService {
         return boardGameExpansionDisDTO;
     }
 
-    class BoardGameExpansionDisToDTOWrapper implements Function<BoardGameExpansionDis, BoardGameExpansionDisDTO> {
+    private class BoardGameExpansionDisToDTOWrapper implements Function<BoardGameExpansionDis, BoardGameExpansionDisDTO> {
         public BoardGameExpansionDisDTO apply(BoardGameExpansionDis boardGameExpansionDis) {
             return boardGameExpansionDisToDTO(boardGameExpansionDis);
         }
@@ -465,7 +470,7 @@ public class GeneralDisService {
         return boardGameExpansionDis;
     }
 
-    class BoardGameExpansionDisToEntityWrapper implements Function<BoardGameExpansionDisDTO, BoardGameExpansionDis> {
+    private class BoardGameExpansionDisToEntityWrapper implements Function<BoardGameExpansionDisDTO, BoardGameExpansionDis> {
         public BoardGameExpansionDis apply(BoardGameExpansionDisDTO boardGameExpansionDisDTO) {
             return boardGameExpansionDisToEntity(boardGameExpansionDisDTO);
         }
@@ -478,7 +483,7 @@ public class GeneralDisService {
         return equipmentDisDTO;
     }
 
-    class EquipmentDisToDTOWrapper implements Function<EquipmentDis, EquipmentDisDTO> {
+    private class EquipmentDisToDTOWrapper implements Function<EquipmentDis, EquipmentDisDTO> {
         public EquipmentDisDTO apply(EquipmentDis equipmentDis) {
             return equipmentDisToDTO(equipmentDis);
         }
@@ -489,7 +494,7 @@ public class GeneralDisService {
         return equipmentDis;
     }
 
-    class EquipmentDisToEntityWrapper implements Function<EquipmentDisDTO, EquipmentDis> {
+    private class EquipmentDisToEntityWrapper implements Function<EquipmentDisDTO, EquipmentDis> {
         public EquipmentDis apply(EquipmentDisDTO equipmentDisDTO) {
             return equipmentDisToEntity(equipmentDisDTO);
         }
@@ -502,7 +507,7 @@ public class GeneralDisService {
         return gameConsoleDisDTO;
     }
 
-    class GameConsoleDisToDTOWrapper implements Function<GameConsoleDis, GameConsoleDisDTO> {
+    private class GameConsoleDisToDTOWrapper implements Function<GameConsoleDis, GameConsoleDisDTO> {
         public GameConsoleDisDTO apply(GameConsoleDis gameConsoleDis) {
             return gameConsoleDisToDTO(gameConsoleDis);
         }
@@ -513,7 +518,7 @@ public class GeneralDisService {
         return gameConsoleDis;
     }
 
-    class GameConsoleDisToEntityWrapper implements Function<GameConsoleDisDTO, GameConsoleDis> {
+    private class GameConsoleDisToEntityWrapper implements Function<GameConsoleDisDTO, GameConsoleDis> {
         public GameConsoleDis apply(GameConsoleDisDTO gameConsoleDisDTO) {
             return gameConsoleDisToEntity(gameConsoleDisDTO);
         }
@@ -525,13 +530,13 @@ public class GeneralDisService {
         final VideoGameDis videoGameDis = videoGameDisToEntity(videoGameDisDTO);
         return videoGameDisRepository.save(videoGameDis).getId();
     }
-    
+
     private VideoGameDisDTO videoGameDisToDTO(VideoGameDis videoGameDis) {
         VideoGameDisDTO videoGameDisDTO = (VideoGameDisDTO) gameDisToDTO(videoGameDis);
         return videoGameDisDTO;
     }
 
-    class MapVideoGameDisToDTOWrapper implements Function<VideoGameDis, VideoGameDisDTO> {
+    private class MapVideoGameDisToDTOWrapper implements Function<VideoGameDis, VideoGameDisDTO> {
         public VideoGameDisDTO apply(VideoGameDis videoGameDis) {
             return videoGameDisToDTO(videoGameDis);
         }
@@ -542,11 +547,11 @@ public class GeneralDisService {
         return videoGameDis;
     }
 
-    class VideoGameDisToEntityWrapper implements Function<VideoGameDisDTO, VideoGameDis> {
+    private class VideoGameDisToEntityWrapper implements Function<VideoGameDisDTO, VideoGameDis> {
         public VideoGameDis apply(VideoGameDisDTO videoGameDisDTO) {
             return videoGameDisToEntity(videoGameDisDTO);
         }
-    } 
+    }
 
     /* TagRepository Backed Methods */
 

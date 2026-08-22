@@ -106,9 +106,16 @@ public class GeneralDisResource {
             HttpServletRequest request) {
         //System.out.println("read queryParameters: " + queryParameters);
         ModelAndView model = new ModelAndView("manage/descriptions/formfields");
-        //String description_type = queryParameters.get("description_type");
-        System.out.println("read description_type from query parameters: " + description_type);
-        Long description_id = Long.decode(queryParameters.get("description_id"));
+        String description_type = queryParameters.get("description_type");
+        //System.out.println("read description_type from query parameters: " + description_type);
+        System.out.println("before parsing id ");
+        Long description_id;
+        if (queryParameters.containsKey("description_id")) {
+            description_id = Long.decode(queryParameters.get("description_id"));
+        } else {
+            description_id = null;
+        }
+        System.out.println("parsed id to: " + description_id);
         //System.out.println("read description_id from query parameters: " + description_id);
         generalDisService.setCreateOrUpdateDescriptionData(description_type, request, model, description_id);
         // generalDisService.

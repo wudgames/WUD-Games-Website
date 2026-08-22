@@ -7,7 +7,7 @@
 
 <body id="root">
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
-    <div>This is the create items page.</div>
+    <div>This is the create/update items page.</div>
     <base href="<scheme>://<netloc>/api/">
     <span th:if="${description != null}">
         <input type="hidden" name="description_id" th:value="${description.id}">
