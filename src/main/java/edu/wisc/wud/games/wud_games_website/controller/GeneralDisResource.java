@@ -47,7 +47,12 @@ public class GeneralDisResource {
     private final GeneralDisService generalDisService;
 
     private final Map<Class<? extends GeneralDisDTO>, String> physicalDescriptionStrings = new HashMap<>();
-    private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();// Used when create a new entity
+    private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();// Used
+                                                                                                                        // when
+                                                                                                                        // create
+                                                                                                                        // a
+                                                                                                                        // new
+                                                                                                                        // entity
 
     public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
@@ -64,52 +69,60 @@ public class GeneralDisResource {
         physicalDescriptionStrings.put(GameConsoleDisDTO.class, "Game Console");
         dtoFactories.put(GameConsoleDisDTO.class, () -> new GameConsoleDisDTO());
     }
-    /*
-    private GeneralDisDTO emptyDTOFor(Map<String, String> queryParameters) {
-        if (id != null) {
-            generalDisDTO = generalDisService.get(id);
-        } else {
-            Class<? extends GeneralDisDTO> dtoClass = null;
-            for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
-                if (entry.getValue().equals(description_type)) {
-                    dtoClass = entry.getKey();
-                    break;
-                }
-            }
-            if (null == dtoClass) {
-                throw new IllegalArgumentException("Invalid description type: " + description_type);
-            }
-            generalDisDTO = dtoFactories.get(dtoClass).get();
-        }
-    }
 
-    private GeneralDisDTO getDTOFromQueryParameters(Map<String, String> queryParameters) {
-        GeneralDisDTO generalDisDTO;
-        Long description_id;
-        if (queryParameters.containsKey("id") && queryParameters.get("id") != null) {
-            description_id = Long.decode(queryParameters.get("id"));
-        } else {
-            description_id = null;
-        }
-        generalDisDTO.setId(description_id);
-        generalDisDTO.setName(queryParameters.get("name"));
-        generalDisDTO.setDescription(queryParameters.get("description"));
-        generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
-        // TODO tags
-        if (generalDisDTO instanceof GameDisDTO) {
-            try {
-                ((GameDisDTO) generalDisDTO).setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers")));
-            } catch (NumberFormatException e) {
-            }
-            try {
-                ((GameDisDTO) generalDisDTO).setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers")));
-            } catch (NumberFormatException e) {
-            }
-        }
-        // TODO fields on other description types
-        return generalDisDTO;
-    }
-    */
+    /*
+     * private GeneralDisDTO emptyDTOFor(Map<String, String> queryParameters) {
+     * if (id != null) {
+     * generalDisDTO = generalDisService.get(id);
+     * } else {
+     * Class<? extends GeneralDisDTO> dtoClass = null;
+     * for (Entry<Class<? extends GeneralDisDTO>, String> entry :
+     * physicalDescriptionStrings.entrySet()) {
+     * if (entry.getValue().equals(description_type)) {
+     * dtoClass = entry.getKey();
+     * break;
+     * }
+     * }
+     * if (null == dtoClass) {
+     * throw new IllegalArgumentException("Invalid description type: " +
+     * description_type);
+     * }
+     * generalDisDTO = dtoFactories.get(dtoClass).get();
+     * }
+     * }
+     * 
+     * private GeneralDisDTO getDTOFromQueryParameters(Map<String, String>
+     * queryParameters) {
+     * GeneralDisDTO generalDisDTO;
+     * Long description_id;
+     * if (queryParameters.containsKey("id") && queryParameters.get("id") != null) {
+     * description_id = Long.decode(queryParameters.get("id"));
+     * } else {
+     * description_id = null;
+     * }
+     * generalDisDTO.setId(description_id);
+     * generalDisDTO.setName(queryParameters.get("name"));
+     * generalDisDTO.setDescription(queryParameters.get("description"));
+     * generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
+     * // TODO tags
+     * if (generalDisDTO instanceof GameDisDTO) {
+     * try {
+     * ((GameDisDTO)
+     * generalDisDTO).setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers"
+     * )));
+     * } catch (NumberFormatException e) {
+     * }
+     * try {
+     * ((GameDisDTO)
+     * generalDisDTO).setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers"
+     * )));
+     * } catch (NumberFormatException e) {
+     * }
+     * }
+     * // TODO fields on other description types
+     * return generalDisDTO;
+     * }
+     */
     @GetMapping("/library")
     public ModelAndView librarySearch(Model model, @RequestParam Map<String, String> queryParameters) {
         attachResults(model, queryParameters);
@@ -162,6 +175,20 @@ public class GeneralDisResource {
         return model;
     }
 
+    private GeneralDisDTO getEmptyDTOFor(String description_type) {
+        GeneralDisDTO descriptionDTO = null;
+        for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
+            if (description_type.equals(entry.getValue())) {
+                descriptionDTO = dtoFactories.get(entry.getKey()).get();
+                break;
+            }
+        }
+        if (description_type == null) {
+            throw new IllegalArgumentException("Invalid description type: " + description_type);
+        }
+        return descriptionDTO;
+    }
+
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("/api/manage/descriptions/formoptions")
     public ModelAndView getItemForm(@RequestParam(required = false) Long id, @RequestParam String description_type,
@@ -171,50 +198,68 @@ public class GeneralDisResource {
         if (id != null) {
             generalDisDTO = generalDisService.get(id);
         } else {
-            Class<? extends GeneralDisDTO> dtoClass = null;
-            for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
-                if (entry.getValue().equals(description_type)) {
-                    dtoClass = entry.getKey();
-                    break;
-                }
-            }
-            if (null == dtoClass) {
-                throw new IllegalArgumentException("Invalid description type: " + description_type);
-            }
-            generalDisDTO = dtoFactories.get(dtoClass).get();
+            generalDisDTO = getEmptyDTOFor(description_type);
         }
         System.out.println("found " + generalDisDTO);
         verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
-        
+
         // System.out.println("read queryParameters: " + queryParameters);
         ModelAndView model = new ModelAndView("manage/descriptions/formfields");
         model.addObject("description", generalDisDTO);
-        model.addObject("description_type", description_type.getClass());
+        model.addObject("description_type", description_type);
         return model;
     }
 
     private GeneralDisDTO parseToGeneralDisDTO(Map<String, String> queryParameters) {
-        queryParameters.get("description_type");
-        System.out.println();
-        GeneralDisDTO descriptionDTO;
-        /*
-        for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
-            if (entry.getKey().e) {
+        GeneralDisDTO descriptionDTO = getEmptyDTOFor(queryParameters.get("description_type"));
+        System.out.println(descriptionDTO);
+        if (descriptionDTO instanceof GeneralDisDTO) {
+            descriptionDTO.setId(Long.valueOf(queryParameters.get("id")));
+            descriptionDTO.setName(queryParameters.get("name"));
+            descriptionDTO.setDescription(queryParameters.get("description"));
+            descriptionDTO.setImageUrl(queryParameters.get("imageUrl"));
+        }
 
+        // TODO tags
+
+        if (descriptionDTO instanceof GameDisDTO) {
+            GameDisDTO gamsDisDTO = (GameDisDTO) descriptionDTO;
+            try {
+                gamsDisDTO.setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers")));
+            } catch (NumberFormatException e) {
+            }
+            try {
+                gamsDisDTO.setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers")));
+            } catch (NumberFormatException e) {
+            }
+
+            if (gamsDisDTO instanceof BoardGameDisDTO) {
+                BoardGameDisDTO boardGameDisDTO = (BoardGameDisDTO) gamsDisDTO;
+                try {
+                    boardGameDisDTO.setMinPlaytime(Integer.valueOf(queryParameters.get("minPlaytime")));
+                } catch (NumberFormatException e) {
+                }
+                try {
+                    boardGameDisDTO.setMaxPlaytime(Integer.valueOf(queryParameters.get("maxPlaytime")));
+                } catch (NumberFormatException e) {
+            }
             }
         }
-        */
 
-        return null;
+        
+
+        return descriptionDTO;
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
-    public ModelAndView createNewItem(HttpServletRequest request, @RequestParam(name = "description_type") Class<GeneralDisDTO> description_type) {
-        // ModelAttribute is no respect polymorphic types so we need to use the description_type
-        System.out.println("the following description was posted to the server:\n" + description_type);
-        verifyAuthorizationForDescriptionType(request, description_type);
-        //generalDisService.createOrUpdateDescription(description_type);
+    public ModelAndView createNewItem(HttpServletRequest request,
+            @RequestParam Map<String, String> queryParameters) {
+        // ModelAttribute is no respect polymorphic types so we need to use the
+        // description_type
+        GeneralDisDTO descriptionDTO = parseToGeneralDisDTO(queryParameters);
+        verifyAuthorizationForDescriptionType(request, descriptionDTO.getClass());
+        generalDisService.createOrUpdateDescription(descriptionDTO);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 

@@ -2,10 +2,8 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import org.springframework.stereotype.Component;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisMapper;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisMapper;
 
