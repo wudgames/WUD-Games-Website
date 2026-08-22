@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.inventory_item;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
+import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -27,7 +28,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class InventoryItem {
+public class InventoryItem implements EntityWithId {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -51,11 +52,12 @@ public class InventoryItem {
 
     //@Column(nullable = false)
     //@Enumerated(EnumType.STRING)
-
+    /*
+    // Note that this is null when the item is not checked out
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_checkout_id")
     private CheckoutRecord currentCheckout;
-
+    */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gen_dis_id", nullable = false)
     private GeneralDis genDis;

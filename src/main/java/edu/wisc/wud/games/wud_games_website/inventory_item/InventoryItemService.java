@@ -2,15 +2,11 @@ package edu.wisc.wud.games.wud_games_website.inventory_item;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteInventoryItem;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
-import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
-import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;
-import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -21,77 +17,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class InventoryItemService {
+public class InventoryItemService extends EntityService<InventoryItemRepository, InventoryItem, InventoryItemDTO> {
 
     private final InventoryItemRepository inventoryItemRepository;
-    private final GeneralDisRepository generalDisRepository;
     private final CheckoutRecordRepository checkoutRecordRepository;
-    private final ApplicationEventPublisher publisher;
 
     public InventoryItemService(final InventoryItemRepository inventoryItemRepository,
-            final GeneralDisRepository generalDisRepository,
+            final InventoryItemMapper mapper,
             final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher) {
+        super(inventoryItemRepository, mapper, publisher);
         this.inventoryItemRepository = inventoryItemRepository;
-        this.generalDisRepository = generalDisRepository;
         this.checkoutRecordRepository = checkoutRecordRepository;
-        this.publisher = publisher;
     }
 
-    public List<InventoryItemDTO> findAll() {
-        final List<InventoryItem> inventoryItems = inventoryItemRepository.findAll(Sort.by("id"));
-        return inventoryItems.stream()
-                .map(inventoryItem -> mapToDTO(inventoryItem, new InventoryItemDTO()))
-                .toList();
+    @Override
+    protected InventoryItem newEntity() {
+        return new InventoryItem();
     }
 
-    public InventoryItemDTO get(final Long id) {
-        return inventoryItemRepository.findById(id)
-                .map(inventoryItem -> mapToDTO(inventoryItem, new InventoryItemDTO()))
-                .orElseThrow(NotFoundException::new);
-    }
-
-    public Long create(final InventoryItemDTO inventoryItemDTO) {
-        final InventoryItem inventoryItem = new InventoryItem();
-        mapToEntity(inventoryItemDTO, inventoryItem);
-        return inventoryItemRepository.save(inventoryItem).getId();
-    }
-
-    public void update(final Long id, final InventoryItemDTO inventoryItemDTO) {
-        final InventoryItem inventoryItem = inventoryItemRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        mapToEntity(inventoryItemDTO, inventoryItem);
-        inventoryItemRepository.save(inventoryItem);
-    }
-
-    public void delete(final Long id) {
-        final InventoryItem inventoryItem = inventoryItemRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        publisher.publishEvent(new BeforeDeleteInventoryItem(id));
-        inventoryItemRepository.delete(inventoryItem);
-    }
-
-    private InventoryItemDTO mapToDTO(final InventoryItem inventoryItem,
-            final InventoryItemDTO inventoryItemDTO) {
-        inventoryItemDTO.setId(inventoryItem.getId());
-        inventoryItemDTO.setDateAdded(inventoryItem.getDateAdded());
-        inventoryItemDTO.setNotes(inventoryItem.getNotes());
-        inventoryItemDTO.setCurrentCheckout(inventoryItem.getCurrentCheckout() == null ? null : inventoryItem.getCurrentCheckout().getId());
-        inventoryItemDTO.setGenDis(inventoryItem.getGenDis() == null ? null : inventoryItem.getGenDis().getId());
-        return inventoryItemDTO;
-    }
-
-    private InventoryItem mapToEntity(final InventoryItemDTO inventoryItemDTO,
-            final InventoryItem inventoryItem) {
-        inventoryItem.setDateAdded(inventoryItemDTO.getDateAdded());
-        inventoryItem.setNotes(inventoryItemDTO.getNotes());
-        final GeneralDis genDis = inventoryItemDTO.getGenDis() == null ? null : generalDisRepository.findById(inventoryItemDTO.getGenDis())
-                .orElseThrow(() -> new NotFoundException("genDis not found"));
-        inventoryItem.setGenDis(genDis);
-        final CheckoutRecord currentCheckout = inventoryItemDTO.getCurrentCheckout() == null ? null : checkoutRecordRepository.findById(inventoryItemDTO.getCurrentCheckout())
-                .orElseThrow(() -> new NotFoundException("currentCheckout not found"));
-        inventoryItem.setCurrentCheckout(currentCheckout);
-        return inventoryItem;
+    @Override
+    public InventoryItemDTO newDTO() {
+        return new InventoryItemDTO();
     }
 
     public Map<Long, Long> getInventoryItemValues() {
@@ -100,26 +47,34 @@ public class InventoryItemService {
                 .collect(CustomCollectors.toSortedMap(InventoryItem::getId, InventoryItem::getId));
     }
 
-    @EventListener(BeforeDeleteGeneralDis.class)
-    public void on(final BeforeDeleteGeneralDis event) {
-        final ReferencedException referencedException = new ReferencedException();
-        final InventoryItem genDisInventoryItem = inventoryItemRepository.findFirstByGenDisId(event.getId());
-        if (genDisInventoryItem != null) {
-            referencedException.setKey("generalDis.inventoryItem.genDis.referenced");
-            referencedException.addParam(genDisInventoryItem.getId());
-            throw referencedException;
+    class GeneralDisListener {
+        // Stop a description of an item from being deleted if there are still items using that description
+        @EventListener(BeforeDelete.class)
+        public void on(final BeforeDelete<GeneralDis> event) {
+            final ReferencedException referencedException = new ReferencedException();
+            final InventoryItem genDisInventoryItem = inventoryItemRepository.findFirstByGenDisId(event.getId());
+            if (genDisInventoryItem != null) {
+                referencedException.setKey("generalDis.inventoryItem.genDis.referenced");
+                referencedException.addParam(genDisInventoryItem.getId());
+                throw referencedException;
+            }
         }
     }
 
-    @EventListener(BeforeDeleteCheckoutRecord.class)
-    public void on(final BeforeDeleteCheckoutRecord event) {
-        final ReferencedException referencedException = new ReferencedException();
-        final InventoryItem currentCheckoutInventoryItem = inventoryItemRepository.findFirstByCurrentCheckoutId(event.getId());
-        if (currentCheckoutInventoryItem != null) {
-            referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
-            referencedException.addParam(currentCheckoutInventoryItem.getId());
-            throw referencedException;
+    class CheckoutRecordListener {
+        // Stop a checkout record from being deleted if there are still items using that checkout record
+        @EventListener(BeforeDelete.class)
+        public void on(final BeforeDelete<CheckoutRecord> event) {
+            final ReferencedException referencedException = new ReferencedException();
+            // TODO update check for current fields
+            final CheckoutRecord recordToBeDeleted = checkoutRecordRepository.getReferenceById(event.getId());
+            if (recordToBeDeleted.getReturnedTime() == null && recordToBeDeleted.getInventoryItems() != null && recordToBeDeleted.getInventoryItems().size() > 0) {
+                // This item is currently checkout to the that record
+                referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
+                referencedException.addParam(recordToBeDeleted.getInventoryItems().get(0).getId());
+                throw referencedException;
+            }
         }
-    }
+    }    
 }
 

@@ -1,82 +1,136 @@
 package edu.wisc.wud.games.wud_games_website.controller;
 
+import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
+import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisService;
+import edu.wisc.wud.games.wud_games_website.game_console.GameConsoleDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException.NotImplemented;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
+import edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion.BoardGameExpansionDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
-import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
+import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
+import edu.wisc.wud.games.wud_games_website.equipment.EquipmentDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
+import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisService;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
-import edu.wisc.wud.games.wud_games_website.game_dis.GameDisRepository;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisService;
-import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
+import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisService;
 
 @RestController
 public class GeneralDisResource {
-
     private final GeneralDisService generalDisService;
 
-    private final GameDisService GAME_DIS_SERVICE;
-    
-    // private static final VideoGameExpansionDisService // Not made currently
+    private final Map<Class<? extends GeneralDisDTO>, String> physicalDescriptionStrings = new HashMap<>();
+    private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();// Used when create a new entity
 
-    private final Map<Class<? extends GameDisDTO>, JpaRepository<? extends GeneralDis, Long>> descriptionsRepositories = new HashMap<>();
-
-    //private final Map<T, Consumer<T>> saveDTOFunctions = new HashMap<>();
-
-    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService, final GameDisService GAME_DIS_SERVICE) {
+    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
 
-        this.GAME_DIS_SERVICE = GAME_DIS_SERVICE;
-        
-        /* 
-        descriptionsRepositories.put(GameDisDTO.class, GAME_DIS_REPOSITORY);
-        descriptionsRepositories.put(BoardGameDisDTO.class, BOARD_GAME_DIS_REPOSITORY);
-        descriptionsRepositories.put(BoardGameExpansionDisDTO.class, BOARD_GAME_EXPANSION_DIS_REPOSITORY);
-        descriptionsRepositories.put(VideoGameDisDTO.class, VIDEO_GAME_DIS_REPOSITORY);
-        // VIDEO_GAME_DIS_REPOSITORY);
-        */
+        physicalDescriptionStrings.put(BoardGameDisDTO.class, "Board Game");
+        dtoFactories.put(BoardGameDisDTO.class, () -> new BoardGameDisDTO());
+
+        physicalDescriptionStrings.put(BoardGameExpansionDisDTO.class, "Board Game Expansion");
+        dtoFactories.put(BoardGameExpansionDisDTO.class, () -> new BoardGameExpansionDisDTO());
+
+        physicalDescriptionStrings.put(EquipmentDisDTO.class, "Equipment");
+        dtoFactories.put(EquipmentDisDTO.class, () -> new EquipmentDisDTO());
+
+        physicalDescriptionStrings.put(GameConsoleDisDTO.class, "Game Console");
+        dtoFactories.put(GameConsoleDisDTO.class, () -> new GameConsoleDisDTO());
+    }
+    /*
+    private GeneralDisDTO emptyDTOFor(Map<String, String> queryParameters) {
+        if (id != null) {
+            generalDisDTO = generalDisService.get(id);
+        } else {
+            Class<? extends GeneralDisDTO> dtoClass = null;
+            for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
+                if (entry.getValue().equals(description_type)) {
+                    dtoClass = entry.getKey();
+                    break;
+                }
+            }
+            if (null == dtoClass) {
+                throw new IllegalArgumentException("Invalid description type: " + description_type);
+            }
+            generalDisDTO = dtoFactories.get(dtoClass).get();
+        }
     }
 
+    private GeneralDisDTO getDTOFromQueryParameters(Map<String, String> queryParameters) {
+        GeneralDisDTO generalDisDTO;
+        Long description_id;
+        if (queryParameters.containsKey("id") && queryParameters.get("id") != null) {
+            description_id = Long.decode(queryParameters.get("id"));
+        } else {
+            description_id = null;
+        }
+        generalDisDTO.setId(description_id);
+        generalDisDTO.setName(queryParameters.get("name"));
+        generalDisDTO.setDescription(queryParameters.get("description"));
+        generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
+        // TODO tags
+        if (generalDisDTO instanceof GameDisDTO) {
+            try {
+                ((GameDisDTO) generalDisDTO).setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers")));
+            } catch (NumberFormatException e) {
+            }
+            try {
+                ((GameDisDTO) generalDisDTO).setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers")));
+            } catch (NumberFormatException e) {
+            }
+        }
+        // TODO fields on other description types
+        return generalDisDTO;
+    }
+    */
     @GetMapping("/library")
     public ModelAndView librarySearch(Model model, @RequestParam Map<String, String> queryParameters) {
         attachResults(model, queryParameters);
         return new ModelAndView("search/library");
+    }
+
+    private Set<String> getTypeAuthorizedOptionsFor(HttpServletRequest request) {
+        Set<String> authorizedTypeStrings = new HashSet<>();
+        if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
+            authorizedTypeStrings.addAll(physicalDescriptionStrings.values());
+        }
+        // TODO: Add more authorized types as needed
+        return authorizedTypeStrings;
+    }
+
+    private void verifyAuthorizationForDescriptionType(HttpServletRequest request, Class descriptionType) {
+        if (physicalDescriptionStrings.keySet().contains(descriptionType)) {
+            if (request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
+                return;// User is authorized
+            }
+            throw new InvalidParameterException("User is not authorization to edit type: " + descriptionType);
+        } // else check other types here
+        throw new InvalidParameterException("Failed to determine authorization to edit type: " + descriptionType);
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
@@ -84,7 +138,7 @@ public class GeneralDisResource {
     public ModelAndView getMethodName(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/page");
-        Set<String> itemTypeOptions = generalDisService.typeStringMapFor(request).keySet();
+        Set<String> itemTypeOptions = getTypeAuthorizedOptionsFor(request);
         model.addObject("type_options", itemTypeOptions);
         System.out.println("set type_options to " + itemTypeOptions);
         // model.addAttribute("new_item", new GeneralDisDTO());
@@ -95,37 +149,49 @@ public class GeneralDisResource {
     @GetMapping("manage/inventory/update/{id}")
     public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/page");
-        generalDisService.updateDescription(id, request, model);
+        GeneralDisDTO generalDisDTO = generalDisService.get(id);
+        verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
+        Set<String> type_option = new HashSet<>();
+        type_option.add(physicalDescriptionStrings.get(generalDisDTO.getClass()));
+        model.addObject("type_options", type_option);
         return model;
     }
-    
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("/api/manage/descriptions/formoptions")
-    public ModelAndView getItemForm(@RequestParam Map<String, String> queryParameters,
+    public ModelAndView getItemForm(@RequestParam(required = false) Long id, @RequestParam String description_type,
             HttpServletRequest request) {
-        //System.out.println("read queryParameters: " + queryParameters);
-        ModelAndView model = new ModelAndView("manage/descriptions/formfields");
-        String description_type = queryParameters.get("description_type");
-        //System.out.println("read description_type from query parameters: " + description_type);
-        System.out.println("before parsing id ");
-        Long description_id;
-        if (queryParameters.containsKey("description_id")) {
-            description_id = Long.decode(queryParameters.get("description_id"));
+        GeneralDisDTO generalDisDTO;
+        if (id != null) {
+            generalDisDTO = generalDisService.get(id);
         } else {
-            description_id = null;
+            Class<? extends GeneralDisDTO> dtoClass = null;
+            for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
+                if (entry.getValue().equals(description_type)) {
+                    dtoClass = entry.getKey();
+                    break;
+                }
+            }
+            if (null == dtoClass) {
+                throw new IllegalArgumentException("Invalid description type: " + description_type);
+            }
+            generalDisDTO = dtoFactories.get(dtoClass).get();
         }
-        System.out.println("parsed id to: " + description_id);
-        //System.out.println("read description_id from query parameters: " + description_id);
-        generalDisService.setCreateOrUpdateDescriptionData(description_type, request, model, description_id);
-        // generalDisService.
+        verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
+        
+        // System.out.println("read queryParameters: " + queryParameters);
+        ModelAndView model = new ModelAndView("manage/descriptions/formfields");
+        model.addObject("description", generalDisDTO);
+        model.addObject("description_type", description_type);
         return model;
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
-    public ModelAndView createNewItem(HttpServletRequest request, @RequestParam Map<String, String> queryParameters) {
-        generalDisService.createOrUpdateDescription(request, queryParameters);
+    public ModelAndView createNewItem(HttpServletRequest request, @ModelAttribute GeneralDisDTO description) {
+        System.out.println("the following description was posted to the server:\n" + description);
+        verifyAuthorizationForDescriptionType(request, description.getClass());
+        generalDisService.createOrUpdateDescription(description);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
@@ -138,38 +204,7 @@ public class GeneralDisResource {
 
     private void attachResults(Model model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
-        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAllDescriptions();
+        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
         model.addAttribute("generalDisDTOList", generalDisDTOList);
     }
-    /*
-    @GetMapping("/api/generalDiss")
-    public ResponseEntity<List<GeneralDisDTO>> getAllGeneralDiss() {
-        return ResponseEntity.ok(generalDisService.findAll());
-    }
-
-    @GetMapping("/api/generalDiss/{id}")
-    public ResponseEntity<GeneralDisDTO> getGeneralDis(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(generalDisService.get(id));
-    }
-
-    @PostMapping("/api/generalDiss")
-    public ResponseEntity<Long> createGeneralDis(
-            @RequestBody @Valid final GeneralDisDTO generalDisDTO) {
-        final Long createdId = generalDisService.create(generalDisDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/api/generalDiss/{id}")
-    public ResponseEntity<Long> updateGeneralDis(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final GeneralDisDTO generalDisDTO) {
-        generalDisService.update(id, generalDisDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/api/generalDiss/{id}")
-    public ResponseEntity<Void> deleteGeneralDis(@PathVariable(name = "id") final Long id) {
-        generalDisService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-    */
 }

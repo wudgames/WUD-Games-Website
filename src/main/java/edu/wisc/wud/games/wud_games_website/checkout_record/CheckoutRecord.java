@@ -1,6 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.checkout_record;
 
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
+import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,8 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -27,7 +28,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class CheckoutRecord {
+public class CheckoutRecord implements EntityWithId {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -53,7 +54,7 @@ public class CheckoutRecord {
     private Integer peoplePlaying;
 
     @Column
-    private String resipeantName;
+    private String recipientName;
 
     @ManyToMany
     @JoinTable(
@@ -61,7 +62,7 @@ public class CheckoutRecord {
             joinColumns = @JoinColumn(name = "checkoutRecordId"),
             inverseJoinColumns = @JoinColumn(name = "inventoryItemId")
     )
-    private Set<InventoryItem> inventoryItems = new HashSet<>();
+    private List<InventoryItem> inventoryItems = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

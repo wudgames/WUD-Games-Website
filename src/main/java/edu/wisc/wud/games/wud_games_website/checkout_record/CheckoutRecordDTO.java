@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,9 +25,9 @@ public class CheckoutRecordDTO {
     private Integer peoplePlaying;
 
     @Size(max = 255)
-    private String resipeantName;
+    private String recipientName;
 
-    private List<Long> inventoryItems;
+    private List<InventoryItemDTO> inventoryItems;
 
 }
 

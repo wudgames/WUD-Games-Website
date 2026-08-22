@@ -16,40 +16,45 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 
-
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class BoardGameDis extends GameDis {
+        
+        /*
+         * @Id
+         * 
+         * @Column(nullable = false, updatable = false)
+         * 
+         * @SequenceGenerator(
+         * name = "primary_sequence",
+         * sequenceName = "primary_sequence",
+         * allocationSize = 1,
+         * initialValue = 10000
+         * )
+         * 
+         * @GeneratedValue(
+         * strategy = GenerationType.SEQUENCE,
+         * generator = "primary_sequence"
+         * )
+         * private Long id;
+         */
 
-    @Id
-    @Column(nullable = false, updatable = false)
-    @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
-            allocationSize = 1,
-            initialValue = 10000
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
-    )
-    private Long id;
+        @Column
+        private Integer minPlaytime;
 
-    @Column
-    private Integer minPlaytime;
-
-    @Column
-    private Integer maxPlaytime;
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime dateCreated;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private OffsetDateTime lastUpdated;
-
+        @Column
+        private Integer maxPlaytime;
+        /*
+         * @CreatedDate
+         * 
+         * @Column(nullable = false, updatable = false)
+         * private OffsetDateTime dateCreated;
+         * 
+         * @LastModifiedDate
+         * 
+         * @Column(nullable = false)
+         * private OffsetDateTime lastUpdated;
+         */
 }
-

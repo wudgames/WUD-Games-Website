@@ -4,13 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class InventoryItemDTO {
-
     private Long id;
 
     private OffsetDateTime dateAdded;
@@ -18,10 +18,7 @@ public class InventoryItemDTO {
     @Size(max = 1024)
     private String notes;
 
-    private Long currentCheckout;
-
     @NotNull
-    private Long genDis;
-
+    private GeneralDisDTO genDis;
 }
 

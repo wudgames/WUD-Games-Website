@@ -1,6 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
+import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,8 +18,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,7 +32,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // see https://www.baeldung.com/hibernate-inheritance for meaning
-public class GeneralDis {
+public class GeneralDis implements EntityWithId {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -64,7 +65,7 @@ public class GeneralDis {
             joinColumns = @JoinColumn(name = "generalDisId"),
             inverseJoinColumns = @JoinColumn(name = "tagId")
     )
-    private Set<Tag> tags = new HashSet<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -73,6 +74,5 @@ public class GeneralDis {
     @LastModifiedDate
     @Column(nullable = false)
     private OffsetDateTime lastUpdated;
-
 }
 

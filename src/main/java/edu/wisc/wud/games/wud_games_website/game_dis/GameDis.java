@@ -22,7 +22,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 @Getter
 @Setter
 public class GameDis extends GeneralDis {
-
+        /* 
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
@@ -36,13 +36,13 @@ public class GameDis extends GeneralDis {
             generator = "primary_sequence"
     )
     private Long id;
-
+        */
     @Column
     private Integer minPlayers;
 
     @Column
     private Integer maxPlayers;
-
+        /*
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private OffsetDateTime dateCreated;
@@ -50,6 +50,6 @@ public class GameDis extends GeneralDis {
     @LastModifiedDate
     @Column(nullable = false)
     private OffsetDateTime lastUpdated;
-
+        */
 }
 

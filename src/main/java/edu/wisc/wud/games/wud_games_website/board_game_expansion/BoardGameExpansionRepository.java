@@ -5,7 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardGameExpansionRepository extends JpaRepository<BoardGameExpansion, Long> {
 
-    BoardGameExpansion findFirstByGameExpansionDisId(Long id);
-
 }
 
