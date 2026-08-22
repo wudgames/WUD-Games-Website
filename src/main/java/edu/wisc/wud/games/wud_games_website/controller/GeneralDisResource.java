@@ -5,6 +5,8 @@ import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisService;
 import edu.wisc.wud.games.wud_games_website.game_console.GameConsoleDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
+import static org.mockito.Mockito.description;
+
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -149,8 +151,11 @@ public class GeneralDisResource {
     @GetMapping("manage/inventory/update/{id}")
     public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/page");
+        System.out.println("Loading type for description with id: " + id);
         GeneralDisDTO generalDisDTO = generalDisService.get(id);
+        System.out.println("found " + generalDisDTO);
         verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
+        model.addObject("description", generalDisDTO);// This is used to pass the id along to the form options
         Set<String> type_option = new HashSet<>();
         type_option.add(physicalDescriptionStrings.get(generalDisDTO.getClass()));
         model.addObject("type_options", type_option);
@@ -162,6 +167,7 @@ public class GeneralDisResource {
     public ModelAndView getItemForm(@RequestParam(required = false) Long id, @RequestParam String description_type,
             HttpServletRequest request) {
         GeneralDisDTO generalDisDTO;
+        System.out.println("Loading formoptions for description with id: " + id);
         if (id != null) {
             generalDisDTO = generalDisService.get(id);
         } else {
@@ -177,21 +183,38 @@ public class GeneralDisResource {
             }
             generalDisDTO = dtoFactories.get(dtoClass).get();
         }
+        System.out.println("found " + generalDisDTO);
         verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
         
         // System.out.println("read queryParameters: " + queryParameters);
         ModelAndView model = new ModelAndView("manage/descriptions/formfields");
         model.addObject("description", generalDisDTO);
-        model.addObject("description_type", description_type);
+        model.addObject("description_type", description_type.getClass());
         return model;
+    }
+
+    private GeneralDisDTO parseToGeneralDisDTO(Map<String, String> queryParameters) {
+        queryParameters.get("description_type");
+        System.out.println();
+        GeneralDisDTO descriptionDTO;
+        /*
+        for (Entry<Class<? extends GeneralDisDTO>, String> entry : physicalDescriptionStrings.entrySet()) {
+            if (entry.getKey().e) {
+
+            }
+        }
+        */
+
+        return null;
     }
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/description/create")
-    public ModelAndView createNewItem(HttpServletRequest request, @ModelAttribute GeneralDisDTO description) {
-        System.out.println("the following description was posted to the server:\n" + description);
-        verifyAuthorizationForDescriptionType(request, description.getClass());
-        generalDisService.createOrUpdateDescription(description);
+    public ModelAndView createNewItem(HttpServletRequest request, @RequestParam(name = "description_type") Class<GeneralDisDTO> description_type) {
+        // ModelAttribute is no respect polymorphic types so we need to use the description_type
+        System.out.println("the following description was posted to the server:\n" + description_type);
+        verifyAuthorizationForDescriptionType(request, description_type);
+        //generalDisService.createOrUpdateDescription(description_type);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
 
