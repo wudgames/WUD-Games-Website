@@ -29,26 +29,26 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
     public List<dtoType> findAll() {
         final List<entityType> entities = repository.findAll(Sort.by("id"));
         return entities.stream()
-                .map(entity -> mapper.toDTO(entity, newDTO()))
+                .map(entity -> mapper.toDTO(entity))
                 .toList();
     }
 
     public dtoType get(final Long id) {
         return repository.findById(id)
-                .map(entity -> mapper.toDTO(entity, newDTO()))
+                .map(entity -> mapper.toDTO(entity))
                 .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final dtoType dto) {
         final entityType entity = newEntity();
-        mapper.toEntity(dto, entity);
+        mapper.toEntity(dto);
         return repository.save(entity).getId();
     }
 
     public void update(final Long id, final dtoType dto) {
         final entityType entity = repository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapper.toEntity(dto, entity);
+        mapper.toEntity(dto);
         repository.save(entity);
     }
 

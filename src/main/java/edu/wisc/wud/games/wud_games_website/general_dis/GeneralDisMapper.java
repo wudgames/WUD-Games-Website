@@ -11,7 +11,7 @@ public class GeneralDisMapper extends EntityMapper<GeneralDis, GeneralDisDTO> {
     private final TagMapper tagMapper;
 
     public GeneralDisMapper(TagMapper tagMapper) {
-        super(null, GeneralDis.class);
+        super(null, () -> new GeneralDis(), () -> new GeneralDisDTO());
         this.tagMapper = tagMapper;
     }
 
@@ -22,7 +22,7 @@ public class GeneralDisMapper extends EntityMapper<GeneralDis, GeneralDisDTO> {
         generalDisDTO.setDescription(generalDis.getDescription());
         generalDisDTO.setImageUrl(generalDis.getImageUrl());
         generalDisDTO.setTags(generalDis.getTags().stream()
-                .map(tag -> tagMapper.toDTO(tag, new TagDTO()))
+                .map(tag -> tagMapper.toDTO(tag))
                 .toList());
         return generalDisDTO;
     }

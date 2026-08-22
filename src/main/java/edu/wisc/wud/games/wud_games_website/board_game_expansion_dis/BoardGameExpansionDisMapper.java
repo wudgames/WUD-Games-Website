@@ -12,19 +12,19 @@ public class BoardGameExpansionDisMapper extends EntityMapper<BoardGameExpansion
     private final BoardGameDisMapper boardGameDisMapper;
 
     public BoardGameExpansionDisMapper(BoardGameDisMapper boardGameDisMapper) {
-        super(boardGameDisMapper, BoardGameExpansionDis.class);
+        super(boardGameDisMapper, () -> new BoardGameExpansionDis(), () -> new BoardGameExpansionDisDTO());
         this.boardGameDisMapper = boardGameDisMapper;
     }
 
     public BoardGameExpansionDisDTO localToDTO(final BoardGameExpansionDis boardGameExpansionDis,
             final BoardGameExpansionDisDTO boardGameExpansionDisDTO) {
-        boardGameExpansionDisDTO.setBaseBoardGameDis(boardGameDisMapper.toDTO(boardGameExpansionDis.getBaseBoardGameDis(), new BoardGameDisDTO()));
+        boardGameExpansionDisDTO.setBaseBoardGameDis(boardGameDisMapper.toDTO(boardGameExpansionDis.getBaseBoardGameDis()));
         return boardGameExpansionDisDTO;
     }
 
     public BoardGameExpansionDis localToEntity(final BoardGameExpansionDisDTO boardGameExpansionDisDTO,
             final BoardGameExpansionDis boardGameExpansionDis) {
-        boardGameExpansionDis.setBaseBoardGameDis(boardGameDisMapper.toEntity(boardGameExpansionDisDTO.getBaseBoardGameDis(), new BoardGameDis()));
+        boardGameExpansionDis.setBaseBoardGameDis(boardGameDisMapper.toEntity(boardGameExpansionDisDTO.getBaseBoardGameDis()));
         return boardGameExpansionDis;
     }
 }

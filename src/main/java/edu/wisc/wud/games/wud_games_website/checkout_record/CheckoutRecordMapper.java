@@ -11,7 +11,7 @@ public class CheckoutRecordMapper extends EntityMapper<CheckoutRecord, CheckoutR
     private final InventoryItemSubclassMapper inventoryItemSubclassMapper;
 
     public CheckoutRecordMapper(final InventoryItemSubclassMapper inventoryItemSubclassMapper) {
-        super(null, CheckoutRecord.class);
+        super(null, () -> new CheckoutRecord(), () -> new CheckoutRecordDTO());
         this.inventoryItemSubclassMapper = inventoryItemSubclassMapper;
     }
 

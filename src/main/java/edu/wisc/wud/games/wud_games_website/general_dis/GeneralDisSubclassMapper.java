@@ -31,9 +31,9 @@ public class GeneralDisSubclassMapper {
 
     public GeneralDis toEntity(final GeneralDisDTO dto) {
         if (dto instanceof BoardGameExpansionDisDTO) {
-            return boardGameExpansionDisMapper.toEntity((BoardGameExpansionDisDTO) dto, new BoardGameExpansionDis());
+            return boardGameExpansionDisMapper.toEntity((BoardGameExpansionDisDTO) dto);
         } else if (dto instanceof BoardGameDisDTO) {
-            return boardGameDisMapper.toEntity((BoardGameDisDTO) dto, new BoardGameDis());
+            return boardGameDisMapper.toEntity((BoardGameDisDTO) dto);
         }
         throw new UnsupportedOperationException("This method has not been implemented.");
     }

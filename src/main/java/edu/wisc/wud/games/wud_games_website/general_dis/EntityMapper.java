@@ -2,56 +2,90 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public abstract class EntityMapper<entityType, dtoType> {
     private final EntityMapper parentMapper;
-    private final Class<entityType> clasz;
+    private final Class<entityType> entityClass;
+    private final Class<dtoType> dtoClass;
+    private final Supplier<entityType> entityTypeSupplier;
+    private final Supplier<dtoType> dtoSupplier;
     private final Set<EntityMapper<entityType, dtoType>> childMappers = new HashSet<>();
 
-    public EntityMapper(EntityMapper parentMapper, Class<entityType> clasz) {
+    public EntityMapper(EntityMapper parentMapper, Supplier<entityType> entityTypeSupplier, Supplier<dtoType> dtoSupplier) {
         this.parentMapper = parentMapper;
-        System.out.println("Starting " + this.getClass() + "");
+        // System.out.println("Starting " + this.getClass() + "");
         if (parentMapper != null) {
             parentMapper.childMappers.add(this);
         }
-        this.clasz = clasz;
-        System.out.println("Finished " + this.getClass() + "");
+        this.entityTypeSupplier = entityTypeSupplier;
+        this.dtoSupplier = dtoSupplier;
+
+        this.entityClass = (Class<entityType>) entityTypeSupplier.get().getClass();
+        this.dtoClass = (Class<dtoType>) dtoSupplier.get().getClass();
+        // System.out.println("Finished " + this.getClass() + "");
     }
-    
-    private EntityMapper<entityType, dtoType> getLeafMapper(final entityType entity) {
+
+    private EntityMapper<entityType, dtoType> getLeafByEntity(final entityType entity) {
+        //System.out.println("Ruining getLeafMapper in " + this.getClass().getSimpleName() + " with entity: "
+        //        + entity.getClass().getSimpleName());
         for (EntityMapper<entityType, dtoType> childMapper : childMappers) {
-            if (entity.getClass().isAssignableFrom(childMapper.clasz)) {
-                return childMapper.getLeafMapper(entity);
+            Boolean isValidMapper = childMapper.entityClass.isAssignableFrom(entity.getClass())
+                    || childMapper.entityClass == entity.getClass();
+            //System.out.println("    testing " + childMapper.entityClass + " : " + isValidMapper);
+            if (isValidMapper) {
+                return childMapper.getLeafByEntity(entity);
             }
         }
         return this;
     }
 
     // Mapping to DTO
-    public final dtoType toDTO(final entityType entity, final dtoType dto) {
-        return getLeafMapper(entity).bubbleUpDTO(entity, dto);
+    public final dtoType toDTO(final entityType entity) {
+        EntityMapper leaf = getLeafByEntity(entity);
+        return (dtoType) leaf.bubbleUpDTO(entity, leaf.dtoSupplier.get());
     }
 
     private dtoType bubbleUpDTO(final entityType entity, final dtoType dto) {
         dtoType outputDTO = dto;
         if (parentMapper != null) {
-            outputDTO = (dtoType) parentMapper.toDTO(entity, dto);
+            outputDTO = (dtoType) parentMapper.bubbleUpDTO(entity, dto);
         }
+        //System.out.println("Ruining bubbleUpDTO in " + this.getClass().getSimpleName() + " with dto "
+        //        + dto.getClass().getSimpleName());
         return localToDTO(entity, outputDTO);
     }
 
     protected abstract dtoType localToDTO(final entityType entity, final dtoType dto);
 
     // Mapping to Entity
-    public final entityType toEntity(final dtoType dto, final entityType entity) {
-        return getLeafMapper(entity).bubbleUpEntity(dto, entity);
+
+    private EntityMapper<entityType, dtoType> getLeafByDTO(final dtoType dto) {
+        //System.out.println("Ruining getLeafMapper in " + this.getClass().getSimpleName() + " with DTO: "
+        //        + dto.getClass().getSimpleName());
+        for (EntityMapper<entityType, dtoType> childMapper : childMappers) {
+            Boolean isValidMapper = childMapper.dtoClass.isAssignableFrom(dto.getClass())
+                    || childMapper.dtoClass == dto.getClass();
+            //System.out.println("    testing " + childMapper.dtoClass + " : " + isValidMapper);
+            if (isValidMapper) {
+                return childMapper.getLeafByDTO(dto);
+            }
+        }
+        return this;
+    }
+    
+    public final entityType toEntity(final dtoType dto) {
+        EntityMapper leaf = getLeafByDTO(dto);
+        return (entityType) leaf.bubbleUpEntity(dto, leaf.entityTypeSupplier.get());
     }
 
     private entityType bubbleUpEntity(final dtoType dto, final entityType entity) {
         entityType outputEntity = entity;
         if (parentMapper != null) {
-            outputEntity = (entityType) parentMapper.toEntity(dto, entity);
+            outputEntity = (entityType) parentMapper.bubbleUpEntity(dto, entity);
         }
+        //System.out.println("Ruining bubbleUpEntity in " + this.getClass().getSimpleName() + " with entity "
+        //        + entity.getClass().getSimpleName());
         return localToEntity(dto, outputEntity);
     }
 

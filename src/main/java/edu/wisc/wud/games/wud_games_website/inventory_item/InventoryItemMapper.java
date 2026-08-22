@@ -11,7 +11,7 @@ public class InventoryItemMapper extends EntityMapper<InventoryItem, InventoryIt
     private final GeneralDisSubclassMapper generalDisSubclassMapper;
 
     public InventoryItemMapper(GeneralDisSubclassMapper generalDisSubclassMapper) {
-        super(null, InventoryItem.class);
+        super(null, () -> new InventoryItem(), () -> new InventoryItemDTO());
         this.generalDisSubclassMapper = generalDisSubclassMapper;
     }
 

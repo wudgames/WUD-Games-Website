@@ -8,7 +8,7 @@ import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemMapper;
 @Component
 public class BoardGameMapper extends EntityMapper<BoardGame, BoardGameDTO> {
     public BoardGameMapper(PhysicalItemMapper physicalItemMapper) {
-        super(physicalItemMapper, BoardGame.class);
+        super(physicalItemMapper, () -> new BoardGame(), () -> new BoardGameDTO());
     }
 
     @Override

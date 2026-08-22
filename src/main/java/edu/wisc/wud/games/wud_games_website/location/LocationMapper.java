@@ -7,7 +7,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 @Component
 public class LocationMapper extends EntityMapper<Location, LocationDTO> {
     public LocationMapper() {
-        super(null, Location.class);
+        super(null, () -> new Location(), () -> new LocationDTO());
     }
 
     @Override

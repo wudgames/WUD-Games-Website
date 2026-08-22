@@ -8,7 +8,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 public class TagMapper extends EntityMapper<Tag, TagDTO> {
 
     public TagMapper() {
-        super(null, Tag.class);
+        super(null, Tag::new, TagDTO::new);
     }
 
     @Override

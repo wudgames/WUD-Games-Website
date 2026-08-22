@@ -8,7 +8,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 @Component
 public class BoardGameDisMapper extends EntityMapper<BoardGameDis, BoardGameDisDTO> {
     public BoardGameDisMapper(GameDisMapper gameDisMapper) {
-        super(gameDisMapper, BoardGameDis.class);
+        super(gameDisMapper, () -> new BoardGameDis(), () -> new BoardGameDisDTO());
     }
 
     public BoardGameDisDTO localToDTO(final BoardGameDis boardGameDis,

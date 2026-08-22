@@ -8,7 +8,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 @Component
 public class BoardGameExpansionMapper extends EntityMapper<BoardGameExpansion, BoardGameExpansionDTO> {
     public BoardGameExpansionMapper(BoardGameMapper boardGameMapper) {
-        super(boardGameMapper,BoardGameExpansion.class);
+        super(boardGameMapper,() -> new BoardGameExpansion(), () -> new BoardGameExpansionDTO());
     }
 
     @Override

@@ -9,7 +9,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisMapper;
 public class GameConsoleDisMapper extends EntityMapper<GameConsoleDis, GameConsoleDisDTO> {
 
     public GameConsoleDisMapper(GeneralDisMapper parentMapper) {
-        super(parentMapper, GameConsoleDis.class);
+        super(parentMapper, () -> new GameConsoleDis(), () -> new GameConsoleDisDTO());
     }
 
     @Override
