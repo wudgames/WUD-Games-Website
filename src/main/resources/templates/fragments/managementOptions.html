@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Management Options</title>
+</head>
+
+<body id="root" th:fragment="managementOptions (description_managed)">
+    <span
+        th:if="${description_managed instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}"
+        sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
+
+        <a th:href="@{~/manage/inventory/update/{id}(id=${description_managed.id})}">
+            <button>Edit</button>
+        </a>
+
+
+        <a>
+            <button>Delete (WIP)</button>
+        </a>
+
+    </span>
+
+</body>
+
+</html>

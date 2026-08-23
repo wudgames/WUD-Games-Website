@@ -8,7 +8,72 @@
 <body id="root">
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>Single description page</div>
-    <div th:replace="~{fragments/tile :: tile(someType)}"></div>
+    <span th:replace="~{fragments/managementOptions :: managementOptions(${description})}">Management Options</span>
+    <!-- 
+    <div th:if="${show_editor == true}">Editor Visible</div>
+    <div th:if="${show_editor != true}">Editor Hidden</div>
+    -->
+    Description type is <span th:text="${description_type}"></span>
+    <form action="/api/description/create" method="post" th:object="${description}">
+        <input type="hidden" th:value="${description_type}" name="description_type">
+        <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
+            <input type="hidden" th:field="*{id}">
+            <div>GeneralDis fields</div>
+            <!-- add a prefill link option (link from steam or bgg) here -->
+            <div class="media">
+                <div class="content">
+                    <h3>
+                        <span th:if="${show_editor != true}" th:text="${description.name}">Name</span>
+                        <input th:if="${show_editor == true}" id="name" aria-label="Name" type="text" th:field="*{name}"
+                            th:value="${name}" />
+                    </h3>
+                    <p th:if="${show_editor != true}" th:text="${description.description}">description</p>
+                    <textarea th:if="${show_editor == true}" id="description" aria-label="Description" type="text"
+                        th:field="*{description}"></textarea>
+                    <!-- Add tags fields here -->
+                </div>
+                <img th:if="${show_editor != true}" th:src="${description.imageUrl}" alt="Description Image" class="img"
+                    src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
+                <span th:if="${show_editor == true}">
+                    <label for="imageUrl">Image Url</label>: <input id="imageUrl" type="url" th:field="*{imageUrl}" />
+                </span>
+            </div>
+        </span>
+        <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+            <span th:if="${show_editor == true}">
+                <div>GameDis fields</div>
+                <label for="minPlayers">Min player count</label>: <input id="minPlayers" type="number"
+                    th:field="*{minPlayers}" />
+                <label for="maxPlayers">Max player count</label>: <input id="maxPlayers" type="number"
+                    th:field="*{maxPlayers}" />
+            </span>
+        </span>
+        <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+            <span th:if="${show_editor == true}">
+                <div>BoardGameDis fields</div>
+                <label for="minPlaytime">Min playtime (minutes)</label>: <input id="minPlaytime" type="number"
+                    th:field="*{minPlaytime}" />
+                <label for="maxPlaytime">Max playtime (minutes)</label>: <input id="maxPlaytime" type="number"
+                    th:field="*{maxPlaytime}" />
+            </span>
+        </span>
+        <span
+            th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO)}">
+            <span th:if="${show_editor == true}">
+                <div>BoardGameExpansionDis fields</div>
+                <!-- Add selecting what this is an expansion to here -->
+            </span>
+        </span>
+        <!--
+            <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.video_game_expansion_dis.VideoGameExpansionDisDTO)}">
+                <div>VideoGameExpansionDis fields</div>
+                <!- - Add selecting what this is an expansion to here - ->
+            </span>
+            -->
+        <div>
+            <input th:if="${show_editor == true}" type="submit" value="Submit">
+        </div>
+    </form>
     <div>This with be were information about individual items could go.</div>
 </body>
 

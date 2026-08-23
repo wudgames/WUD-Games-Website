@@ -86,11 +86,13 @@ public class InventoryManagementResource {
 
     @GetMapping("manage/inventory/update/{id}")
     public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
-        ModelAndView model = new ModelAndView("manage/descriptions/page");
+        ModelAndView model = new ModelAndView("search/singleDescription");
         System.out.println("Loading type for description with id: " + id);
         GeneralDisDTO generalDisDTO = generalDisService.get(id);
         System.out.println("found " + generalDisDTO);
         verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
+        model.addObject("show_editor", true);
+        model.addObject("description_type", physicalDescriptionStrings.get(generalDisDTO.getClass()));
         model.addObject("description", generalDisDTO);// This is used to pass the id along to the form options
         Set<String> type_option = new HashSet<>();
         type_option.add(physicalDescriptionStrings.get(generalDisDTO.getClass()));

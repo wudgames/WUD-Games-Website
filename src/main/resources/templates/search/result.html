@@ -21,6 +21,7 @@
 
         <div th:each="tiledata: ${generalDisDTOList}" class="overlay">
             <div class="overlay__content">
+                overlay
                 <div>
                     <a sec:authorize="hasRole('HOST')">
                         <button>Checkout</button>
@@ -31,20 +32,7 @@
                         <button>Return</button>
                     </a>
                 </div>
-                <span
-                    th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}"
-                    sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
-                    <div>
-                        <a th:href="@{~/manage/inventory/update/{id}(id=${tiledata.id})}">
-                            <button>Edit</button>
-                        </a>
-                    </div>
-                    <div>
-                        <a>
-                            <button>Delete</button>
-                        </a>
-                    </div>
-                </span>
+                <span th:replace="~{fragments/managementOptions :: managementOptions(${tiledata})}">Management Options</span>
             </div>
             <a th:href="@{~/library/{id}/{name}(id=${tiledata.id},name=${tiledata.name})}">
                 <div th:replace="~{fragments/tile :: tile(sometype)}"></div>

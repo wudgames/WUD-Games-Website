@@ -31,7 +31,7 @@ public class InventoryDisplayResource {
     public ModelAndView getPageForDescription(@PathVariable Long id) {
         ModelAndView model = new ModelAndView("search/singleDescription");
         GeneralDisDTO generalDisDTO = generalDisService.get(id);
-        model.addObject("tiledata", generalDisDTO);
+        model.addObject("description", generalDisDTO);
         return model;
     }
 
