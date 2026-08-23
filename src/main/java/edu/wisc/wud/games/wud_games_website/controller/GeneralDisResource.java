@@ -202,15 +202,16 @@ public class GeneralDisResource {
         GeneralDisDTO descriptionDTO = getEmptyDTOFor(queryParameters.get("description_type"));
         System.out.println(descriptionDTO);
         if (descriptionDTO instanceof GeneralDisDTO) {
-            descriptionDTO.setId(Long.valueOf(queryParameters.get("id")));
+            try {
+                descriptionDTO.setId(Long.valueOf(queryParameters.get("id")));
+            } catch (NumberFormatException e) {
+            }
             descriptionDTO.setName(queryParameters.get("name"));
             descriptionDTO.setDescription(queryParameters.get("description"));
             descriptionDTO.setImageUrl(queryParameters.get("imageUrl"));
             descriptionDTO.setTags(new ArrayList<>());
             // TODO tags
         }
-
-        
 
         if (descriptionDTO instanceof GameDisDTO) {
             GameDisDTO gamsDisDTO = (GameDisDTO) descriptionDTO;
@@ -232,11 +233,9 @@ public class GeneralDisResource {
                 try {
                     boardGameDisDTO.setMaxPlaytime(Integer.valueOf(queryParameters.get("maxPlaytime")));
                 } catch (NumberFormatException e) {
-            }
+                }
             }
         }
-
-        
 
         return descriptionDTO;
     }
