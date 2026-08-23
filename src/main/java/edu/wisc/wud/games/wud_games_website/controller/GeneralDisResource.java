@@ -1,13 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.controller;
 
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
-import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisService;
-import edu.wisc.wud.games.wud_games_website.game_console.GameConsoleDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
-import static org.mockito.Mockito.description;
-
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,25 +17,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.wisc.wud.games.wud_games_website.board_game.BoardGameDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion.BoardGameExpansionDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisService;
-import edu.wisc.wud.games.wud_games_website.equipment.EquipmentDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
-import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisService;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
-import edu.wisc.wud.games.wud_games_website.game_dis.GameDisService;
-import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 
@@ -218,9 +206,11 @@ public class GeneralDisResource {
             descriptionDTO.setName(queryParameters.get("name"));
             descriptionDTO.setDescription(queryParameters.get("description"));
             descriptionDTO.setImageUrl(queryParameters.get("imageUrl"));
+            descriptionDTO.setTags(new ArrayList<>());
+            // TODO tags
         }
 
-        // TODO tags
+        
 
         if (descriptionDTO instanceof GameDisDTO) {
             GameDisDTO gamsDisDTO = (GameDisDTO) descriptionDTO;

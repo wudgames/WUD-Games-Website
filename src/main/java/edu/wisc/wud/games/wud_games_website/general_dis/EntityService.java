@@ -40,15 +40,15 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
     }
 
     public Long create(final dtoType dto) {
-        final entityType entity = newEntity();
-        mapper.toEntity(dto);
+        entityType entity = newEntity();
+        entity = mapper.toEntity(dto);
         return repository.save(entity).getId();
     }
 
     public void update(final Long id, final dtoType dto) {
-        final entityType entity = repository.findById(id)
+        entityType entity = repository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapper.toEntity(dto);
+        entity = mapper.toEntity(dto);
         repository.save(entity);
     }
 

@@ -1,49 +1,17 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
-import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisRepository;
-import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDis;
-import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
-import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDis;
-import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
-import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
-import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
-import edu.wisc.wud.games.wud_games_website.tag.Tag;
-import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
-import edu.wisc.wud.games.wud_games_website.tag.TagRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
-import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDis;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
-import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisRepository;
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.security.InvalidParameterException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 @Service("GeneralDisService")
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 public class GeneralDisService extends EntityService<GeneralDisRepository, GeneralDis, GeneralDisDTO> {
     public GeneralDisService(GeneralDisRepository repository, EntityMapper<GeneralDis, GeneralDisDTO> mapper,
             ApplicationEventPublisher publisher) {
