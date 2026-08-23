@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">WUD Games</title>
+</head>
+
+<body id="root">
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    <div>Single description page</div>
+    <div th:replace="~{fragments/tile :: tile(someType)}"></div>
+</body>
+
+</html>

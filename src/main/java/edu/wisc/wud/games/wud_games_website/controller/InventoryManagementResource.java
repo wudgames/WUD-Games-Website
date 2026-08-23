@@ -7,7 +7,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,7 +14,6 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,18 +29,15 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 
 @RestController
-public class GeneralDisResource {
+@PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+public class InventoryManagementResource {
     private final GeneralDisService generalDisService;
 
     private final Map<Class<? extends GeneralDisDTO>, String> physicalDescriptionStrings = new HashMap<>();
-    private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();// Used
-                                                                                                                        // when
-                                                                                                                        // create
-                                                                                                                        // a
-                                                                                                                        // new
-                                                                                                                        // entity
+    // Used when  create a new entity
+    private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();
 
-    public GeneralDisResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService) {
+    public InventoryManagementResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService) {
         this.generalDisService = generalDisService;
 
         physicalDescriptionStrings.put(BoardGameDisDTO.class, "Board Game");
@@ -57,65 +52,7 @@ public class GeneralDisResource {
         physicalDescriptionStrings.put(GameConsoleDisDTO.class, "Game Console");
         dtoFactories.put(GameConsoleDisDTO.class, () -> new GameConsoleDisDTO());
     }
-
-    /*
-     * private GeneralDisDTO emptyDTOFor(Map<String, String> queryParameters) {
-     * if (id != null) {
-     * generalDisDTO = generalDisService.get(id);
-     * } else {
-     * Class<? extends GeneralDisDTO> dtoClass = null;
-     * for (Entry<Class<? extends GeneralDisDTO>, String> entry :
-     * physicalDescriptionStrings.entrySet()) {
-     * if (entry.getValue().equals(description_type)) {
-     * dtoClass = entry.getKey();
-     * break;
-     * }
-     * }
-     * if (null == dtoClass) {
-     * throw new IllegalArgumentException("Invalid description type: " +
-     * description_type);
-     * }
-     * generalDisDTO = dtoFactories.get(dtoClass).get();
-     * }
-     * }
-     * 
-     * private GeneralDisDTO getDTOFromQueryParameters(Map<String, String>
-     * queryParameters) {
-     * GeneralDisDTO generalDisDTO;
-     * Long description_id;
-     * if (queryParameters.containsKey("id") && queryParameters.get("id") != null) {
-     * description_id = Long.decode(queryParameters.get("id"));
-     * } else {
-     * description_id = null;
-     * }
-     * generalDisDTO.setId(description_id);
-     * generalDisDTO.setName(queryParameters.get("name"));
-     * generalDisDTO.setDescription(queryParameters.get("description"));
-     * generalDisDTO.setImageUrl(queryParameters.get("imageUrl"));
-     * // TODO tags
-     * if (generalDisDTO instanceof GameDisDTO) {
-     * try {
-     * ((GameDisDTO)
-     * generalDisDTO).setMinPlayers(Integer.valueOf(queryParameters.get("minPlayers"
-     * )));
-     * } catch (NumberFormatException e) {
-     * }
-     * try {
-     * ((GameDisDTO)
-     * generalDisDTO).setMaxPlayers(Integer.valueOf(queryParameters.get("maxPlayers"
-     * )));
-     * } catch (NumberFormatException e) {
-     * }
-     * }
-     * // TODO fields on other description types
-     * return generalDisDTO;
-     * }
-     */
-    @GetMapping("/library")
-    public ModelAndView librarySearch(Model model, @RequestParam Map<String, String> queryParameters) {
-        attachResults(model, queryParameters);
-        return new ModelAndView("search/library");
-    }
+    
 
     private Set<String> getTypeAuthorizedOptionsFor(HttpServletRequest request) {
         Set<String> authorizedTypeStrings = new HashSet<>();
@@ -136,7 +73,6 @@ public class GeneralDisResource {
         throw new InvalidParameterException("Failed to determine authorization to edit type: " + descriptionType);
     }
 
-    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/create")
     public ModelAndView getMethodName(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
@@ -148,7 +84,6 @@ public class GeneralDisResource {
         return model;
     }
 
-    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("manage/inventory/update/{id}")
     public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/page");
@@ -177,7 +112,6 @@ public class GeneralDisResource {
         return descriptionDTO;
     }
 
-    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @GetMapping("/api/manage/descriptions/formoptions")
     public ModelAndView getItemForm(@RequestParam(required = false) Long id, @RequestParam String description_type,
             HttpServletRequest request) {
@@ -239,8 +173,7 @@ public class GeneralDisResource {
 
         return descriptionDTO;
     }
-
-    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+    
     @PostMapping("/api/description/create")
     public ModelAndView createNewItem(HttpServletRequest request,
             @RequestParam Map<String, String> queryParameters) {
@@ -250,18 +183,5 @@ public class GeneralDisResource {
         verifyAuthorizationForDescriptionType(request, descriptionDTO.getClass());
         generalDisService.createOrUpdateDescription(descriptionDTO);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
-    }
-
-    /* This is called to refresh the the html for displaying a search result */
-    @GetMapping("/api/search")
-    public ModelAndView getMethodNameM(Model model, @RequestParam Map<String, String> queryParameters) {
-        attachResults(model, queryParameters);
-        return new ModelAndView("search/result");
-    }
-
-    private void attachResults(Model model, Map<String, String> queryParameters) {
-        System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
-        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
-        model.addAttribute("generalDisDTOList", generalDisDTOList);
     }
 }
