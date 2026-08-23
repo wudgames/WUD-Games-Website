@@ -13,7 +13,7 @@
     <div th:if="${show_editor == true}">Editor Visible</div>
     <div th:if="${show_editor != true}">Editor Hidden</div>
     -->
-    Description type is <span th:text="${description_type}"></span>
+    Description type is "<span th:text="${description_type}"></span>"
     <form action="/api/description/create" method="post" th:object="${description}">
         <input type="hidden" th:value="${description_type}" name="description_type">
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
@@ -40,6 +40,10 @@
             </div>
         </span>
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+            <div th:if="${show_editor != true}">
+                Min player count: <span th:text="*{minPlayers}"></span>
+                Max player count: <span th:text="*{maxPlayers}"></span>
+            </div>
             <span th:if="${show_editor == true}">
                 <div>GameDis fields</div>
                 <label for="minPlayers">Min player count</label>: <input id="minPlayers" type="number"
@@ -49,6 +53,10 @@
             </span>
         </span>
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+            <div th:if="${show_editor != true}">
+                Min playtime (minutes): <span th:text="*{minPlaytime}"></span>
+                Max playtime (minutes): <span th:text="*{maxPlaytime}"></span>
+            </div>
             <span th:if="${show_editor == true}">
                 <div>BoardGameDis fields</div>
                 <label for="minPlaytime">Min playtime (minutes)</label>: <input id="minPlaytime" type="number"
