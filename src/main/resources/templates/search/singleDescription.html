@@ -83,6 +83,18 @@
         </div>
     </form>
     <div>This with be were information about individual items could go.</div>
+    <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}"
+        sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
+        <form method="post" th:action="@{/api/manage/createItem}">
+            <input type="hidden" name="description_id" th:value="${description.id}">
+            <button type="submit">Add Copy (WIP)</button>
+        </form>
+    </span>
+    <span hx-target="next itemsTable"
+        hx-get="/library/itemsTable"
+        hx-trigger="submit from:[name='create_copy']">
+        <span name="itemsTable" th:replace="~{fragments/itemsTable ::itemsTable}"></span>
+    </span>
 </body>
 
 </html>

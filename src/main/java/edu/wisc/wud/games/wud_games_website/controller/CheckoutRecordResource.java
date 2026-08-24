@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
 @EnableMethodSecurity
+@PreAuthorize("hasRole('HOST')")
 @RequestMapping(value = "/api/checkoutRecords", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CheckoutRecordResource {
 
@@ -31,37 +34,11 @@ public class CheckoutRecordResource {
         this.checkoutRecordService = checkoutRecordService;
     }
 
-    @PreAuthorize("denyAll")
-    @GetMapping
-    public ResponseEntity<List<CheckoutRecordDTO>> getAllCheckoutRecords() {
-        return ResponseEntity.ok(checkoutRecordService.findAll());
+    @GetMapping("path")
+    public String getMethodName(@RequestParam String param) {
+        return new String();
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CheckoutRecordDTO> getCheckoutRecord(
-            @PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(checkoutRecordService.get(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<Long> createCheckoutRecord(
-            @RequestBody @Valid final CheckoutRecordDTO checkoutRecordDTO) {
-        final Long createdId = checkoutRecordService.create(checkoutRecordDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateCheckoutRecord(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final CheckoutRecordDTO checkoutRecordDTO) {
-        checkoutRecordService.update(id, checkoutRecordDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCheckoutRecord(@PathVariable(name = "id") final Long id) {
-        checkoutRecordService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+    
 
 }
 

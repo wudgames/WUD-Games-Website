@@ -1,18 +1,13 @@
 package edu.wisc.wud.games.wud_games_website.equipment;
 
-import jakarta.validation.constraints.NotNull;
+import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Getter
 @Setter
-public class EquipmentDTO {
-
-    private Long id;
-
-    @NotNull
-    private Long equipmentDis;
+public class EquipmentDTO extends PhysicalItemDTO {
 
 }
 

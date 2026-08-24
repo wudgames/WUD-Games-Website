@@ -1,8 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public abstract class EntityMapper<entityType, dtoType> {
     private final EntityMapper parentMapper;
@@ -46,6 +48,14 @@ public abstract class EntityMapper<entityType, dtoType> {
         return (dtoType) leaf.bubbleUpDTO(entity, leaf.dtoSupplier.get());
     }
 
+    public final List<dtoType> allToDTO(final List<entityType> entityList) {
+        return entityList.stream().map(this::toDTO).toList();
+    }
+
+    public final Set<dtoType> allToDTO(final Set<entityType> entityList) {
+        return entityList.stream().map(this::toDTO).collect(Collectors.toSet());
+    }
+
     private dtoType bubbleUpDTO(final entityType entity, final dtoType dto) {
         dtoType outputDTO = dto;
         if (parentMapper != null) {
@@ -77,6 +87,14 @@ public abstract class EntityMapper<entityType, dtoType> {
     public final entityType toEntity(final dtoType dto) {
         EntityMapper leaf = getLeafByDTO(dto);
         return (entityType) leaf.bubbleUpEntity(dto, leaf.entityTypeSupplier.get());
+    }
+
+    public final List<entityType> allToEntity(final List<dtoType> dtoList) {
+        return dtoList.stream().map(this::toEntity).toList();
+    }
+
+    public final Set<entityType> allToEntity(final Set<dtoType> dtoList) {
+        return dtoList.stream().map(this::toEntity).collect(Collectors.toSet());
     }
 
     private entityType bubbleUpEntity(final dtoType dto, final entityType entity) {

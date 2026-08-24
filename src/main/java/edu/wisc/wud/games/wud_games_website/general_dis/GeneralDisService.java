@@ -1,7 +1,12 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
+
+import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -9,13 +14,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.ModelAndView;
 
 @Service("GeneralDisService")
 @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 public class GeneralDisService extends EntityService<GeneralDisRepository, GeneralDis, GeneralDisDTO> {
+
+    private final InventoryItemRepository inventoryItemRepository;
+    private final InventoryItemMapper inventoryItemMapper;
+
     public GeneralDisService(GeneralDisRepository repository, EntityMapper<GeneralDis, GeneralDisDTO> mapper,
-            ApplicationEventPublisher publisher) {
+            ApplicationEventPublisher publisher, InventoryItemRepository inventoryItemRepository, InventoryItemMapper inventoryItemMapper) {
         super(repository, mapper, publisher);
+        this.inventoryItemRepository = inventoryItemRepository;
+        this.inventoryItemMapper = inventoryItemMapper;
     }
     /*
     // This is used to fill in the existing data for 
@@ -46,6 +58,14 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public void setDataForSingleDescription(Long description_id, ModelAndView model) {
+        GeneralDisDTO generalDisDTO = get(description_id);
+        model.addObject("description", generalDisDTO);
+        GeneralDis generalDis = mapper.toEntity(generalDisDTO);
+        List<InventoryItemDTO> items = inventoryItemMapper.allToDTO(inventoryItemRepository.findByGenDis(generalDis));
+        model.addObject("items", items);
     }
 
     // What is this for?

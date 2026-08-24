@@ -1,18 +1,13 @@
 package edu.wisc.wud.games.wud_games_website.account;
 
-import jakarta.validation.constraints.NotNull;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Getter
 @Setter
-public class AccountDTO {
-
-    private Long id;
-
-    @NotNull
-    private Long accountDis;
+public class AccountDTO extends InventoryItemDTO {
 
 }
 

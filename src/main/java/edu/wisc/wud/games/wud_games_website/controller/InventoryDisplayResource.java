@@ -32,6 +32,7 @@ public class InventoryDisplayResource {
         ModelAndView model = new ModelAndView("search/singleDescription");
         GeneralDisDTO generalDisDTO = generalDisService.get(id);
         model.addObject("description", generalDisDTO);
+        //model.addObject("id", id);
         return model;
     }
 

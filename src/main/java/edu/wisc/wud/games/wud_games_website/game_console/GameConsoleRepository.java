@@ -5,7 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameConsoleRepository extends JpaRepository<GameConsole, Long> {
 
-    GameConsole findFirstByGameConsoleDisId(Long id);
-
 }
 

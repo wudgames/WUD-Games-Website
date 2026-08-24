@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.video_game;
 
+import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,12 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VideoGameDTO {
-
-    private Long id;
-
-    @NotNull
-    private Long videoGameDis;
+public class VideoGameDTO extends DigitalItemDTO {
 
 }
 

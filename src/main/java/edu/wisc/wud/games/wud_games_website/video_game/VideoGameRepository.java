@@ -5,7 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VideoGameRepository extends JpaRepository<VideoGame, Long> {
 
-    VideoGame findFirstByVideoGameDisId(Long id);
-
 }
 
