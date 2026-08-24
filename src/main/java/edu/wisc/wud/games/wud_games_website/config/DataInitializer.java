@@ -11,6 +11,10 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import edu.wisc.wud.games.wud_games_website.location.Location;
+import edu.wisc.wud.games.wud_games_website.location.LocationDTO;
+import edu.wisc.wud.games.wud_games_website.location.LocationRepository;
+import edu.wisc.wud.games.wud_games_website.location.LocationService;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
@@ -21,17 +25,19 @@ public class DataInitializer {
     private final BoardGameDisRepository boardGameDisRepository;
 
     private final UserAccountService userAccountService;
-
     private final UserAccountRepository userAccountRepository;
+
+    private final LocationRepository locationRepository;
 
     private final GeneralDisService generalDisService;
 
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
-            UserAccountRepository userAccountRepository, @Qualifier("GeneralDisService") GeneralDisService generalDisService) {
+            UserAccountRepository userAccountRepository, @Qualifier("GeneralDisService") GeneralDisService generalDisService, LocationRepository locationRepository) {
         this.boardGameDisRepository = boardGameDisRepository;
         this.userAccountService = userAccountService;
         this.userAccountRepository = userAccountRepository;
         this.generalDisService = generalDisService;
+        this.locationRepository = locationRepository;
     }
 
     @Bean
@@ -44,17 +50,14 @@ public class DataInitializer {
             // Log to verify if the count check is working
             long count = userAccountRepository.count();
             UserAccount defaultAdminAccount = userAccountRepository.findByEmail(defaultAdminEmail);
-            Long id;
             System.out.println("Number of users in the database: " + count);
 
             if (null == defaultAdminAccount) {
                 System.out.println(
                         "Did not find default admin account with email: " + defaultAdminEmail + ", creating...");
-                id = userAccountService.create(new UserAccountDTO());
-                defaultAdminAccount = userAccountRepository.findById(id).orElseThrow();
+                defaultAdminAccount = new UserAccount();
                 System.out.println("Default defaultAdminAccount added successfully!");
             } else {
-                id = defaultAdminAccount.getId();
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
             defaultAdminAccount.setEmail(defaultAdminEmail);
@@ -67,13 +70,20 @@ public class DataInitializer {
             count = boardGameDisRepository.count();
             System.out.println("Number of game descriptions in the database: " + count);
             if (count == 0) {
-                addEntriesForTesting();
+                addBoardGamesForTesting();
                 System.out.println("Default game descriptions added successfully!");
+            }
+
+            if (locationRepository.findByName("Unknown").isEmpty()) {
+                Location unknownLocation = locationRepository.findByName("Unknown").orElse(new Location());
+                unknownLocation.setName("Unknown");
+                locationRepository.save(unknownLocation);
+                System.out.println("Created Unknown location successfully!");
             }
         };
     }
 
-    private void addEntriesForTesting() {
+    private void addBoardGamesForTesting() {
         BoardGameDisDTO boardGameDisDTO = new BoardGameDisDTO();
         boardGameDisDTO.setName("7 Wonders");
         boardGameDisDTO

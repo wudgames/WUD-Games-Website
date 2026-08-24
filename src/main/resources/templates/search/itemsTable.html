@@ -18,7 +18,8 @@
             <td th:text="${item.barcode}"></td>
             <td th:text="${item.notes}"></td>
             <td th:text="${item.location.name}"></td>
-            <td th:text="${item.availability}"></td>
+            <td></td>
+            <!-- <td th:text="${item.availability}"></td> -->
             <td>
                 <form method="post" th:action="@{/api/manage/editItem}">
                     <input type="hidden" name="item_id" th:value="${item.id}">

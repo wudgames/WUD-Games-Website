@@ -19,6 +19,9 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisMapper;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import edu.wisc.wud.games.wud_games_website.location.LocationDTO;
+import edu.wisc.wud.games.wud_games_website.location.LocationMapper;
+import edu.wisc.wud.games.wud_games_website.location.LocationRepository;
 import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;
@@ -44,6 +47,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class InventoryItemService extends EntityService<InventoryItemRepository, InventoryItem, InventoryItemDTO> {
 
     private final InventoryItemRepository inventoryItemRepository;
+    private final LocationRepository locationRepository;
+    private final LocationMapper locationMapper;
     private final GeneralDisService generalDisService;
     private final GeneralDisMapper generalDisMapper;
     private final CheckoutRecordRepository checkoutRecordRepository;
@@ -54,12 +59,15 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
             final InventoryItemMapper mapper,
             final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher, final GeneralDisService generalDisService,
-            final GeneralDisMapper generalDisMapper) {
+            final GeneralDisMapper generalDisMapper, final LocationRepository locationRepository, final LocationMapper locationMapper) {
         super(inventoryItemRepository, mapper, publisher);
         this.generalDisService = generalDisService;
         this.generalDisMapper = generalDisMapper;
         this.inventoryItemRepository = inventoryItemRepository;
         this.checkoutRecordRepository = checkoutRecordRepository;
+        this.locationRepository = locationRepository;
+        this.locationMapper = locationMapper;
+    
 
         //generalDisDTOToInventoryItemDTOMap.put(GeneralDisDTO.class, () -> new InventoryItemDTO());
         generalDisDTOToInventoryItemDTOMap.put(BoardGameDisDTO.class, () -> new BoardGameDTO());
@@ -84,7 +92,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         GeneralDis generalDis = generalDisMapper.toEntity(generalDisService.get(description_id));
         List<InventoryItem> inventoryItems = inventoryItemRepository.findByGenDis(generalDis);
         List<InventoryItemDTO> itemDTOs = inventoryItems.stream().map(entity -> mapper.toDTO(entity)).toList();
-        ModelAndView model = new ModelAndView("templates/itemsTable");
+        ModelAndView model = new ModelAndView("search/itemsTable");
         model.addObject("items", itemDTOs);
         return model;
     }
@@ -108,6 +116,11 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         } else {
             throw new UnsupportedOperationException(
                     "Authorization could not be confirmed for type " + inventoryItemDTO.getClass());
+        }
+        inventoryItemDTO.setGenDis(generalDisDTO);
+        if (inventoryItemDTO instanceof PhysicalItemDTO) {
+            LocationDTO unknownLocation = locationMapper.toDTO(locationRepository.findByName("Unknown").orElseThrow());
+            ((PhysicalItemDTO) inventoryItemDTO).setLocation(unknownLocation);
         }
         this.create(inventoryItemDTO);
     }

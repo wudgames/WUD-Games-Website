@@ -29,8 +29,12 @@ public class InventoryItemResource {
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER')")
     @PostMapping("/api/manage/createItem")
-    public void getMethodName(@RequestParam Long description_id, HttpServletRequest request) {
-        inventoryItemService.createItemFor(description_id, request);
+    public void createInventoryItem(@RequestParam Long description_id, HttpServletRequest request) {
+        try {
+            inventoryItemService.createItemFor(description_id, request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
 

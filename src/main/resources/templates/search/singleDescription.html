@@ -90,10 +90,12 @@
             <button type="submit">Add Copy (WIP)</button>
         </form>
     </span>
-    <span hx-target="next itemsTable"
+    <input type="hidden" name="description_id" th:value="${description.id}">
+    <span hx-target="find #itemsTable"
         hx-get="/library/itemsTable"
-        hx-trigger="submit from:[name='create_copy']">
-        <span name="itemsTable" th:replace="~{fragments/itemsTable ::itemsTable}"></span>
+        hx-trigger="load, submit from:[name='create_copy']"
+        hx-include="[name='description_id']">
+        <span id="itemsTable">Loading Items...</span>
     </span>
 </body>
 

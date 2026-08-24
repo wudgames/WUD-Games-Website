@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
+import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,9 @@ public abstract class EntityMapper<entityType, dtoType> {
 
     // Mapping to DTO
     public final dtoType toDTO(final entityType entity) {
+        if (entity == null) {
+            return null;
+        }
         EntityMapper leaf = getLeafByEntity(entity);
         return (dtoType) leaf.bubbleUpDTO(entity, leaf.dtoSupplier.get());
     }
@@ -85,6 +89,9 @@ public abstract class EntityMapper<entityType, dtoType> {
     }
     
     public final entityType toEntity(final dtoType dto) {
+        if (dto == null) {
+            return null;
+        }
         EntityMapper leaf = getLeafByDTO(dto);
         return (entityType) leaf.bubbleUpEntity(dto, leaf.entityTypeSupplier.get());
     }
