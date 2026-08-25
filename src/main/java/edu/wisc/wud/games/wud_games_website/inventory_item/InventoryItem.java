@@ -58,7 +58,7 @@ public class InventoryItem implements EntityWithId {
     @JoinColumn(name = "current_checkout_id")
     private CheckoutRecord currentCheckout;
     */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gen_dis_id", nullable = false)
     private GeneralDis genDis;
 

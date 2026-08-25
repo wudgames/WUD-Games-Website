@@ -17,11 +17,14 @@
         <tr th:each="item : ${items}">
             <td th:text="${item.barcode}"></td>
             <td th:text="${item.notes}"></td>
-            <td th:text="${item.location.name}"></td>
+            <td>
+                <span th:if="${item.location} != null" th:text="${item.location.name}"></span>
+                <span th:if="${item.location} == null">null</span>
+            </td>
             <td></td>
             <!-- <td th:text="${item.availability}"></td> -->
             <td>
-                <form method="post" th:action="@{/api/manage/editItem}">
+                <form method="get" th:action="@{/manage/inventoryItem/edit}">
                     <input type="hidden" name="item_id" th:value="${item.id}">
                     <button type="submit">Edit Copy (WIP)</button>
                 </form>

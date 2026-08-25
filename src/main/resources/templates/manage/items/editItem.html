@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Edit Item</title>
+</head>
+
+<body id="root">
+    <div>This is the update form page for items.</div>
+    <form action="/manage/inventoryItem/edit" method="post" th:object="${item}">
+        <input type="hidden" th:field="*{id}">
+        <label for="notes">Notes</label>: <textarea id="notes" type="text"
+                th:field="*{notes}"></textarea>
+        <span th:if="${item instanceof T(edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO)}">
+            <h3>Physical Item Fields:</h3>
+            <div>
+                Location: <span th:text="${item.location.name}"></span> (Editing WIP)
+            </div>
+            <div>
+                Barcode: <span th:text="*{barcode}"></span> (Editing WIP)
+            </div>
+        </span>
+        <span th:if="${item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}">
+            <h3>Digital Item Fields:</h3>
+            <div>
+                Compatible Accounts: <span th:text="${item.compatible_accounts}"></span> (Editing WIP)
+            </div>
+        </span>
+        <div>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+</body>
+
+</html>
