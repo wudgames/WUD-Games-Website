@@ -30,7 +30,7 @@
                 </form>
                 <form method="post" th:action="@{/api/manage/deleteItem}">
                     <input type="hidden" name="item_id" th:value="${item.id}">
-                    <button type="submit">Delete Copy (WIP)</button>
+                    <button type="submit" onclick="return confirm('Confirm Deleting Item?');">Delete Copy (WIP)</button>
                 </form>
             </td>
         </tr>

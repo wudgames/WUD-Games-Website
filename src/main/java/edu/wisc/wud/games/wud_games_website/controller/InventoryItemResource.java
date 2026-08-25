@@ -25,6 +25,8 @@ import edu.wisc.wud.games.wud_games_website.steam_account.SteamAccountDTO;
 import edu.wisc.wud.games.wud_games_website.video_game.VideoGameDTO;
 
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 public class InventoryItemResource {
@@ -78,8 +80,10 @@ public class InventoryItemResource {
         return modelAndView;
     }
 
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/manage/inventoryItem/edit")
     public ModelAndView updateItem(@RequestParam Map<String, String> parameters) {
+        // TODO move whole method to service
         InventoryItemDTO originalItem = inventoryItemService.get(Long.valueOf(parameters.get("id")));
         // TODO check authority
         InventoryItemDTO updatedItem = updateItem(originalItem, parameters);
@@ -88,7 +92,6 @@ public class InventoryItemResource {
     }
 
     private InventoryItemDTO updateItem(InventoryItemDTO originalItem, Map<String, String> parameters) {
-        // TODO create a dto of the correct type
         InventoryItemDTO updatedItem = itemDTOSupplierMap.get(originalItem.getClass()).get();
         updatedItem.setId(originalItem.getId());
         updatedItem.setGenDis(originalItem.getGenDis());
@@ -107,6 +110,16 @@ public class InventoryItemResource {
         // TODO Barcodes and accounts
         return updatedItem;
     }
-    
+
+    @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
+    @PostMapping("/api/manage/deleteItem")
+    public String postMethodName(@RequestParam Map<String, String> parameters) {
+        // TODO move whole method to service
+        // TODO check authority
+        Long item_id = Long.valueOf(parameters.get("item_id"));
+        Long descriptionId = inventoryItemService.get(item_id).getGenDis().getId();
+        inventoryItemService.delete(item_id);// Failing with no such element found exception
+        return "redirect:/library/" + descriptionId;
+    }
 }
 
