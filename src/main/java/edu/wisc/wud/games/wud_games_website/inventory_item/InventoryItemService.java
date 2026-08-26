@@ -11,6 +11,8 @@ import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO;
 import edu.wisc.wud.games.wud_games_website.equipment.EquipmentDTO;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.game_console.GameConsoleDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
@@ -134,8 +136,8 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
     class GeneralDisListener {
         // Stop a description of an item from being deleted if there are still items
         // using that description
-        @EventListener(BeforeDelete.class)
-        public void on(final BeforeDelete<GeneralDis> event) {
+        @EventListener(BeforeDeleteGeneralDis.class)
+        public void on(final BeforeDeleteGeneralDis event) {
             final ReferencedException referencedException = new ReferencedException();
             final InventoryItem genDisInventoryItem = inventoryItemRepository.findFirstByGenDisId(event.getId());
             if (genDisInventoryItem != null) {
@@ -149,8 +151,8 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
     class CheckoutRecordListener {
         // Stop a checkout record from being deleted if there are still items using that
         // checkout record
-        @EventListener(BeforeDelete.class)
-        public void on(final BeforeDelete<CheckoutRecord> event) {
+        @EventListener(BeforeDeleteCheckoutRecord.class)
+        public void on(final BeforeDeleteCheckoutRecord event) {
             final ReferencedException referencedException = new ReferencedException();
             // TODO update check for current fields
             final CheckoutRecord recordToBeDeleted = checkoutRecordRepository.getReferenceById(event.getId());

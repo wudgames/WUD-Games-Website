@@ -5,10 +5,12 @@ import lombok.Getter;
 
 
 @Getter
-@AllArgsConstructor
-public class BeforeDeleteAccountDis {
+public class BeforeDeleteAccountDis extends BeforeDeleteGeneralDis {
 
-    private Long id;
+    public BeforeDeleteAccountDis(Long id) {
+        super(id);
+        //TODO Auto-generated constructor stub
+    }
 
 }
 

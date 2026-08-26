@@ -1,14 +1,14 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @Getter
-@AllArgsConstructor
-public class BeforeDeleteCheckoutRecord {
+public class BeforeDeleteCheckoutRecord extends BeforeDelete {
 
-    private Long id;
+    public BeforeDeleteCheckoutRecord(Long id) {
+        super(id);
+        //TODO Auto-generated constructor stub
+    }
 
 }
 

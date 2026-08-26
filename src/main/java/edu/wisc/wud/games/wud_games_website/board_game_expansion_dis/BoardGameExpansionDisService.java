@@ -1,7 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.board_game_expansion_dis;
 
-import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;
 
@@ -36,8 +35,8 @@ public class BoardGameExpansionDisService extends EntityService<BoardGameExpansi
         return new BoardGameExpansionDisDTO();
     }
 
-    @EventListener(BeforeDelete.class)
-    public void on(final BeforeDelete<BoardGameDis> event) {
+    @EventListener(BeforeDeleteBoardGameDis.class)
+    public void on(final BeforeDeleteBoardGameDis event) {
         final ReferencedException referencedException = new ReferencedException();
         final BoardGameExpansionDis boardGameExpansionDis = repository.findFirstByBaseBoardGameDisId(event.getId());
         if (boardGameExpansionDis != null) {

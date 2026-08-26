@@ -22,6 +22,7 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemService;
 import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO;
 import edu.wisc.wud.games.wud_games_website.steam_account.SteamAccountDTO;
+import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.video_game.VideoGameDTO;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,13 +114,18 @@ public class InventoryItemResource {
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/manage/deleteItem")
-    public String postMethodName(@RequestParam Map<String, String> parameters) {
+    public ModelAndView postMethodName(@RequestParam Map<String, String> parameters) {
         // TODO move whole method to service
         // TODO check authority
         Long item_id = Long.valueOf(parameters.get("item_id"));
         Long descriptionId = inventoryItemService.get(item_id).getGenDis().getId();
-        inventoryItemService.delete(item_id);// Failing with no such element found exception
-        return "redirect:/library/" + descriptionId;
+        try {
+            inventoryItemService.delete(item_id);// Failing with no such element found exception
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new NotFoundException("No such item exists");
+        }
+        return new ModelAndView("redirect:/library/" + descriptionId);
     }
 }
 

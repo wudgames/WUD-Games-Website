@@ -20,13 +20,15 @@ import org.springframework.data.elasticsearch.annotations.Field;
 */
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+
 
 @Entity
 //@Document(indexName = "tag")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Tag {
+public class Tag implements EntityWithId {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(

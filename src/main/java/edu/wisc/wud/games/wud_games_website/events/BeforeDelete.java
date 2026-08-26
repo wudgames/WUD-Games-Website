@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BeforeDelete<entityType> {
+public abstract class BeforeDelete {
     private Long id;
 }

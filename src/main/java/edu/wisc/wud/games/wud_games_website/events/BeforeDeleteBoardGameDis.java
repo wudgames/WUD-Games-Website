@@ -1,14 +1,17 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
+import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
 @Getter
-@AllArgsConstructor
-public class BeforeDeleteBoardGameDis {
+public class BeforeDeleteBoardGameDis extends BeforeDeleteGameDis {
 
-    private Long id;
+    public BeforeDeleteBoardGameDis(Long id) {
+        super(id);
+        //TODO Auto-generated constructor stub
+    }
 
 }
 

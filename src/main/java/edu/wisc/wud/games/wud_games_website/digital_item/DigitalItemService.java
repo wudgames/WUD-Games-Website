@@ -3,6 +3,7 @@ package edu.wisc.wud.games.wud_games_website.digital_item;
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDis;
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDisRepository;
 import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccountDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -30,8 +31,8 @@ public class DigitalItemService extends EntityService<DigitalItemRepository, Dig
         return new DigitalItemDTO();
     }
 
-    @EventListener(BeforeDelete.class)
-    public void on(final BeforeDelete<AccountDis> event) {
+    @EventListener(BeforeDeleteAccountDis.class)
+    public void on(final BeforeDeleteAccountDis event) {
         // remove many-to-many relations at owning side
         AccountDis accountDeleted = accountDisRepository.findById(event.getId()).orElseThrow();
         repository.findAllByCompatibleAccountsContaining(accountDeleted).forEach(digitalItem ->

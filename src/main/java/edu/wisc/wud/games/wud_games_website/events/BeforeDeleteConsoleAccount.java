@@ -1,14 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
-import lombok.Getter;
+public class BeforeDeleteConsoleAccount extends BeforeDeleteAccount {
 
-@Getter
-public class BeforeDeleteTag extends BeforeDelete {
-
-    public BeforeDeleteTag(Long id) {
+    public BeforeDeleteConsoleAccount(Long id) {
         super(id);
         //TODO Auto-generated constructor stub
     }
-
+    
 }
-

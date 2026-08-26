@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.rental_request;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
+import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -30,7 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class RentalRequest {
+public class RentalRequest implements EntityWithId {
 
     @Id
     @Column(nullable = false, updatable = false)

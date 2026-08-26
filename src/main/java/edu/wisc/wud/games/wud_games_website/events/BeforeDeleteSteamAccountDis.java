@@ -1,14 +1,14 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @Getter
-@AllArgsConstructor
-public class BeforeDeleteSteamAccountDis {
+public class BeforeDeleteSteamAccountDis extends BeforeDeleteAccountDis {
 
-    private Long id;
+    public BeforeDeleteSteamAccountDis(Long id) {
+        super(id);
+        //TODO Auto-generated constructor stub
+    }
 
 }
 

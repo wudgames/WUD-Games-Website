@@ -1,14 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
-import lombok.Getter;
+public class BeforeDeleteVideoGame extends BeforeDeleteDigitalItem {
 
-@Getter
-public class BeforeDeleteTag extends BeforeDelete {
-
-    public BeforeDeleteTag(Long id) {
+    public BeforeDeleteVideoGame(Long id) {
         super(id);
         //TODO Auto-generated constructor stub
     }
-
+    
 }
-

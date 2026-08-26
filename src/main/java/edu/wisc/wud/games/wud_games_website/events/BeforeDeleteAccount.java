@@ -1,14 +1,14 @@
 package edu.wisc.wud.games.wud_games_website.events;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @Getter
-@AllArgsConstructor
-public class BeforeDeleteAccount {
+public class BeforeDeleteAccount extends BeforeDeleteInventoryItem {
 
-    private Long id;
+    public BeforeDeleteAccount(Long id) {
+        super(id);
+        //TODO Auto-generated constructor stub
+    }
 
 }
 
