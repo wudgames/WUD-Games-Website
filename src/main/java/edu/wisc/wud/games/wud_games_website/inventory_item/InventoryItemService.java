@@ -35,7 +35,10 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -133,6 +136,10 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
                 .collect(CustomCollectors.toSortedMap(InventoryItem::getId, InventoryItem::getId));
     }
 
+    public Set<InventoryItemDTO> findAllById(Stream<Long> ids) {
+        return ids.map(id -> get(id)).collect(Collectors.toSet());
+    }
+
     class GeneralDisListener {
         // Stop a description of an item from being deleted if there are still items
         // using that description
@@ -160,7 +167,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
                     && recordToBeDeleted.getInventoryItems().size() > 0) {
                 // This item is currently checkout to the that record
                 referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
-                referencedException.addParam(recordToBeDeleted.getInventoryItems().get(0).getId());
+                referencedException.addParam(recordToBeDeleted.getInventoryItems().iterator().next().getId());
                 throw referencedException;
             }
         }

@@ -3,16 +3,16 @@ package edu.wisc.wud.games.wud_games_website.checkout_record;
 import org.springframework.stereotype.Component;
 
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
-import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemSubclassMapper;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 
 @Component
 public class CheckoutRecordMapper extends EntityMapper<CheckoutRecord, CheckoutRecordDTO> {
 
-    private final InventoryItemSubclassMapper inventoryItemSubclassMapper;
+    private final InventoryItemMapper inventoryItemMapper;
 
-    public CheckoutRecordMapper(final InventoryItemSubclassMapper inventoryItemSubclassMapper) {
+    public CheckoutRecordMapper(final InventoryItemMapper inventoryItemMapper) {
         super(null, () -> new CheckoutRecord(), () -> new CheckoutRecordDTO());
-        this.inventoryItemSubclassMapper = inventoryItemSubclassMapper;
+        this.inventoryItemMapper = inventoryItemMapper;
     }
 
     @Override
@@ -22,9 +22,7 @@ public class CheckoutRecordMapper extends EntityMapper<CheckoutRecord, CheckoutR
         dto.setReturnedTime(entity.getReturnedTime());
         dto.setPeoplePlaying(entity.getPeoplePlaying());
         dto.setRecipientName(entity.getRecipientName());
-        dto.setInventoryItems(entity.getInventoryItems().stream()
-                .map(inventoryItem -> inventoryItemSubclassMapper.toDTO(inventoryItem))
-                .toList());
+        dto.setInventoryItems(inventoryItemMapper.allToDTO(entity.getInventoryItems()));
         return dto;
     }
 
@@ -35,9 +33,7 @@ public class CheckoutRecordMapper extends EntityMapper<CheckoutRecord, CheckoutR
         entity.setReturnedTime(dto.getReturnedTime());
         entity.setPeoplePlaying(dto.getPeoplePlaying());
         entity.setRecipientName(dto.getRecipientName());
-        entity.setInventoryItems(dto.getInventoryItems().stream()
-                .map(inventoryItem -> inventoryItemSubclassMapper.toEntity(inventoryItem))
-                .toList());
+        entity.setInventoryItems(inventoryItemMapper.allToEntity(dto.getInventoryItems()));
         return entity;
     }
 }

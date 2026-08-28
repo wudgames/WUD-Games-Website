@@ -15,7 +15,10 @@ import jakarta.persistence.SequenceGenerator;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -62,7 +65,7 @@ public class CheckoutRecord implements EntityWithId {
             joinColumns = @JoinColumn(name = "checkoutRecordId"),
             inverseJoinColumns = @JoinColumn(name = "inventoryItemId")
     )
-    private List<InventoryItem> inventoryItems = new ArrayList<>();
+    private Set<InventoryItem> inventoryItems = new HashSet<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

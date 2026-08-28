@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Checkout</title>
+</head>
+
+<body id="root">
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    <div>This is the create/update checkouts page.</div>
+    <span id="selector_window"></span>
+    <form th:object="${checkoutRecord}" action="/manage/checkout" method="post">
+        <input type="hidden" name="id" th:field="*{id}">
+        <button hx-target="#selector_window" hx-get="/library" hx-trigger="click">
+            Open Selector (WIP)
+        </button><br>
+        <input type="hidden" name="item_id" th:value="${param.item_id}">
+
+        <label for="recipientName">Recipient Name</label>: <input id="recipientName" type="text"
+            th:field="*{recipientName}" /><br>
+
+        <label for="peoplePlaying">People Playing</label>: <input id="peoplePlaying" type="number"
+            th:field="*{peoplePlaying}" /><br>
+
+        <label for="markReturned">Mark as Returned</label>: <input id="markReturned" type="checkbox"
+            th:value="${checkoutRecord.returnedTime != null}"></input><br>
+
+        <input aria-label="Complete Checkout" type="submit" value="Complete Checkout" />
+
+    </form>
+</body>
+
+</html>

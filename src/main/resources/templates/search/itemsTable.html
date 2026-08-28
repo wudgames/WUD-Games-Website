@@ -32,6 +32,10 @@
                     <input type="hidden" name="item_id" th:value="${item.id}">
                     <button type="submit" onclick="return confirm('Confirm Deleting Item?');">Delete Copy (WIP)</button>
                 </form>
+                <form method="get" th:action="@{/manage/checkout}">
+                    <input type="hidden" name="item_id" th:value="${item.id}">
+                    <button type="submit">Checkout</button>
+                </form>
             </td>
         </tr>
     </table>
