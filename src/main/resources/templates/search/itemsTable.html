@@ -22,8 +22,10 @@
                 <span th:if="${rowData.item.location} == null">null</span>
             </td>
             <td>
-                <span th:if="${rowData.checkoutRecord} != null">Checkout Exists</span>
-                <span th:if="${rowData.checkoutRecord} == null">Checkout Is Null</span>
+                <span th:if="${rowData.checkoutRecord} != null">
+                    Checked out by: <span th:text="${rowData.checkoutRecord.recipientName}"></span>
+                </span>
+                <span th:if="${rowData.checkoutRecord} == null">Available</span>
             </td>
             <!-- <td th:text="${item.availability}"></td> -->
             <td>
@@ -35,9 +37,13 @@
                     <input type="hidden" name="item_id" th:value="${rowData.item.id}">
                     <button type="submit" onclick="return confirm('Confirm Deleting Item?');">Delete Copy (WIP)</button>
                 </form>
-                <form method="get" th:action="@{/manage/checkout}">
+                <form th:if="${rowData.checkoutRecord} == null" method="get" th:action="@{/manage/checkout}" th:object="${rowData}">
                     <input type="hidden" name="item_id" th:value="${rowData.item.id}">
                     <button type="submit">Checkout</button>
+                </form>
+                <form th:if="${rowData.checkoutRecord} != null" method="post" th:action="@{/manage/checkout/return}" th:object="${rowData}">
+                    <input type="hidden" name="checkoutRecord_id" th:value="${rowData.checkoutRecord.id}">
+                    <button type="submit">Return</button>
                 </form>
             </td>
         </tr>

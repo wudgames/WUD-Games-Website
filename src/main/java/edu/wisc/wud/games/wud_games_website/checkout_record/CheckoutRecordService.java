@@ -93,7 +93,7 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
             throw new IllegalStateException("Checkout is already returned");
         }
         checkoutRecord.setReturnedTime(OffsetDateTime.now());
-        return new ModelAndView("redirect:library");
+        return new ModelAndView("redirect:/library");
     }
 
     public CheckoutRecordDTO getActiveCheckoutFor(Long item_id) {
