@@ -3,8 +3,6 @@ package edu.wisc.wud.games.wud_games_website.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.stringtemplate.v4.misc.MultiMap;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordService;
@@ -67,27 +64,19 @@ public class CheckoutRecordResource {
     
     @PostMapping("/manage/checkout")
     public ModelAndView updateCheckout(@RequestParam Map<String, String> params, @RequestParam(name = "item_id") Set<String> item_ids, @ModelAttribute CheckoutRecordDTO checkoutRecordDTO) {
-        Long checkoutId = null;
-        try {
-            checkoutId = Long.parseLong(params.get("id"));
-        } catch (NumberFormatException e) {
-            
-        }
         Stream<Long> itemIdsStream = item_ids.stream().map(id -> Long.valueOf(id));
-        Integer peoplePlaying = null;
-        try {
-            peoplePlaying = Integer.valueOf(params.get("peoplePlaying"));
-        } catch (NumberFormatException e) {
-            
-        }
-        String recipientName = params.get("recipientName");
         Boolean markReturned = params.get("markReturned") != null && params.get("markReturned").equals("true");
         try {
-            return checkoutRecordService.updateCheckout(checkoutId, itemIdsStream, peoplePlaying, recipientName, markReturned);
+            return checkoutRecordService.updateCheckout(checkoutRecordDTO, itemIdsStream, markReturned);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    
+    @PostMapping("/manage/checkout/return")
+    public ModelAndView postMethodName(@RequestBody Long checkout_id) {
+        return checkoutRecordService.markReturned(checkout_id);
     }
     
 

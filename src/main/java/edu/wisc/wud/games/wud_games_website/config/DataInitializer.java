@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisService;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.location.Location;
 import edu.wisc.wud.games.wud_games_website.location.LocationDTO;
 import edu.wisc.wud.games.wud_games_website.location.LocationRepository;
@@ -31,13 +34,20 @@ public class DataInitializer {
 
     private final GeneralDisService generalDisService;
 
+    private final InventoryItemRepository inventoryItemRepository;
+    private final CheckoutRecordRepository checkoutRecordRepository;
+
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
-            UserAccountRepository userAccountRepository, @Qualifier("GeneralDisService") GeneralDisService generalDisService, LocationRepository locationRepository) {
+            UserAccountRepository userAccountRepository,
+            @Qualifier("GeneralDisService") GeneralDisService generalDisService, LocationRepository locationRepository,
+            final CheckoutRecordRepository checkoutRecordRepository, final InventoryItemRepository inventoryItemRepository) {
         this.boardGameDisRepository = boardGameDisRepository;
         this.userAccountService = userAccountService;
         this.userAccountRepository = userAccountRepository;
         this.generalDisService = generalDisService;
         this.locationRepository = locationRepository;
+        this.checkoutRecordRepository = checkoutRecordRepository;
+        this.inventoryItemRepository = inventoryItemRepository;
     }
 
     @Bean
@@ -80,6 +90,9 @@ public class DataInitializer {
                 locationRepository.save(unknownLocation);
                 System.out.println("Created Unknown location successfully!");
             }
+
+            InventoryItem item = inventoryItemRepository.findAll().get(0);
+            System.out.println(checkoutRecordRepository.getActiveCheckoutFor(item.getId()));
         };
     }
 

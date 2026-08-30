@@ -21,7 +21,6 @@ public class InventoryItemMapper extends EntityMapper<InventoryItem, InventoryIt
         dto.setDateAdded(entity.getDateAdded());
         dto.setNotes(entity.getNotes());
         dto.setGenDis(generalDisMapper.toDTO(entity.getGenDis()));
-        // TODO dateCreated and lastUpdated
         return dto;
     }
 
@@ -31,7 +30,6 @@ public class InventoryItemMapper extends EntityMapper<InventoryItem, InventoryIt
         entity.setDateAdded(dto.getDateAdded());
         entity.setNotes(dto.getNotes());
         entity.setGenDis(generalDisMapper.toEntity(dto.getGenDis()));
-        // TODO dateCreated and lastUpdated
         return entity;
     }
     

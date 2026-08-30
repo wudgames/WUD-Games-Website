@@ -14,26 +14,29 @@
             <td>Availability</td>
             <td>Edit Options</td>
         </tr>
-        <tr th:each="item : ${items}">
-            <td th:text="${item.barcode}"></td>
-            <td th:text="${item.notes}"></td>
+        <tr th:each="rowData : ${rowDTOs}">
+            <td th:text="${rowData.item.barcode}"></td>
+            <td th:text="${rowData.item.notes}"></td>
             <td>
-                <span th:if="${item.location} != null" th:text="${item.location.name}"></span>
-                <span th:if="${item.location} == null">null</span>
+                <span th:if="${rowData.item.location} != null" th:text="${rowData.item.location.name}"></span>
+                <span th:if="${rowData.item.location} == null">null</span>
             </td>
-            <td></td>
+            <td>
+                <span th:if="${rowData.checkoutRecord} != null">Checkout Exists</span>
+                <span th:if="${rowData.checkoutRecord} == null">Checkout Is Null</span>
+            </td>
             <!-- <td th:text="${item.availability}"></td> -->
             <td>
                 <form method="get" th:action="@{/manage/inventoryItem/edit}">
-                    <input type="hidden" name="item_id" th:value="${item.id}">
+                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
                     <button type="submit">Edit Copy (WIP)</button>
                 </form>
                 <form method="post" th:action="@{/api/manage/deleteItem}">
-                    <input type="hidden" name="item_id" th:value="${item.id}">
+                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
                     <button type="submit" onclick="return confirm('Confirm Deleting Item?');">Delete Copy (WIP)</button>
                 </form>
                 <form method="get" th:action="@{/manage/checkout}">
-                    <input type="hidden" name="item_id" th:value="${item.id}">
+                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
                     <button type="submit">Checkout</button>
                 </form>
             </td>

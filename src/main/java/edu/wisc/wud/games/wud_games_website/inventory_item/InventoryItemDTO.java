@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,7 @@ public class InventoryItemDTO {
 
     @NotNull
     private GeneralDisDTO genDis;
-}
 
+    // This only exist on the DTO, and my be null
+    private CheckoutRecordDTO currentCheckoutRecord;
+}

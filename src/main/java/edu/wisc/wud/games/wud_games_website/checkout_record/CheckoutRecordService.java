@@ -52,26 +52,20 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
                 .collect(CustomCollectors.toSortedMap(CheckoutRecord::getId, CheckoutRecord::getId));
     }
 
-    private CheckoutRecordDTO parseDTO(Long checkoutId, Stream<Long> itemIds, Integer peoplePlaying, String recipientName) {
-        CheckoutRecordDTO dto;
-        if (checkoutId != null) {
-            dto = get(checkoutId);
-        } else {
-            dto = new CheckoutRecordDTO();
-        }
-        // what items were checked out
-        dto.setInventoryItems(itemIds.map(itemId -> inventoryItemMapper.toDTO(inventoryItemRepository.findById(itemId).orElseThrow()))
-                .collect(Collectors.toSet()));
-        // number of people playing
-        dto.setPeoplePlaying(peoplePlaying);
-        // who checked it out
-        dto.setRecipientName(recipientName);
-        return dto;
-    }
-
     // Called when the update checkout form is submitted
-    public ModelAndView updateCheckout(Long checkoutId, Stream<Long> itemIds, Integer peoplePlaying, String recipientName, Boolean markReturned) {
-        CheckoutRecordDTO dto = parseDTO(checkoutId, itemIds, peoplePlaying, recipientName);
+    public ModelAndView updateCheckout(CheckoutRecordDTO checkoutRecord, Stream<Long> itemIds, Boolean markReturned) {
+        CheckoutRecordDTO dto;
+        if (checkoutRecord.getId() != null) {
+            dto = get(checkoutRecord.getId());
+            dto.setPeoplePlaying(checkoutRecord.getPeoplePlaying());
+            dto.setRecipientName(checkoutRecord.getRecipientName());
+        } else {
+            dto = checkoutRecord;
+        }
+        if (itemIds != null) {
+            dto.setInventoryItems(itemIds.map(itemId -> inventoryItemMapper.toDTO(inventoryItemRepository.findById(itemId).orElseThrow()))
+                .collect(Collectors.toSet()));
+        }
         if (dto.getCheckoutTime() == null) {
             dto.setCheckoutTime(OffsetDateTime.now());
         }
@@ -82,7 +76,16 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
             dto.setReturnedTime(null);
         }
         repository.save(mapper.toEntity(dto));
-        return new ModelAndView("library");// TODO change to hosting page
+        return new ModelAndView("redirect:/library");// TODO change to hosting page
+    }
+
+    public ModelAndView markReturned(Long checkout_id) {
+        CheckoutRecord checkoutRecord = repository.findById(checkout_id).orElseThrow();
+        if (checkoutRecord.getReturnedTime() != null) {
+            throw new IllegalStateException("Checkout is already returned");
+        }
+        checkoutRecord.setReturnedTime(OffsetDateTime.now());
+        return new ModelAndView("redirect:library");
     }
 
     @EventListener(BeforeDeleteInventoryItem.class)

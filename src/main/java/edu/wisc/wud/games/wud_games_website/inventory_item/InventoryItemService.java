@@ -5,6 +5,7 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion.BoardGameExpansionDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordMapper;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordService;
 import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO;
@@ -57,6 +58,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
     private final GeneralDisService generalDisService;
     private final GeneralDisMapper generalDisMapper;
     private final CheckoutRecordRepository checkoutRecordRepository;
+    private final CheckoutRecordMapper checkoutRecordMapper;
 
     private final Map<Class<? extends GeneralDisDTO>, Supplier<InventoryItemDTO>> generalDisDTOToInventoryItemDTOMap = new HashMap<>();
 
@@ -64,7 +66,8 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
             final InventoryItemMapper mapper,
             final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher, final GeneralDisService generalDisService,
-            final GeneralDisMapper generalDisMapper, final LocationRepository locationRepository, final LocationMapper locationMapper) {
+            final GeneralDisMapper generalDisMapper, final LocationRepository locationRepository,
+            final LocationMapper locationMapper, final CheckoutRecordMapper checkoutRecordMapper) {
         super(inventoryItemRepository, mapper, publisher);
         this.generalDisService = generalDisService;
         this.generalDisMapper = generalDisMapper;
@@ -72,9 +75,10 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         this.checkoutRecordRepository = checkoutRecordRepository;
         this.locationRepository = locationRepository;
         this.locationMapper = locationMapper;
-    
+        this.checkoutRecordMapper = checkoutRecordMapper;
 
-        //generalDisDTOToInventoryItemDTOMap.put(GeneralDisDTO.class, () -> new InventoryItemDTO());
+        // generalDisDTOToInventoryItemDTOMap.put(GeneralDisDTO.class, () -> new
+        // InventoryItemDTO());
         generalDisDTOToInventoryItemDTOMap.put(BoardGameDisDTO.class, () -> new BoardGameDTO());
         generalDisDTOToInventoryItemDTOMap.put(BoardGameExpansionDisDTO.class, () -> new BoardGameExpansionDTO());
         generalDisDTOToInventoryItemDTOMap.put(VideoGameDisDTO.class, () -> new VideoGameDTO());
@@ -96,15 +100,22 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
     public ModelAndView getInventoryItemsFor(Long description_id) {
         GeneralDis generalDis = generalDisMapper.toEntity(generalDisService.get(description_id));
         List<InventoryItem> inventoryItems = inventoryItemRepository.findByGenDis(generalDis);
-        List<InventoryItemDTO> itemDTOs = inventoryItems.stream().map(entity -> mapper.toDTO(entity)).toList();
+        List<ItemRowDTO> rowDTOs = inventoryItems.stream().map(entity -> {
+            ItemRowDTO row = new ItemRowDTO();
+            row.setItem(mapper.toDTO(entity));
+            // TODO set current checkout record
+            row.setCheckoutRecord(checkoutRecordMapper.toDTO(checkoutRecordRepository.getActiveCheckoutFor(entity.getId())));
+            return row;
+        }).toList();
         ModelAndView model = new ModelAndView("search/itemsTable");
-        model.addObject("items", itemDTOs);
+        model.addObject("rowDTOs", rowDTOs);
         return model;
     }
 
     public void createItemFor(Long description_id, HttpServletRequest request) {
         final GeneralDisDTO generalDisDTO = generalDisService.get(description_id);
-        Supplier<InventoryItemDTO> inventoryItemDTOSupplier  = generalDisDTOToInventoryItemDTOMap.get(generalDisDTO.getClass());
+        Supplier<InventoryItemDTO> inventoryItemDTOSupplier = generalDisDTOToInventoryItemDTOMap
+                .get(generalDisDTO.getClass());
         if (inventoryItemDTOSupplier == null) {
             throw new UnsupportedOperationException(
                     "InventoryItemService does not have a item supplier for " + generalDisDTO.getClass());
