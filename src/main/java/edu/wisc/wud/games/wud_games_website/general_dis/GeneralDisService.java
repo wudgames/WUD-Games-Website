@@ -29,6 +29,15 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         this.inventoryItemRepository = inventoryItemRepository;
         this.inventoryItemMapper = inventoryItemMapper;
     }
+
+    public ModelAndView getResultsFor(String query, int minPlayers, int maxPlaytime) {
+        ModelAndView model = new ModelAndView("search/result");
+        // Get descriptions based on search filters
+
+        // Add availability info
+        return model;
+    }
+
     /*
     // This is used to fill in the existing data for 
     public void setCreateOrUpdateDescriptionData(final String description_type, HttpServletRequest request,
@@ -76,7 +85,7 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
     }
 
     @EventListener(BeforeDeleteTag.class)
-    public void on(final BeforeDeleteTag event) {
+    public void onBeforeDeleteTag(final BeforeDeleteTag event) {
         // remove many-to-many relations at owning side
         repository.findAllByTagsId(event.getId())
                 .forEach(generalDis -> generalDis.getTags().removeIf(tag -> tag.getId().equals(event.getId())));

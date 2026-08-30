@@ -13,7 +13,14 @@
   <div th:fragment="tile (type_displayed)" class="media tile">
     <div class="content">
       <h3 th:text="${tiledata.name}">Name</h3>
-      <p th:text="${tiledata.description}">description</p>
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+        Player Count: <span th:text="${tiledata.minPlayers}">[Min]</span>-<span th:text="${tiledata.maxPlayers}">[Max]</span><br>
+      </span>
+      <span th:if="${tiledata instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+        Playtime (minutes): <span th:text="${tiledata.minPlaytime}">[Min]</span>-<span th:text="${tiledata.maxPlaytime}">[Max]</span><br>
+      </span>
+      Availability:
+      <!-- <p th:text="${tiledata.description}">description</p> -->
     </div>
     <img th:src="${tiledata.imageUrl}" alt="Description Image" class="img"
       src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
