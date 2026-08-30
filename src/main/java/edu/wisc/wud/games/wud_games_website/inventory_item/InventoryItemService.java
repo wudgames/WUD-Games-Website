@@ -11,9 +11,9 @@ import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordServic
 import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO;
 import edu.wisc.wud.games.wud_games_website.equipment.EquipmentDTO;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteGeneralDis;
 import edu.wisc.wud.games.wud_games_website.game_console.GameConsoleDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;

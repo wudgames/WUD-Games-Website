@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.steam_account_dis;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteSteamAccountDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteSteamAccountDis;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;

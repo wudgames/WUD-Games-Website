@@ -1,7 +1,9 @@
 package edu.wisc.wud.games.wud_games_website.checkout_record;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteInventoryItem;
+import edu.wisc.wud.games.wud_games_website.events.before_create.BeforeCreateCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteInventoryItem;
+import edu.wisc.wud.games.wud_games_website.events.brfore_update.BeforeUpdateCheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
@@ -10,6 +12,7 @@ import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,8 +66,9 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
             dto = checkoutRecord;
         }
         if (itemIds != null) {
-            dto.setInventoryItems(itemIds.map(itemId -> inventoryItemMapper.toDTO(inventoryItemRepository.findById(itemId).orElseThrow()))
-                .collect(Collectors.toSet()));
+            dto.setInventoryItems(itemIds
+                    .map(itemId -> inventoryItemMapper.toDTO(inventoryItemRepository.findById(itemId).orElseThrow()))
+                    .collect(Collectors.toSet()));
         }
         if (dto.getCheckoutTime() == null) {
             dto.setCheckoutTime(OffsetDateTime.now());
@@ -75,7 +79,11 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
         } else {
             dto.setReturnedTime(null);
         }
-        repository.save(mapper.toEntity(dto));
+        if (dto.getId() == null) {
+            create(dto);
+        } else {
+            update(dto.getId(), dto);
+        }
         return new ModelAndView("redirect:/library");// TODO change to hosting page
     }
 
@@ -88,10 +96,61 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
         return new ModelAndView("redirect:library");
     }
 
+    public CheckoutRecordDTO getActiveCheckoutFor(Long item_id) {
+        return mapper.toDTO(repository.getActiveCheckoutFor(item_id));
+    }
+
     @EventListener(BeforeDeleteInventoryItem.class)
     public void on(final BeforeDeleteInventoryItem event) {
         // remove many-to-many relations at owning side
         repository.findAllByInventoryItemsId(event.getId()).forEach(checkoutRecord -> checkoutRecord.getInventoryItems()
                 .removeIf(inventoryItem -> inventoryItem.getId().equals(event.getId())));
     }
+
+    private void validateUpdatedCheckoutRecord(CheckoutRecordDTO checkoutRecord) {
+        System.out.println("Validating update to checkout record: " + checkoutRecord.getId());
+        // Check if the checkout record is current
+        if (checkoutRecord.getReturnedTime() != null) {
+            return;
+        }
+        Long updatedRecordId = checkoutRecord.getId();
+        // Confirm that no items are already checkout on a different checkout record
+        Set<InventoryItemDTO> inventoryItems = checkoutRecord.getInventoryItems();
+        for (InventoryItemDTO item : inventoryItems) {
+            System.out.println("Checking current status of item " + item.getId());
+            CheckoutRecordDTO currentCheckoutRecord = getActiveCheckoutFor(item.getId());
+            if (currentCheckoutRecord != null) {
+                if (updatedRecordId != null) {
+                    // record being validated is an update to existing record
+                    if (currentCheckoutRecord.getId() != updatedRecordId) {
+                        System.out.println("    Item is currently checked out by a different record.");
+                        throw new RuntimeException("Cannot update checkout record " + updatedRecordId
+                                + ", because item "
+                                + item.getId() + " is already checked out by record " + currentCheckoutRecord.getId());
+                    } else {
+                        System.out.println("    Item is currently checked out by this record.");
+                    }
+                } else {
+                    // record being validated is new
+                    System.out.println("    Item is currently checked out by a different record.");
+                    throw new RuntimeException("Cannot create new checkout record, because item "
+                            + item.getId() + " is already checked out by record " + currentCheckoutRecord.getId());
+                }
+            } else {
+                System.out.println("    Item is currently not checked out");
+            }
+        }
+    }
+
+    @EventListener(BeforeCreateCheckoutRecord.class)
+    public void onBeforeCreateCheckoutRecord(final BeforeCreateCheckoutRecord event) {
+        validateUpdatedCheckoutRecord(event.getRecordBeingCreated());
+    }
+
+    @EventListener(BeforeUpdateCheckoutRecord.class)
+    public void onBeforeUpdateCheckoutRecord(final BeforeUpdateCheckoutRecord event) {
+        Long checkoutRecordId = event.getId();
+        validateUpdatedCheckoutRecord(get(checkoutRecordId));
+    }
+
 }

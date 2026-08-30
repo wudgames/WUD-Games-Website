@@ -67,7 +67,7 @@ public class InventoryItemResource {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ModelAndView("search/singleDescription");
+        return new ModelAndView("forward:/library/" + description_id);// TODO update to forward
     }
     
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")

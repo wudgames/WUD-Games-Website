@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.video_game_dis;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteVideoGameDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteVideoGameDis;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;

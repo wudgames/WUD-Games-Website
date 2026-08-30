@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.physical_item;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteLocation;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteLocation;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;

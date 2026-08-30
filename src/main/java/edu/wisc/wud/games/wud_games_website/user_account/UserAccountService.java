@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteTag;
 import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
 
 @Service

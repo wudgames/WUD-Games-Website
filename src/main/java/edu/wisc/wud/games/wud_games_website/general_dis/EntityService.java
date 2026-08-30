@@ -16,35 +16,40 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDis;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion.BoardGameExpansion;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDis;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
 import edu.wisc.wud.games.wud_games_website.console_account.ConsoleAccount;
 import edu.wisc.wud.games.wud_games_website.digital_item.DigitalItem;
 import edu.wisc.wud.games.wud_games_website.equipment.Equipment;
 import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccount;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccountDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGame;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameExpansion;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteBoardGameExpansionDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteConsoleAccount;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteDigitalItem;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteEquipment;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteEquipmentDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGameConsole;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGameConsoleDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGameDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteGeneralDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteInventoryItem;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteLocation;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeletePhysicalItem;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteRentalRequest;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteSteamAccount;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteSteamAccountDis;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteVideoGame;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteVideoGameDis;
+import edu.wisc.wud.games.wud_games_website.events.before_create.BeforeCreate;
+import edu.wisc.wud.games.wud_games_website.events.before_create.BeforeCreateCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteAccount;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteAccountDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteBoardGame;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteBoardGameDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteBoardGameExpansion;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteBoardGameExpansionDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteConsoleAccount;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteDigitalItem;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteEquipment;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteEquipmentDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteGameConsole;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteGameConsoleDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteGameDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteGeneralDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteInventoryItem;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteLocation;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeletePhysicalItem;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteRentalRequest;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteSteamAccount;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteSteamAccountDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteTag;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteVideoGame;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteVideoGameDis;
+import edu.wisc.wud.games.wud_games_website.events.brfore_update.BeforeUpdate;
+import edu.wisc.wud.games.wud_games_website.events.brfore_update.BeforeUpdateCheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.game_console.GameConsole;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDis;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
@@ -96,6 +101,11 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
         classToBeforeDeleteEvent.put(Location.class, BeforeDeleteLocation::new);
     }
 
+    private static Map<Class<?>, Function<Long, ? extends BeforeUpdate>> classToBeforeUpdateEvent = new HashMap<>();
+    static {
+        classToBeforeUpdateEvent.put(CheckoutRecordDTO.class, BeforeUpdateCheckoutRecord::new);
+    }
+
     public EntityService(final repositoryT repository,
             final EntityMapper<entityType, dtoType> mapper,
             final ApplicationEventPublisher publisher) {
@@ -121,6 +131,10 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
     }
 
     public Long create(final dtoType dto) {
+        if (dto.getClass() == CheckoutRecordDTO.class) {
+            BeforeCreate event = new BeforeCreateCheckoutRecord((CheckoutRecordDTO) dto);
+            publisher.publishEvent(event);
+        }
         entityType entity = newEntity();
         entity = mapper.toEntity(dto);
         return repository.save(entity).getId();
@@ -130,6 +144,11 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
         entityType entity = repository.findById(id)
                 .orElseThrow(NotFoundException::new);
         entity = mapper.toEntity(dto);
+        if (classToBeforeUpdateEvent.containsKey(entity.getClass())) {
+            Function<Long, ? extends BeforeUpdate> eventFactory = classToBeforeUpdateEvent.get(entity.getClass());
+            BeforeUpdate event = eventFactory.apply(id);
+            publisher.publishEvent(event);
+        }
         repository.save(entity);
     }
 

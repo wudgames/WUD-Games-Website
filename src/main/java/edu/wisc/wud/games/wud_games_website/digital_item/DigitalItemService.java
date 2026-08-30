@@ -2,8 +2,8 @@ package edu.wisc.wud.games.wud_games_website.digital_item;
 
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDis;
 import edu.wisc.wud.games.wud_games_website.account_dis.AccountDisRepository;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDelete;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccountDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDelete;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteAccountDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;

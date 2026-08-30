@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.account_dis;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteAccountDis;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteAccountDis;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;

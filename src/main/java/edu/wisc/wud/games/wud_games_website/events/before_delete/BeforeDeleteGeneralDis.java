@@ -1,8 +1,6 @@
-package edu.wisc.wud.games.wud_games_website.events;
+package edu.wisc.wud.games.wud_games_website.events.before_delete;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 
 @Getter
 public class BeforeDeleteGeneralDis extends BeforeDelete {

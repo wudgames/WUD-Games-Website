@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteTag;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteTag;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;

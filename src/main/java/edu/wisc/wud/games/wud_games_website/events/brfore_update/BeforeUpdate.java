@@ -1,10 +1,10 @@
-package edu.wisc.wud.games.wud_games_website.events;
+package edu.wisc.wud.games.wud_games_website.events.brfore_update;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public abstract class BeforeDelete {
+public class BeforeUpdate {
     private Long id;
 }

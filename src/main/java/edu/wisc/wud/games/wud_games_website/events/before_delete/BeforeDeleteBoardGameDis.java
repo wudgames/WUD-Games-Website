@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.events;
+package edu.wisc.wud.games.wud_games_website.events.before_delete;
 
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDis;
 import lombok.AllArgsConstructor;

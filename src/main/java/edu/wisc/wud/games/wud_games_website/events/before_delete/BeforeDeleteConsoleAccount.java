@@ -1,4 +1,4 @@
-package edu.wisc.wud.games.wud_games_website.events;
+package edu.wisc.wud.games.wud_games_website.events.before_delete;
 
 public class BeforeDeleteConsoleAccount extends BeforeDeleteAccount {
 

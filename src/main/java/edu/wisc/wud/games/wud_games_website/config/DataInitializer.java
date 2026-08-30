@@ -91,8 +91,9 @@ public class DataInitializer {
                 System.out.println("Created Unknown location successfully!");
             }
 
-            InventoryItem item = inventoryItemRepository.findAll().get(0);
-            System.out.println(checkoutRecordRepository.getActiveCheckoutFor(item.getId()));
+
+            //InventoryItem item = inventoryItemRepository.findAll().get(0);
+            //System.out.println(checkoutRecordRepository.getActiveCheckoutFor(item.getId()));
         };
     }
 

@@ -1,6 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.location;
 
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteLocation;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteLocation;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import java.util.List;

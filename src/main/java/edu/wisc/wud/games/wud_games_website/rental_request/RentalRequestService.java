@@ -2,8 +2,8 @@ package edu.wisc.wud.games.wud_games_website.rental_request;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordRepository;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteCheckoutRecord;
-import edu.wisc.wud.games.wud_games_website.events.BeforeDeleteInventoryItem;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteCheckoutRecord;
+import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteInventoryItem;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
