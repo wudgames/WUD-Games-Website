@@ -11,6 +11,5 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
     InventoryItem findFirstByGenDisId(Long id);
     List<InventoryItem> findByGenDis(GeneralDis genDis);
-
 }
 

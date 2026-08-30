@@ -2,6 +2,7 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,6 +16,12 @@ public interface GeneralDisRepository extends JpaRepository<GeneralDis, Long> {
 
     @Query(value = "SELECT description FROM GeneralDis description WHERE description.name LIKE %:searchText% ORDER BY name ASC")
     List<? extends GeneralDis> search(@Param("searchText") String searchText);
+
+    @Query(value = "SELECT COUNT(*) FROM CheckoutRecord checkoutRecord " + //
+                "INNER JOIN checkoutRecord.inventoryItems item " + //
+                "INNER JOIN item.genDis description " + //
+                "WHERE description.id=:id AND checkoutRecord.returnedTime IS NULL")
+    int getNumberCheckedOut(Long id);
 
 }
 
