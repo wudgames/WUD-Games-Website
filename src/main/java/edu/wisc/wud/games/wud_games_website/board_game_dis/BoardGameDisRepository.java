@@ -10,7 +10,9 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 
 public interface BoardGameDisRepository extends JpaRepository<BoardGameDis, Long> {
 
-    @Query(value = "SELECT description FROM BoardGameDis description WHERE description.name LIKE %:searchText% AND description.minPlayers <= :minPlayers AND description.maxPlayers >= :minPlayers ORDER BY name ASC")
-    List<? extends BoardGameDis> search(String searchText, int minPlayers, int maxPlaytime);
+    @Query(value = "SELECT description FROM BoardGameDis description " +
+        "WHERE description.name LIKE %:searchText% AND description.minPlayers <= :players AND description.maxPlayers >= :players " + 
+        "AND description.maxPlaytime <= :playtime ORDER BY name ASC")
+    List<? extends BoardGameDis> search(String searchText, int players, int playtime);
 
 }
