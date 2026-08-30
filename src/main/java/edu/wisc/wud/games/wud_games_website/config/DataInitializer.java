@@ -98,7 +98,7 @@ public class DataInitializer {
             // InventoryItem item = inventoryItemRepository.findAll().get(0);
             // System.out.println(checkoutRecordRepository.getActiveCheckoutFor(item.getId()));
 
-            System.out.println(generalDisRepository.search("Wonder"));
+            System.out.println(generalDisRepository.search("7 Wonders"));
         };
     }
 
