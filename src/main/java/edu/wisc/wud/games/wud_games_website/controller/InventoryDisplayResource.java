@@ -23,7 +23,7 @@ public class InventoryDisplayResource {
     @GetMapping("/library")
     public ModelAndView librarySearch(@RequestParam Map<String, String> queryParameters) {
         ModelAndView model = new ModelAndView("search/library");
-        attachResults(model, queryParameters);
+        model = attachResults(model, queryParameters);
         return model;
     }
 
@@ -45,13 +45,17 @@ public class InventoryDisplayResource {
     @GetMapping("/api/search")
     public ModelAndView getSearchResult(@RequestParam Map<String, String> queryParameters) {
         ModelAndView model = new ModelAndView("search/result");
-        attachResults(model, queryParameters);
+        model = attachResults(model, queryParameters);
         return model;
     }
 
-    private void attachResults(ModelAndView model, Map<String, String> queryParameters) {
+    private ModelAndView attachResults(ModelAndView model, Map<String, String> queryParameters) {
         System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
-        List<GeneralDisDTO> generalDisDTOList = generalDisService.findAll();
-        model.addObject("generalDisDTOList", generalDisDTOList);
+        try {
+            return generalDisService.getResultsFor(model, queryParameters.get("searchterm"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

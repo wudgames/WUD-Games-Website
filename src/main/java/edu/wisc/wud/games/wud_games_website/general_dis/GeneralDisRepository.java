@@ -21,7 +21,6 @@ public interface GeneralDisRepository extends JpaRepository<GeneralDis, Long> {
                 "INNER JOIN checkoutRecord.inventoryItems item " + //
                 "INNER JOIN item.genDis description " + //
                 "WHERE description.id=:id AND checkoutRecord.returnedTime IS NULL")
-    int getNumberCheckedOut(Long id);
-
+    Integer getNumberCheckedOut(Long id);
 }
 

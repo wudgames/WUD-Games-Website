@@ -19,7 +19,8 @@
     <div>Filter summery will go here</div>
     <div class="tilegrid">
 
-        <div th:each="tiledata: ${generalDisDTOList}" class="overlay">
+        <div th:each="tiledata: ${resultsList}" class="overlay">
+            a
             <div class="overlay__content">
                 <div>
                     <a sec:authorize="hasRole('HOST')">
@@ -31,9 +32,9 @@
                         <button>Return (WIP)</button>
                     </a>
                 </div>
-                <span th:replace="~{fragments/managementOptions :: managementOptions(${tiledata})}">Management Options</span>
+                <span th:replace="~{fragments/managementOptions :: managementOptions(${tiledata.generalDis})}">Management Options</span>
             </div>
-            <a th:href="@{~/library/{id}/{name}(id=${tiledata.id},name=${tiledata.name})}">
+            <a th:href="@{~/library/{id}/{name}(id=${tiledata.generalDis.id},name=${tiledata.generalDis.name})}">
                 <div th:replace="~{fragments/tile :: tile(sometype)}"></div>
             </a>
         </div>

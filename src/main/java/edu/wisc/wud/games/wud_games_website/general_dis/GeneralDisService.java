@@ -6,6 +6,8 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 
+import static org.mockito.Mockito.description;
+
 import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,11 +32,28 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         this.inventoryItemMapper = inventoryItemMapper;
     }
 
-    public ModelAndView getResultsFor(String query, int minPlayers, int maxPlaytime) {
-        ModelAndView model = new ModelAndView("search/result");
-        // Get descriptions based on search filters
+    public List<GeneralDisDTO> search(String query) {
+        return mapper.allToDTO(repository.search(query).stream().map(dto -> (GeneralDis) dto).toList());
+    }
 
+    public ModelAndView getResultsFor(ModelAndView model, String query) {
+        // Get descriptions based on search filters
+        List<? extends GeneralDisDTO> results;
+        if (query == null) {
+            results = findAll();
+        } else {
+            results = search(query);
+        }
         // Add availability info
+        List<GenDisWithAvailabilityDTO> resultsList = results.stream().map(description -> {
+            GenDisWithAvailabilityDTO result = new GenDisWithAvailabilityDTO();
+            result.setGeneralDis(description);
+            int totalCopies = inventoryItemRepository.findByGenDis(mapper.toEntity(description)).size();
+            result.setTotalCopies(totalCopies);
+            result.setCopiesAvailable(totalCopies - repository.getNumberCheckedOut(description.getId()));
+            return result;
+        }).toList();
+        model.addObject("resultsList", resultsList);
         return model;
     }
 
