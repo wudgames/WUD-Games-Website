@@ -1,7 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -33,7 +33,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // see https://www.baeldung.com/hibernate-inheritance for meaning
-public class GeneralDis implements EntityWithId {
+public class GeneralDis implements HasId {
 
     @Id
     @Column(nullable = false, updatable = false)

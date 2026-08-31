@@ -24,11 +24,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import edu.wisc.wud.games.wud_games_website.util.HasId;
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class UserAccount implements UserDetails {
+public class UserAccount implements UserDetails, HasId {
 
 	@Id
 	@SequenceGenerator(

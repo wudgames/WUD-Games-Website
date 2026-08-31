@@ -60,17 +60,17 @@ import edu.wisc.wud.games.wud_games_website.rental_request.RentalRequest;
 import edu.wisc.wud.games.wud_games_website.steam_account.SteamAccount;
 import edu.wisc.wud.games.wud_games_website.steam_account_dis.SteamAccountDis;
 import edu.wisc.wud.games.wud_games_website.tag.Tag;
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.video_game.VideoGame;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDis;
 
-public abstract class EntityService<repositoryT extends JpaRepository<entityType, Long>, entityType extends EntityWithId, dtoType> {
+public abstract class EntityService<repositoryT extends JpaRepository<entityType, Long>, entityType extends HasId, dtoType extends HasId> {
     protected final repositoryT repository;
     protected final EntityMapper<entityType, dtoType> mapper;
     protected final ApplicationEventPublisher publisher;
 
-    private static Map<Class<? extends EntityWithId>, Function<Long, ? extends BeforeDelete>> classToBeforeDeleteEvent = new HashMap<>();
+    private static Map<Class<? extends HasId>, Function<Long, ? extends BeforeDelete>> classToBeforeDeleteEvent = new HashMap<>();
     static {
         // Descriptions
         classToBeforeDeleteEvent.put(GeneralDis.class, BeforeDeleteGeneralDis::new);
@@ -150,6 +150,14 @@ public abstract class EntityService<repositoryT extends JpaRepository<entityType
             publisher.publishEvent(event);
         }
         repository.save(entity);
+    }
+
+    public Long createOrUpdate(final dtoType dto) {
+        if (dto.getId() != null) {
+            update(dto.getId(), dto);
+            return dto.getId();
+        }
+        return create(dto);
     }
 
     public void delete(final Long id) {

@@ -6,8 +6,6 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 
-import static org.mockito.Mockito.description;
-
 import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;

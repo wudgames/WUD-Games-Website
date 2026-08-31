@@ -20,7 +20,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 */
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 
 
 @Entity
@@ -28,7 +28,7 @@ import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Tag implements EntityWithId {
+public class Tag implements HasId {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(

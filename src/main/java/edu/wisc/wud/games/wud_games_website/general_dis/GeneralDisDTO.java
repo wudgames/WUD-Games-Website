@@ -4,13 +4,14 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 import edu.wisc.wud.games.wud_games_website.tag.TagDTO;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Getter
 @Setter
-public class GeneralDisDTO {
+public class GeneralDisDTO implements HasId {
 
     private Long id;
 

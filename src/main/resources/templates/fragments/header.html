@@ -25,8 +25,12 @@
       <a class="navbar__option" href="/library">Library</a>
       <a class="navbar__option">Option 2</a>
       <a class="navbar__option">Option 3</a>
-      <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory/physicalItems">Manage
-        Inventory</a>
+      <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" class="navbar__option" href="/manage/inventory/physicalItems">
+        Manage Inventory
+      </a>
+      <a sec:authorize="hasRole('ADMIN')" class="navbar__option" href="/manage/admin">
+        Admin Dashboard
+      </a>
       <div class=navbar__separator></div>
       <a class="navbar__option" href="/myuser">
         <div class="navbar__username">

@@ -6,12 +6,13 @@ import java.time.OffsetDateTime;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecordDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class InventoryItemDTO {
+public class InventoryItemDTO implements HasId {
     private Long id;
 
     private OffsetDateTime dateAdded;

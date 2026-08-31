@@ -1,7 +1,7 @@
 package edu.wisc.wud.games.wud_games_website.checkout_record;
 
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -31,7 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class CheckoutRecord implements EntityWithId {
+public class CheckoutRecord implements HasId {
 
     @Id
     @Column(nullable = false, updatable = false)

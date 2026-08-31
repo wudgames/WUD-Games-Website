@@ -2,7 +2,7 @@ package edu.wisc.wud.games.wud_games_website.inventory_item;
 
 import edu.wisc.wud.games.wud_games_website.checkout_record.CheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -28,7 +28,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class InventoryItem implements EntityWithId {
+public class InventoryItem implements HasId {
 
     @Id
     @Column(nullable = false, updatable = false)

@@ -2,13 +2,13 @@ package edu.wisc.wud.games.wud_games_website.user_account;
 
 import java.time.OffsetDateTime;
 
-import jakarta.annotation.Nullable;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserAccountDTO {
+public class UserAccountDTO implements HasId {
     
     private Long id;
 

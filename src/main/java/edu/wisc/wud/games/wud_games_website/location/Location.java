@@ -14,14 +14,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import edu.wisc.wud.games.wud_games_website.util.EntityWithId;
+import edu.wisc.wud.games.wud_games_website.util.HasId;
 
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Location implements EntityWithId {
+public class Location implements HasId {
 
     @Id
     @Column(nullable = false, updatable = false)

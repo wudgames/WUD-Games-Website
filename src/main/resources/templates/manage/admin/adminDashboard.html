@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Admin Dashboard</title>
+</head>
+
+<body>
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    This is the admin dashboard.
+    <p>
+        Add options to import/export using .csv file.
+    </p>
+    <p>
+        Search options for user accounts.
+        <label for="email">Email</label>: <input id="email" type="text">
+    </p>
+    <p>
+        UserAccounts table with option to edit perms.
+    </p>
+</body>
+
+</html>
