@@ -11,11 +11,17 @@
     <p>
         Add options to import/export using .csv file.
     </p>
-    <p>
+    <form
+        action="#"
+        hx-target="next #searchresult"
+        hx-include="this"
+        hx-get="/manage/admin/userAccounts"
+        hx-trigger="load, change changed delay:0.5"
+        >
         Search options for user accounts.
-        <label for="email">Email</label>: <input id="email" type="text">
-    </p>
-    <p>
+        <label for="email">Email</label>: <input id="email" name="email" type="text">
+    </form>
+    <p id="searchresult">
         UserAccounts table with option to edit perms.
     </p>
 </body>

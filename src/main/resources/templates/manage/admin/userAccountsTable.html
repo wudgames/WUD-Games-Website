@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Admin Dashboard</title>
+</head>
+
+<body>
+    This is the user accounts table.
+    <table>
+        <tr>
+            <td>Email</td>
+            <td>Edit</td>
+            <td>Is Host</td>
+            <td>Hours Hosted</td>
+            <td>Physical Inventory</td>
+            <td>Digital Inventory</td>
+            <td>Rentals</td>
+            <td>Events</td>
+            <td>Metadata</td>
+            <td>Admin</td>
+            <td>Last Login</td>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.email}">example@email.com</td>
+            <td>Edit options</td>
+            <td th:text="${user.isHost}"></td>
+            <td th:text="${user.hoursHosted}"></td>
+            <td th:text="${user.isPhysicalInventoryManager}"></td>
+            <td th:text="${user.isDigitalInventoryManager}"></td>
+            <td th:text="${user.isRentalsManager}"></td>
+            <td th:text="${user.isEventsManager}"></td>
+            <td th:text="${user.isMetaDataManager}"></td>
+            <td th:text="${user.isAdmin}"></td>
+            <td th:text="${user.lastLogin}"></td>
+        </tr>
+    </table>
+</body>
+
+</html>

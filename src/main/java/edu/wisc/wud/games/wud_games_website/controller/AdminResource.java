@@ -28,8 +28,8 @@ public class AdminResource {
 
     @GetMapping("/manage/admin/userAccounts")
     public ModelAndView getUserAccountResults(@RequestParam String email) {
-        ModelAndView model = new ModelAndView("manage/admin/adminDashboard");
-        model.addObject("users", userAccountService.findByEmail(email));
+        ModelAndView model = new ModelAndView("manage/admin/userAccountsTable");
+        model.addObject("users", userAccountService.emailContains(email));
         return model;
     }
     
