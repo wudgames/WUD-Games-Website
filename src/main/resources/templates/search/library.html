@@ -28,7 +28,7 @@
         </label>
         <input class="dropdown-menu__input" type='checkbox' id="type-toggle">
         <div class="dropdown-menu__content">
-            <form hx-target="#filterOptions" hx-get="/library/filterOptions" hx-trigger="load, change changed delay:0.5">
+            <form hx-target="#filterOptions" hx-get="/library/filterOptions" hx-trigger="load, change delay:0.5" hx-include="this">
                 <!-- This is the description type, such as board game or video game is selected. -->
                 Description type selection
                 <div>
@@ -38,6 +38,10 @@
                 <div>
                     <label for="board-game-expansion-type">Board Game Expansion</label>
                     <input type="checkbox" name="type" value="Board Game Expansion" id="board-game-expansion-type" checked>
+                </div>
+                <div>
+                    <label for="video-game-type">Video Game</label>
+                    <input type="checkbox" name="type" value="Video Game" id="video-game-type">
                 </div>
                 <!-- Add other description types here -->
             </form>

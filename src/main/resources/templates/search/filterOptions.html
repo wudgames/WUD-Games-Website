@@ -9,11 +9,18 @@
     <form hx-target=".searchresult" hx-get="/api/search" hx-trigger="load, change changed delay:0.5"
         hx-include="[name='searchterm'],[name='tags']" hx-ext="push-url-w-params" data-push-url="/library">
         <!-- These are the search/filter options, they are based on the types selected above. -->
-        <div>This should be filter options</div>
-        <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
+        <div>This is the filter options</div>
+        <input type="hidden" name="type" th:value="${commonAncestor}">
+        <span th:if="${T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO).isAssignableFrom(commonAncestor)}">
+            <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
             th:value="${param.searchterm}" />
-        <label for="player-count">Player Count</label>: <input id="player-count" name="player-count" type="number" />
-        <label for="play-time">Playtime (minutes)</label>: <input id="play-time" name="play-time" type="number" />
+        </span>
+        <span th:if="${T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO).isAssignableFrom(commonAncestor)}">
+            <label for="player-count">Player Count</label>: <input id="player-count" name="player-count" type="number" />
+        </span>
+        <span th:if="${T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO).isAssignableFrom(commonAncestor)}">
+            <label for="play-time">Playtime (minutes)</label>: <input id="play-time" name="play-time" type="number" />
+        </span>
         <!-- <label for="tags">Tags (WIP)</label>: <input id="tags" name="tags" type="text" th:value="${param.tags}" /> -->
     </form>
 

@@ -21,6 +21,7 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 
 @RestController
 public class InventoryDisplayResource {
@@ -35,6 +36,7 @@ public class InventoryDisplayResource {
 
         classByDisplayString.put("Board Game", BoardGameDisDTO.class);
         classByDisplayString.put("Board Game Expansion", BoardGameExpansionDisDTO.class);
+        classByDisplayString.put("Video Game", VideoGameDisDTO.class);
     }
 
     @GetMapping("/library")
@@ -105,7 +107,10 @@ public class InventoryDisplayResource {
     }
 
     @GetMapping("/library/filterOptions")
-    public ModelAndView getMethodName(@RequestParam(name = "type") List<String> descriptionTypes) {
+    public ModelAndView getMethodName(@RequestParam(name = "type", required = false) List<String> descriptionTypes) {
+        if (descriptionTypes == null) {
+            descriptionTypes = new ArrayList<>();
+        }
         ModelAndView model = new ModelAndView("search/filterOptions");
         // Identify common ancestor 
         try {
