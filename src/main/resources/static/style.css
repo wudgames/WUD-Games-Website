@@ -193,3 +193,12 @@ img {
     position: absolute;
     z-index: 2;
 }
+
+.dropdown-menu {
+    input:checked + .dropdown-menu__content { display: block; }
+}
+
+.dropdown-menu__content {
+    display: none;
+}
+

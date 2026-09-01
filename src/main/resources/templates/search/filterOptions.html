@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Filter Options</title>
+</head>
+
+<body>
+    <form hx-target=".searchresult" hx-get="/api/search" hx-trigger="load, change changed delay:0.5"
+        hx-include="[name='searchterm'],[name='tags']" hx-ext="push-url-w-params" data-push-url="/library">
+        <!-- These are the search/filter options, they are based on the types selected above. -->
+        <div>This should be filter options</div>
+        <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
+            th:value="${param.searchterm}" />
+        <label for="player-count">Player Count</label>: <input id="player-count" name="player-count" type="number" />
+        <label for="play-time">Playtime (minutes)</label>: <input id="play-time" name="play-time" type="number" />
+        <!-- <label for="tags">Tags (WIP)</label>: <input id="tags" name="tags" type="text" th:value="${param.tags}" /> -->
+    </form>
+
+</body>
+
+</html>

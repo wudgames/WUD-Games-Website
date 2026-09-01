@@ -21,21 +21,29 @@
     <a sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')" href="/manage/inventory/create">
         <button>Create Item</button>
     </a>
-    <form>
-        <!-- This is the description type, such as board game or video game is selected. -->
-        <p>Description type selection</p>
-    </form>
-    <form>
-        <!-- These are the search/filter options, they are based on the types selected above. -->
-        <div>This should be filter options</div>
-        <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
-            th:value="${param.searchterm}" />
-        <!-- <label for="tags">Tags (WIP)</label>: <input id="tags" name="tags" type="text" th:value="${param.tags}" /> -->
-        <button hx-target="next .searchresult" hx-get="/api/search" hx-trigger="click"
-            hx-include="[name='searchterm'],[name='tags']" hx-ext="push-url-w-params" data-push-url="/library">
-            Refresh
-        </button>
-    </form>
+    <br>
+    <span class="dropdown-menu">
+        <label class="dropdown-menu__toggle" for="type-toggle">
+            Type Filters
+        </label>
+        <input class="dropdown-menu__input" type='checkbox' id="type-toggle">
+        <div class="dropdown-menu__content">
+            <form hx-target="#filterOptions" hx-get="/library/filterOptions" hx-trigger="load, change changed delay:0.5">
+                <!-- This is the description type, such as board game or video game is selected. -->
+                Description type selection
+                <div>
+                    <label for="board-game-type">Board Game</label>
+                    <input type="checkbox" name="type" value="Board Game" id="board-game-type" checked>
+                </div>
+                <div>
+                    <label for="board-game-expansion-type">Board Game Expansion</label>
+                    <input type="checkbox" name="type" value="Board Game Expansion" id="board-game-expansion-type" checked>
+                </div>
+                <!-- Add other description types here -->
+            </form>
+        </div>
+    </span>
+    <span id="filterOptions"></span>
     <div th:insert="~{search/result :: searchresult}" class="searchresult"></div>
 </body>
 
