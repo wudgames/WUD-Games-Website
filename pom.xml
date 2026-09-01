@@ -79,6 +79,11 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-vector-store-advisor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.12.0</version>
+        </dependency>
         <!-- Runtime Dependencies, note docker may need to be installed manually -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

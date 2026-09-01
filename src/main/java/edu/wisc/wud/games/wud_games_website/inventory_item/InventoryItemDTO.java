@@ -24,5 +24,5 @@ public class InventoryItemDTO implements HasId {
     private GeneralDisDTO genDis;
 
     // This only exist on the DTO, and my be null
-    private CheckoutRecordDTO currentCheckoutRecord;
+    // private CheckoutRecordDTO currentCheckoutRecord;
 }

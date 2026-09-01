@@ -9,7 +9,11 @@
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     This is the admin dashboard.
     <p>
-        Add options to import/export using .csv file.
+        <form action="/manage/admin/upload" method="post" enctype="multipart/form-data">
+            <label for="file">Select .csv file to upload board games</label><input type="file" id="file" name="file" accept=".csv">
+            <input type="submit" value="Upload" aria-label="Upload">
+        </form>
+        Add options to export using .csv file.
     </p>
     <form
         action="#"

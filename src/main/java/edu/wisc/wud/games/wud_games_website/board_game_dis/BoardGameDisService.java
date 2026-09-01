@@ -23,6 +23,10 @@ public class BoardGameDisService extends EntityService<BoardGameDisRepository, B
                 .collect(CustomCollectors.toSortedMap(BoardGameDis::getId, BoardGameDis::getId));
     }
 
+    public BoardGameDisDTO findByName(String name) {
+        return mapper.toDTO(repository.findByName(name));
+    }
+
     @Override
     protected BoardGameDis newEntity() {
         return new BoardGameDis();

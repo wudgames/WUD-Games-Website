@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.general_dis;
 
+import edu.wisc.wud.games.wud_games_website.config.DataInitializer;
 import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteTag;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
@@ -53,6 +54,10 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         }).toList();
         model.addObject("resultsList", resultsList);
         return model;
+    }
+
+    public int getTotalNumberOfLegacyCheckouts(Long description_id) {
+        return repository.getTotalNumberOfLegacyCheckouts(description_id, DataInitializer.TIME_FOR_LEGACY_RECORDS);
     }
 
     /*

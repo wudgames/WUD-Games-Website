@@ -22,6 +22,9 @@ public class UserAccountService extends EntityService<UserAccountRepository, Use
     }
 
     public List<UserAccountDTO> emailContains(String email) {
+        if (email == null || email.isBlank()) {
+            return findAll();
+        }
         return mapper.allToDTO(repository.emailContains(email));
     }
 

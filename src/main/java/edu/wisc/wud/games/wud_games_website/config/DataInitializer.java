@@ -1,6 +1,10 @@
 package edu.wisc.wud.games.wud_games_website.config;
 
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisRepository;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +23,8 @@ import edu.wisc.wud.games.wud_games_website.user_account.UserAccountService;
 
 @Component
 public class DataInitializer {
+    public final static OffsetDateTime TIME_FOR_LEGACY_RECORDS = OffsetDateTime.of(2026, 9, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+
     private final BoardGameDisRepository boardGameDisRepository;
 
     private final UserAccountService userAccountService;

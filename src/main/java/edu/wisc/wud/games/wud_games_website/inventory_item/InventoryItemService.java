@@ -97,6 +97,10 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         return new InventoryItemDTO();
     }
 
+    public List<InventoryItemDTO> findByGenDis(GeneralDisDTO description) {
+        return mapper.allToDTO(repository.findByGenDis(generalDisMapper.toEntity(description)));
+    }
+
     public ModelAndView getInventoryItemsFor(Long description_id) {
         GeneralDis generalDis = generalDisMapper.toEntity(generalDisService.get(description_id));
         List<InventoryItem> inventoryItems = inventoryItemRepository.findByGenDis(generalDis);

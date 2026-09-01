@@ -108,7 +108,7 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
     }
 
     private void validateUpdatedCheckoutRecord(CheckoutRecordDTO checkoutRecord) {
-        System.out.println("Validating update to checkout record: " + checkoutRecord.getId());
+        //System.out.println("Validating update to checkout record: " + checkoutRecord.getId());
         // Check if the checkout record is current
         if (checkoutRecord.getReturnedTime() != null) {
             return;
@@ -117,27 +117,27 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
         // Confirm that no items are already checkout on a different checkout record
         Set<InventoryItemDTO> inventoryItems = checkoutRecord.getInventoryItems();
         for (InventoryItemDTO item : inventoryItems) {
-            System.out.println("Checking current status of item " + item.getId());
+            //System.out.println("Checking current status of item " + item.getId());
             CheckoutRecordDTO currentCheckoutRecord = getActiveCheckoutFor(item.getId());
             if (currentCheckoutRecord != null) {
                 if (updatedRecordId != null) {
                     // record being validated is an update to existing record
                     if (currentCheckoutRecord.getId() != updatedRecordId) {
-                        System.out.println("    Item is currently checked out by a different record.");
+                        //System.out.println("    Item is currently checked out by a different record.");
                         throw new RuntimeException("Cannot update checkout record " + updatedRecordId
                                 + ", because item "
                                 + item.getId() + " is already checked out by record " + currentCheckoutRecord.getId());
                     } else {
-                        System.out.println("    Item is currently checked out by this record.");
+                        //System.out.println("    Item is currently checked out by this record.");
                     }
                 } else {
                     // record being validated is new
-                    System.out.println("    Item is currently checked out by a different record.");
+                    //System.out.println("    Item is currently checked out by a different record.");
                     throw new RuntimeException("Cannot create new checkout record, because item "
                             + item.getId() + " is already checked out by record " + currentCheckoutRecord.getId());
                 }
             } else {
-                System.out.println("    Item is currently not checked out");
+                //System.out.println("    Item is currently not checked out");
             }
         }
     }

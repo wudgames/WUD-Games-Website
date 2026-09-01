@@ -15,4 +15,6 @@ public interface BoardGameDisRepository extends JpaRepository<BoardGameDis, Long
         "AND description.maxPlaytime <= :playtime ORDER BY name ASC")
     List<? extends BoardGameDis> search(String searchText, int players, int playtime);
 
+    BoardGameDis findByName(String name);
+
 }
