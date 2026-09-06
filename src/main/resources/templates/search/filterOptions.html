@@ -11,15 +11,19 @@
         <!-- These are the search/filter options, they are based on the types selected above. -->
         <div>This is the filter options</div>
         <input type="hidden" name="type" th:value="${commonAncestor.getName()}">
-        <span th:if="${T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO).isAssignableFrom(commonAncestor)}">
+        <span
+            th:if="${T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO).isAssignableFrom(commonAncestor)}">
             <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
-            th:value="${param.searchterm}" />
+                th:value="${param.searchterm}" />
         </span>
         <span th:if="${T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO).isAssignableFrom(commonAncestor)}">
-            <label for="player-count">Player Count</label>: <input id="player-count" name="player-count" type="number" />
+            <label for="player-count">Player Count</label>: <input id="player-count" name="playerCount" type="number"
+                th:value="${param.playerCount}" />
         </span>
-        <span th:if="${T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO).isAssignableFrom(commonAncestor)}">
-            <label for="play-time">Playtime (minutes)</label>: <input id="play-time" name="play-time" type="number" />
+        <span
+            th:if="${T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO).isAssignableFrom(commonAncestor)}">
+            <label for="play-time">Playtime (minutes)</label>: <input id="play-time" name="playTime" type="number"
+                th:value="${param.playTime}" />
         </span>
         <!-- <label for="tags">Tags (WIP)</label>: <input id="tags" name="tags" type="text" th:value="${param.tags}" /> -->
     </form>
