@@ -10,7 +10,7 @@
         hx-include="[name='searchterm'],[name='tags']" hx-ext="push-url-w-params" data-push-url="/library">
         <!-- These are the search/filter options, they are based on the types selected above. -->
         <div>This is the filter options</div>
-        <input type="hidden" name="type" th:value="${commonAncestor}">
+        <input type="hidden" name="type" th:value="${commonAncestor.getName()}">
         <span th:if="${T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO).isAssignableFrom(commonAncestor)}">
             <label for="searchterm">query text felid</label>: <input id="searchterm" name="searchterm" type="text"
             th:value="${param.searchterm}" />

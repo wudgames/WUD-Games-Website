@@ -7,14 +7,11 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
@@ -24,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.querydsl.jpa.JPQLTemplates;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("GeneralDisService")
@@ -37,50 +34,47 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
     private final InventoryItemRepository inventoryItemRepository;
     private final InventoryItemMapper inventoryItemMapper;
 
-    private final JPAQueryFactory queryFactory;
-
     public GeneralDisService(GeneralDisRepository repository, EntityMapper<GeneralDis, GeneralDisDTO> mapper,
             ApplicationEventPublisher publisher, InventoryItemRepository inventoryItemRepository,
-            InventoryItemMapper inventoryItemMapper, final JPAQueryFactory queryFactory) {
+            InventoryItemMapper inventoryItemMapper) {
         super(repository, mapper, publisher);
         this.inventoryItemRepository = inventoryItemRepository;
         this.inventoryItemMapper = inventoryItemMapper;
-        this.queryFactory = queryFactory;
     }
 
     public List<GeneralDisDTO> search(String query) {
         return mapper.allToDTO(repository.search(query).stream().map(dto -> (GeneralDis) dto).toList());
     }
 
-    public ModelAndView getResultsFor(ModelAndView model, String query) {
-        // Get descriptions based on search filters
-        List<? extends GeneralDisDTO> results;
-        if (query == null) {
-            results = findAll();
-        } else {
-            results = search(query);
-        }
-        // Add availability info
-        List<GenDisWithAvailabilityDTO> resultsList = results.stream().map(description -> {
-            GenDisWithAvailabilityDTO result = new GenDisWithAvailabilityDTO();
-            result.setGeneralDis(description);
-            int totalCopies = inventoryItemRepository.findByGenDis(mapper.toEntity(description)).size();
-            result.setTotalCopies(totalCopies);
-            result.setCopiesAvailable(totalCopies - repository.getNumberCheckedOut(description.getId()));
-            return result;
-        }).toList();
-        model.addObject("resultsList", resultsList);
-        return model;
-    }
-
     public ModelAndView getResultsFor(ModelAndView model, Class<? extends GeneralDisDTO> clasz, MultiValueMap<String, String> params) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-        QGeneralDis description = QGeneralDis.genDis;
+        QGeneralDis description = QGeneralDis.generalDis;
         
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
         
-        //QGeneralDis general_dis = new QGeneralDis.general_dis;
-        //List<GenDisWithAvailabilityDTO> resultsList = queryFactory.selectFrom(null)
-        //model.addObject("resultsList", resultsList);
+        if (clasz.isInstance(GeneralDisDTO.class)) {
+            String searchTerm = params.getFirst("searchterm");
+            if (searchTerm != null && !searchTerm.isEmpty()) {
+                booleanBuilder.and(description.name.containsIgnoreCase(searchTerm));
+            }
+        }
+
+        List<GeneralDisDTO> resultsList = mapper.allToDTO(queryFactory.selectFrom(description)
+                .where(booleanBuilder)
+                .orderBy(description.name.asc())
+                .fetch());
+        // DOTO this should be able to be done as one query to the database
+        List<GenDisWithAvailabilityDTO> resultsWithAvailabilityList = resultsList.stream().map(result -> {
+            GenDisWithAvailabilityDTO disWithAvailabilityDTO = new GenDisWithAvailabilityDTO();
+            disWithAvailabilityDTO.setGeneralDis(result);
+            int totalCopies = inventoryItemRepository.findByGenDis(mapper.toEntity(result)).size();
+            disWithAvailabilityDTO.setTotalCopies(totalCopies);
+            disWithAvailabilityDTO.setCopiesAvailable(totalCopies - repository.getNumberCheckedOut(result.getId()));
+            return disWithAvailabilityDTO;
+        }).toList();
+
+        model.addObject("resultsList", resultsWithAvailabilityList);
+
         return model;
     }
 
@@ -88,25 +82,6 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         return repository.getTotalNumberOfLegacyCheckouts(description_id, DataInitializer.TIME_FOR_LEGACY_RECORDS);
     }
 
-    /*
-     * // This is used to fill in the existing data for
-     * public void setCreateOrUpdateDescriptionData(final String description_type,
-     * HttpServletRequest request,
-     * final ModelAndView model, Long description_id) {
-     * GeneralDisDTO generalDisDTO;
-     * if (description_id != null) {
-     * generalDisDTO = get(description_id);
-     * } else {
-     * // DOTO add other class types
-     * generalDisDTO = physicalDescriptionTypes.get(description_type).get();
-     * }
-     * model.addObject("description", generalDisDTO);
-     * // System.out.println("set description to object of class " +
-     * // generalDisDTO.getClass());
-     * model.addObject("description_type", description_type);
-     * // Authorization should then be check in the resource
-     * }
-     */
     // Called when the manage description form is submitted created or updated
     public void createOrUpdateDescription(GeneralDisDTO generalDisDTO) {
         System.out.println("Starting createOrUpdateDescription with " + generalDisDTO);

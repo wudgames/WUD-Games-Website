@@ -3,16 +3,20 @@ package edu.wisc.wud.games.wud_games_website.general_dis;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
+import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.repository.query.Param;
 
-import edu.wisc.wud.games.wud_games_website.config.DataInitializer;
-
+import com.querydsl.core.types.dsl.StringPath;
 
 public interface GeneralDisRepository extends JpaRepository<GeneralDis, Long>, QuerydslPredicateExecutor<GeneralDis>, QuerydslBinderCustomizer<QGeneralDis> {
+
+    @Override
+    default void customize(QuerydslBindings bindings, QGeneralDis description) {
+        bindings.bind(description.name).first((StringPath path, String value) -> path.containsIgnoreCase(value));
+    }
 
     List<GeneralDis> findAllByTagsId(Long id);
 

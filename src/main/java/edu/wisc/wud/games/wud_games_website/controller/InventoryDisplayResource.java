@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.management.RuntimeErrorException;
 
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +43,7 @@ public class InventoryDisplayResource {
     @GetMapping("/library")
     public ModelAndView librarySearch(@RequestParam Map<String, String> queryParameters) {
         ModelAndView model = new ModelAndView("search/library");
-        model = attachResults(model, queryParameters);
+        //model = attachResults(model, queryParameters);
         return model;
     }
 
@@ -125,12 +126,12 @@ public class InventoryDisplayResource {
 
     /* This is called to refresh the the html for displaying a search result */
     @GetMapping("/api/search")
-    public ModelAndView getSearchResult(@RequestParam Map<String, String> queryParameters) {
+    public ModelAndView getSearchResult(@RequestParam Class<? extends GeneralDisDTO> type, @RequestParam MultiValueMap<String, String> queryParameters) {
         ModelAndView model = new ModelAndView("search/result");
-        model = attachResults(model, queryParameters);
+        model = generalDisService.getResultsFor(model, type, queryParameters);
         return model;
     }
-
+    /*
     private ModelAndView attachResults(ModelAndView model, Map<String, String> queryParameters) {
         //System.out.println("this could do something based on: " + queryParameters.get("searchterm"));
         // TODO identity the service that will 
@@ -141,4 +142,5 @@ public class InventoryDisplayResource {
             throw new RuntimeException(e);
         }
     }
+        */
 }
