@@ -6,29 +6,46 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.querydsl.jpa.JPQLTemplates;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("GeneralDisService")
 @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 public class GeneralDisService extends EntityService<GeneralDisRepository, GeneralDis, GeneralDisDTO> {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final InventoryItemRepository inventoryItemRepository;
     private final InventoryItemMapper inventoryItemMapper;
 
+    private final JPAQueryFactory queryFactory;
+
     public GeneralDisService(GeneralDisRepository repository, EntityMapper<GeneralDis, GeneralDisDTO> mapper,
-            ApplicationEventPublisher publisher, InventoryItemRepository inventoryItemRepository, InventoryItemMapper inventoryItemMapper) {
+            ApplicationEventPublisher publisher, InventoryItemRepository inventoryItemRepository,
+            InventoryItemMapper inventoryItemMapper, final JPAQueryFactory queryFactory) {
         super(repository, mapper, publisher);
         this.inventoryItemRepository = inventoryItemRepository;
         this.inventoryItemMapper = inventoryItemMapper;
+        this.queryFactory = queryFactory;
     }
 
     public List<GeneralDisDTO> search(String query) {
@@ -56,28 +73,40 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         return model;
     }
 
+    public ModelAndView getResultsFor(ModelAndView model, Class<? extends GeneralDisDTO> clasz, MultiValueMap<String, String> params) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QGeneralDis description = QGeneralDis.genDis;
+        
+        
+        //QGeneralDis general_dis = new QGeneralDis.general_dis;
+        //List<GenDisWithAvailabilityDTO> resultsList = queryFactory.selectFrom(null)
+        //model.addObject("resultsList", resultsList);
+        return model;
+    }
+
     public int getTotalNumberOfLegacyCheckouts(Long description_id) {
         return repository.getTotalNumberOfLegacyCheckouts(description_id, DataInitializer.TIME_FOR_LEGACY_RECORDS);
     }
 
     /*
-    // This is used to fill in the existing data for 
-    public void setCreateOrUpdateDescriptionData(final String description_type, HttpServletRequest request,
-            final ModelAndView model, Long description_id) {
-        GeneralDisDTO generalDisDTO;
-        if (description_id != null) {
-            generalDisDTO = get(description_id);
-        } else {
-            // DOTO add other class types
-            generalDisDTO = physicalDescriptionTypes.get(description_type).get();
-        }
-        model.addObject("description", generalDisDTO);
-        // System.out.println("set description to object of class " +
-        // generalDisDTO.getClass());
-        model.addObject("description_type", description_type);
-        // Authorization should then be check in the resource
-    }
-    */
+     * // This is used to fill in the existing data for
+     * public void setCreateOrUpdateDescriptionData(final String description_type,
+     * HttpServletRequest request,
+     * final ModelAndView model, Long description_id) {
+     * GeneralDisDTO generalDisDTO;
+     * if (description_id != null) {
+     * generalDisDTO = get(description_id);
+     * } else {
+     * // DOTO add other class types
+     * generalDisDTO = physicalDescriptionTypes.get(description_type).get();
+     * }
+     * model.addObject("description", generalDisDTO);
+     * // System.out.println("set description to object of class " +
+     * // generalDisDTO.getClass());
+     * model.addObject("description_type", description_type);
+     * // Authorization should then be check in the resource
+     * }
+     */
     // Called when the manage description form is submitted created or updated
     public void createOrUpdateDescription(GeneralDisDTO generalDisDTO) {
         System.out.println("Starting createOrUpdateDescription with " + generalDisDTO);
@@ -105,7 +134,11 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
                 .stream()
                 .collect(CustomCollectors.toSortedMap(GeneralDis::getId, GeneralDis::getId));
     }
-
+    /*
+    public List<GeneralDis> semanticSearch() {
+        vectorStore.
+    }
+    */
     @EventListener(BeforeDeleteTag.class)
     public void onBeforeDeleteTag(final BeforeDeleteTag event) {
         // remove many-to-many relations at owning side
