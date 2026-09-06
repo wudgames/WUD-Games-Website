@@ -40,7 +40,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("GeneralDisService")
@@ -118,12 +121,39 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
             }
         }
 
-        // TODO Sorting
+        JPAQuery<GeneralDis> query = queryFactory.selectFrom((QGeneralDis) description)
+                .where(booleanBuilder);
+        //        .orderBy(description.name.desc())
+        
+        ComparableExpressionBase<?> sortField = null;
+        // Determine field to sort by
+        String sortBy = params.getFirst("sortBy");
+        if (sortBy.equals("Name")) {
+            sortField = description.name;
+        } else if (sortBy.equals("Popularity")) {
+            throw new IllegalStateException("Sorting by Popularity is not implemented");
+            //sortField = description.name;
+        } else if (sortBy.equals("Min Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
+            sortField = description.as(QGameDis.class).minPlayers;
+        } else if (sortBy.equals("Max Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
+            sortField = description.as(QGameDis.class).maxPlayers;
+        } else if (sortBy.equals("Min Playtime") && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
+            sortField = description.as(QBoardGameDis.class).minPlaytime;
+        } else if (sortBy.equals("Max Playtime") && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
+            sortField = description.as(QBoardGameDis.class).maxPlaytime;
+        } else {
+            throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
+        }
+        
+        // Determine sorting order
+        if (params.getFirst("sortOrder").equals("Ascending")) {
+            query = query.orderBy(sortField.asc());
+        } else if (params.getFirst("sortOrder").equals("Descending")) {
+            query = query.orderBy(sortField.desc());
+        }
+        
+        List<GeneralDisDTO> resultsList = mapper.allToDTO(query.fetch());
 
-        List<GeneralDisDTO> resultsList = mapper.allToDTO(queryFactory.selectFrom((QGeneralDis) description)
-                .where(booleanBuilder)
-                .orderBy(description.name.asc())
-                .fetch());
         // DOTO this should be able to be done as one query to the database
         List<GenDisWithAvailabilityDTO> resultsWithAvailabilityList = resultsList.stream().map(result -> {
             GenDisWithAvailabilityDTO disWithAvailabilityDTO = new GenDisWithAvailabilityDTO();
