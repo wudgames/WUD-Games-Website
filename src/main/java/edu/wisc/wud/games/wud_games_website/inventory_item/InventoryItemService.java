@@ -21,10 +21,13 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisMapper;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisRepository;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.location.LocationDTO;
 import edu.wisc.wud.games.wud_games_website.location.LocationMapper;
 import edu.wisc.wud.games.wud_games_website.location.LocationRepository;
+import edu.wisc.wud.games.wud_games_website.physical_item.Barcode;
+import edu.wisc.wud.games.wud_games_website.physical_item.BarcodeRepository;
 import edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.ReferencedException;
@@ -52,6 +55,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Transactional(rollbackFor = Exception.class)
 public class InventoryItemService extends EntityService<InventoryItemRepository, InventoryItem, InventoryItemDTO> {
 
+    private final BarcodeRepository barcodeRepository;
+    private final GeneralDisRepository generalDisRepository;
     private final InventoryItemRepository inventoryItemRepository;
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
@@ -67,7 +72,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
             final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher, final GeneralDisService generalDisService,
             final GeneralDisMapper generalDisMapper, final LocationRepository locationRepository,
-            final LocationMapper locationMapper, final CheckoutRecordMapper checkoutRecordMapper) {
+            final LocationMapper locationMapper, final CheckoutRecordMapper checkoutRecordMapper, GeneralDisRepository generalDisRepository, BarcodeRepository barcodeRepository) {
         super(inventoryItemRepository, mapper, publisher);
         this.generalDisService = generalDisService;
         this.generalDisMapper = generalDisMapper;
@@ -85,6 +90,8 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         // Add video game expansion here
         generalDisDTOToInventoryItemDTOMap.put(EquipmentDisDTO.class, () -> new EquipmentDTO());
         generalDisDTOToInventoryItemDTOMap.put(GameConsoleDisDTO.class, () -> new GameConsoleDTO());
+        this.generalDisRepository = generalDisRepository;
+        this.barcodeRepository = barcodeRepository;
     }
 
     @Override
@@ -117,6 +124,37 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         return model;
     }
 
+    public ModelAndView updatedOrCreate(InventoryItemDTO item, String locationsName, Long description_id) {
+        if (locationsName != null) {
+            ((PhysicalItemDTO) item).setLocation(locationMapper.toDTO(locationRepository.findByName(locationsName).orElseThrow()));
+        }
+        item.setGenDis(generalDisMapper.toDTO(generalDisRepository.findById(description_id).orElseThrow()));
+        createOrUpdate(item);
+        return new ModelAndView("redirect:/library/");
+    }
+
+    public ModelAndView getPageToCreateItemFor(Long description_id, HttpServletRequest request) {
+        final GeneralDisDTO generalDisDTO = generalDisService.get(description_id);
+        InventoryItemDTO inventoryItemDTO = generalDisDTOToInventoryItemDTOMap.get(generalDisDTO.getClass()).get();
+        inventoryItemDTO.setGenDis(generalDisDTO);
+        if (inventoryItemDTO instanceof PhysicalItemDTO) {
+            if (!request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
+                throw new InvalidParameterException("You do not have permission to create physical inventory items");
+            }
+        } else if (inventoryItemDTO instanceof DigitalItemDTO) {
+            if (!request.isUserInRole("DIGITAL_INVENTORY_MANAGER")) {
+                throw new InvalidParameterException("You do not have permission to create digital inventory items");
+            }
+        } else {
+            throw new UnsupportedOperationException(
+                    "Authorization could not be confirmed for type " + inventoryItemDTO.getClass());
+        }
+        ModelAndView model = new ModelAndView("manage/items/editItem");
+        //inventoryItemDTO
+        model.addObject("item", inventoryItemDTO);
+        return model;
+    }
+
     public void createItemFor(Long description_id, HttpServletRequest request) {
         final GeneralDisDTO generalDisDTO = generalDisService.get(description_id);
         Supplier<InventoryItemDTO> inventoryItemDTOSupplier = generalDisDTOToInventoryItemDTOMap
@@ -139,10 +177,6 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
                     "Authorization could not be confirmed for type " + inventoryItemDTO.getClass());
         }
         inventoryItemDTO.setGenDis(generalDisDTO);
-        if (inventoryItemDTO instanceof PhysicalItemDTO) {
-            LocationDTO unknownLocation = locationMapper.toDTO(locationRepository.findByName("Unknown").orElseThrow());
-            ((PhysicalItemDTO) inventoryItemDTO).setLocation(unknownLocation);
-        }
         this.create(inventoryItemDTO);
     }
 

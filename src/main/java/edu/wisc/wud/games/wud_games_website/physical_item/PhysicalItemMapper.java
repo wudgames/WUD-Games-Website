@@ -45,7 +45,8 @@ public class PhysicalItemMapper extends EntityMapper<PhysicalItem, PhysicalItemD
         if (existing_code != null) {
             entity.setBarcode(barcodeRepository.findById(existing_code).orElseThrow());
         } else {
-            entity.setBarcode(barcodeRepository.save(new Barcode()));
+            Barcode newBarcode = barcodeRepository.save(new Barcode());
+            entity.setBarcode(newBarcode);
         }
         return entity;
     }

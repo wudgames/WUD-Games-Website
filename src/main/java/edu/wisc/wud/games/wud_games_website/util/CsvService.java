@@ -148,7 +148,8 @@ public class CsvService {
     }
 
     private void importCheckoutRecords(GeneralDisDTO description, List<InventoryItemDTO> items, String[] line, Map<String, Integer> indexByHeader) {
-        int currentLegacyCheckouts = generalDisService.getTotalNumberOfLegacyCheckouts(description.getId());
+        Long description_id = description.getId();
+        int currentLegacyCheckouts = generalDisService.getTotalNumberOfLegacyCheckouts(description_id);
         int checkoutsImported = Integer.valueOf(line[indexByHeader.get("Checkout Count")]);
         for (int checkoutsAdded = 0; checkoutsAdded + currentLegacyCheckouts < checkoutsImported; checkoutsAdded++) {
             InventoryItemDTO item = items.get(checkoutsAdded % items.size());
