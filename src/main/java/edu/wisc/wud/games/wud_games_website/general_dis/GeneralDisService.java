@@ -146,10 +146,13 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         }
         
         // Determine sorting order
-        if (params.getFirst("sortOrder").equals("Ascending")) {
+        String sortOrder = params.getFirst("sortOrder");
+        if (sortOrder.equals("Ascending")) {
             query = query.orderBy(sortField.asc());
-        } else if (params.getFirst("sortOrder").equals("Descending")) {
+        } else if (sortOrder.equals("Descending")) {
             query = query.orderBy(sortField.desc());
+        } else {
+            throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
         }
         
         List<GeneralDisDTO> resultsList = mapper.allToDTO(query.fetch());

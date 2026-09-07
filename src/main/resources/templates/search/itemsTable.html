@@ -12,7 +12,16 @@
             <td>Notes</td>
             <td>Location</td>
             <td>Availability</td>
-            <td>Edit Options</td>
+            <td
+                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO)}"
+                sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER') || hasRole('HOST')">
+                Physical Management Options
+            </td>
+            <td
+                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
+                sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER') || hasRole('HOST')">
+                Digital Management Options
+            </td>
         </tr>
         <tr th:each="rowData : ${rowDTOs}">
             <td th:text="${rowData.item.barcode}"></td>
@@ -23,28 +32,71 @@
             </td>
             <td>
                 <span th:if="${rowData.checkoutRecord} != null">
-                    Checked out by: <span th:text="${rowData.checkoutRecord.recipientName}"></span>
+                    Checked out
+                    <span sec:authorize="hasRole('HOST')">
+                         by: <span th:text="${rowData.checkoutRecord.recipientName}"></span>
+                    </span>
                 </span>
                 <span th:if="${rowData.checkoutRecord} == null">Available</span>
             </td>
             <!-- <td th:text="${item.availability}"></td> -->
-            <td>
-                <form method="get" th:action="@{/manage/inventoryItem/edit}">
-                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
-                    <button type="submit">Edit Copy (WIP)</button>
-                </form>
-                <form method="post" th:action="@{/api/manage/deleteItem}">
-                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
-                    <button type="submit" onclick="return confirm('Confirm Deleting Item?');">Delete Copy (WIP)</button>
-                </form>
-                <form th:if="${rowData.checkoutRecord} == null" method="get" th:action="@{/manage/checkout}" th:object="${rowData}">
-                    <input type="hidden" name="item_id" th:value="${rowData.item.id}">
-                    <button type="submit">Checkout</button>
-                </form>
-                <form th:if="${rowData.checkoutRecord} != null" method="post" th:action="@{/manage/checkout/return}" th:object="${rowData}">
-                    <input type="hidden" name="checkoutRecord_id" th:value="${rowData.checkoutRecord.id}">
-                    <button type="submit">Return</button>
-                </form>
+            <td
+                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO)}"
+                sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER') || hasRole('HOST')">
+                <span
+                    sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
+                    <form action="/manage/inventoryItem/edit" method="get">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit">Edit Physical Item</button>
+                    </form>
+                    <form method="post" action="/api/manage/deleteItem">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit" onclick="return confirm('Confirm Deleting Item?');">
+                            Delete Copy
+                        </button>
+                    </form>
+                </span>
+                <span sec:authorize="hasRole('HOST')">
+                    <form th:if="${rowData.checkoutRecord} == null" method="get" th:action="@{/manage/checkout}"
+                        th:object="${rowData}">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit">Checkout</button>
+                    </form>
+                    <form th:if="${rowData.checkoutRecord} != null" method="post" th:action="@{/manage/checkout/return}"
+                        th:object="${rowData}">
+                        <input type="hidden" name="checkoutRecord_id" th:value="${rowData.checkoutRecord.id}">
+                        <button type="submit">Return</button>
+                    </form>
+                </span>
+            </td>
+            <td
+                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
+                sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER') || hasRole('HOST')">
+                <span
+                    sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER')">
+                    <form action="/manage/inventoryItem/edit" method="get">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit">Edit Digital Item (WIP)</button>
+                    </form>
+                    <form method="post" action="/api/manage/deleteItem">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit" onclick="return confirm('Confirm Deleting Item?');">
+                            Delete Copy
+                        </button>
+                    </form>
+                </span>
+                <span sec:authorize="hasRole('HOST')">
+                    <form th:if="${rowData.checkoutRecord} == null" method="get" th:action="@{/manage/checkout}"
+                        th:object="${rowData}">
+                        <input type="hidden" name="item_id" th:value="${rowData.item.id}">
+                        <button type="submit">Checkout</button>
+                    </form>
+                    <form th:if="${rowData.checkoutRecord} != null" method="post" th:action="@{/manage/checkout/return}"
+                        th:object="${rowData}">
+                        <input type="hidden" name="checkoutRecord_id" th:value="${rowData.checkoutRecord.id}">
+                        <button type="submit">Return</button>
+                    </form>
+                </span>
             </td>
         </tr>
     </table>

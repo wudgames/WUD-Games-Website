@@ -74,9 +74,9 @@ public class DataInitializer {
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
             defaultAdminAccount.setEmail(defaultAdminEmail);
-            defaultAdminAccount.setHost(true);
-            defaultAdminAccount.setAdmin(true);
-            defaultAdminAccount.setPhysicalInventoryManager(true);
+            defaultAdminAccount.setIsHost(true);
+            defaultAdminAccount.setIsAdmin(true);
+            defaultAdminAccount.setIsPhysicalInventoryManager(true);
 
             userAccountService.createOrUpdate(defaultAdminAccount);
 

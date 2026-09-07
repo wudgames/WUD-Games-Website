@@ -40,6 +40,10 @@ img {
     object-fit: contain;
 }
 
+table, th, td {
+  border: 1px solid var(--color-primary);
+}
+
 @media (width >=500px) {
     .media {
         display: grid;

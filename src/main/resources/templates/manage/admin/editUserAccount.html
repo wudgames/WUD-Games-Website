@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:insert="~{fragments/header ::head_base}">
+    <title id="pageTitle">Edit Account</title>
+</head>
+
+<body>
+    <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
+    Editing User Account
+    <form th:object="${userAccount}" action="/manage/admin/editUserAccount" method="post">
+        <input type="hidden" th:field="*{id}">
+        <label for="email">Email: </label><input type="text" id="email" th:field="*{email}">
+        <br>
+        <label for="isHost">Is Host: </label><input type="checkbox" id="isHost" th:field="*{isHost}">
+        <label for="hoursHosted">Hours Hosted: </label><input type="number" id="hoursHosted" th:field="*{hoursHosted}">
+        <br>
+        <label for="isPhysicalInventoryManager">Is Physical Inventory Manager: </label>
+        <input type="checkbox" id="isPhysicalInventoryManager" th:field="*{isPhysicalInventoryManager}">
+        <label for="isDigitalInventoryManager">Is Digital Inventory Manager: </label>
+        <input type="checkbox" id="isDigitalInventoryManager" th:field="*{isDigitalInventoryManager}">
+        <br>
+        <label for="isRentalsManager">Is Rentals Manager: </label>
+        <input type="checkbox" id="isRentalsManager" th:field="*{isRentalsManager}">
+        <br>
+        <label for="isEventsManager">Is Events Manager: </label>
+        <input type="checkbox" id="isEventsManager" th:field="*{isEventsManager}">
+        <br>
+        <label for="isMetadataManager">Is Metadata Manager: </label>
+        <input type="checkbox" id="isMetadataManager" th:field="*{isMetadataManager}">
+        <br>
+        <label for="isAdmin">Is Admin: </label>
+        <input type="checkbox" id="isAdmin" th:field="*{isAdmin}">
+        <br>
+        <input type="submit" aria-label="submit">
+    </form>
+</body>
+
+</html>

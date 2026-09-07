@@ -14,14 +14,14 @@ public class UserAccountDTO implements HasId {
 
     private String email;
     // password is never sent to client
-
-    private boolean isHost;
+    // There need to be Boolean (not boolean) for Thymleaf and Lambok to pick the same names.
+    private Boolean isHost;
     private float hoursHosted;
-    private boolean isPhysicalInventoryManager;
-    private boolean isDigitalInventoryManager;
-    private boolean isRentalsManager;
-    private boolean isEventsManager;
-    private boolean isMetaDataManager;
-    private boolean isAdmin;
+    private Boolean isPhysicalInventoryManager;
+    private Boolean isDigitalInventoryManager;
+    private Boolean isRentalsManager;
+    private Boolean isEventsManager;
+    private Boolean isMetadataManager;
+    private Boolean isAdmin;
     private OffsetDateTime lastLogin;
 }

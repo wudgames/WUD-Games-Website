@@ -16,12 +16,16 @@ import org.springframework.web.servlet.ModelAndView;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountService;
 import edu.wisc.wud.games.wud_games_website.util.CsvService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -67,6 +71,21 @@ public class AdminResource {
         model.addObject("users", userAccountService.emailContains(email));
         return model;
     }
+
+    @GetMapping("/manage/admin/editUserAccount")
+    public ModelAndView getMethodName(@RequestParam(required = false) Long id) {
+        ModelAndView model = new ModelAndView("manage/admin/editUserAccount");
+        if (id != null) {
+            model.addObject("userAccount", userAccountService.get(id));
+        } else {
+            model.addObject("userAccount", new UserAccountDTO());
+        }
+        return model;
+    }
     
-    
+    @PostMapping("/manage/admin/editUserAccount")
+    public ModelAndView postMethodName(@ModelAttribute UserAccountDTO userAccountDTO) {
+        userAccountService.createOrUpdate(userAccountDTO);
+        return new ModelAndView("manage/admin/adminDashboard");
+    }
 }

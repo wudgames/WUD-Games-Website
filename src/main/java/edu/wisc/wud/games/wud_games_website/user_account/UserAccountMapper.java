@@ -17,14 +17,14 @@ public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO>
         dto.setId(entity.getId());
         dto.setEmail(entity.getEmail());
         //userAccountDTO.setPassword(userAccount.getPassword());
-        dto.setHost(entity.isHost());
+        dto.setIsHost(entity.isHost());
         dto.setHoursHosted(entity.getHoursHosted());
-        dto.setPhysicalInventoryManager(entity.isPhysicalInventoryManager());
-        dto.setDigitalInventoryManager(entity.isDigitalInventoryManager());
-        dto.setRentalsManager(entity.isRentalsManager());
-        dto.setEventsManager(entity.isEventsManager());
-        dto.setMetaDataManager(entity.isMetaDataManager());
-        dto.setAdmin(entity.isAdmin());
+        dto.setIsPhysicalInventoryManager(entity.isPhysicalInventoryManager());
+        dto.setIsDigitalInventoryManager(entity.isDigitalInventoryManager());
+        dto.setIsRentalsManager(entity.isRentalsManager());
+        dto.setIsEventsManager(entity.isEventsManager());
+        dto.setIsMetadataManager(entity.isMetaDataManager());
+        dto.setIsAdmin(entity.isAdmin());
         dto.setLastLogin(entity.getLastLogin());
         return dto;
     }
@@ -34,14 +34,14 @@ public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO>
         entity.setId(dto.getId());
         entity.setEmail(dto.getEmail());
         //userAccount.setPassword(userAccountDTO.getPassword());
-        entity.setHost(dto.isHost());
+        entity.setHost(dto.getIsHost());
         entity.setHoursHosted(dto.getHoursHosted());
-        entity.setPhysicalInventoryManager(dto.isPhysicalInventoryManager());
-        entity.setDigitalInventoryManager(dto.isDigitalInventoryManager());
-        entity.setRentalsManager(dto.isRentalsManager());
-        entity.setEventsManager(dto.isEventsManager());
-        entity.setMetaDataManager(dto.isMetaDataManager());
-        entity.setAdmin(dto.isAdmin());
+        entity.setPhysicalInventoryManager(dto.getIsPhysicalInventoryManager());
+        entity.setDigitalInventoryManager(dto.getIsDigitalInventoryManager());
+        entity.setRentalsManager(dto.getIsRentalsManager());
+        entity.setEventsManager(dto.getIsEventsManager());
+        entity.setMetaDataManager(dto.getIsMetadataManager());
+        entity.setAdmin(dto.getIsAdmin());
         entity.setLastLogin(dto.getLastLogin());
         return entity;
     }
