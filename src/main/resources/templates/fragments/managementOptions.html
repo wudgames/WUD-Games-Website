@@ -14,10 +14,12 @@
             <button>Edit</button>
         </a>
 
-
-        <a>
-            <button>Delete (WIP)</button>
-        </a>
+        <form method="post" action="/manage/description/delate">
+            <input type="hidden" name="id" th:value="${description_managed.id}">
+            <button type="submit" onclick="return confirm('Confirm Deleting Description?');">
+                Delete
+            </button>
+        </form>
 
     </span>
 

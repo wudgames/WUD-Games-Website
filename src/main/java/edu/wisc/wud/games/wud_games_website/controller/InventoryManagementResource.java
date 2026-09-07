@@ -27,6 +27,8 @@ import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
@@ -74,7 +76,7 @@ public class InventoryManagementResource {
     }
 
     @GetMapping("manage/inventory/create")
-    public ModelAndView getMethodName(@RequestParam Map<String, String> queryParameters,
+    public ModelAndView getCreateDescriptionPage(@RequestParam Map<String, String> queryParameters,
             HttpServletRequest request) {
         ModelAndView model = new ModelAndView("manage/descriptions/page");
         Set<String> itemTypeOptions = getTypeAuthorizedOptionsFor(request);
@@ -186,4 +188,13 @@ public class InventoryManagementResource {
         generalDisService.createOrUpdateDescription(descriptionDTO);
         return new ModelAndView("redirect:/library"); // TODO go back in history instead
     }
+
+    @PostMapping("/manage/description/delate")
+    public ModelAndView delateDescription(@RequestParam Long id, HttpServletRequest request) {
+        verifyAuthorizationForDescriptionType(request, generalDisService.get(id).getClass());
+        // TODO check authoriation for description type
+        generalDisService.delete(id);
+        return new ModelAndView("redirect:/library");
+    }
+    
 }

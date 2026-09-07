@@ -108,7 +108,8 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
             ItemRowDTO row = new ItemRowDTO();
             row.setItem(mapper.toDTO(entity));
             // TODO set current checkout record
-            row.setCheckoutRecord(checkoutRecordMapper.toDTO(checkoutRecordRepository.getActiveCheckoutFor(entity.getId())));
+            row.setCheckoutRecord(
+                    checkoutRecordMapper.toDTO(checkoutRecordRepository.getActiveCheckoutFor(entity.getId())));
             return row;
         }).toList();
         ModelAndView model = new ModelAndView("search/itemsTable");
@@ -155,36 +156,33 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         return ids.map(id -> get(id)).collect(Collectors.toSet());
     }
 
-    class GeneralDisListener {
-        // Stop a description of an item from being deleted if there are still items
-        // using that description
-        @EventListener(BeforeDeleteGeneralDis.class)
-        public void on(final BeforeDeleteGeneralDis event) {
-            final ReferencedException referencedException = new ReferencedException();
-            final InventoryItem genDisInventoryItem = inventoryItemRepository.findFirstByGenDisId(event.getId());
-            if (genDisInventoryItem != null) {
-                referencedException.setKey("generalDis.inventoryItem.genDis.referenced");
-                referencedException.addParam(genDisInventoryItem.getId());
-                throw referencedException;
-            }
+    // Stop a description of an item from being deleted if there are still items
+    // using that description
+    @EventListener(BeforeDeleteGeneralDis.class)
+    public void onBeforeDeleteGeneralDis(final BeforeDeleteGeneralDis event) {
+        final ReferencedException referencedException = new ReferencedException();
+        final InventoryItem genDisInventoryItem = inventoryItemRepository.findFirstByGenDisId(event.getId());
+        if (genDisInventoryItem != null) {
+            referencedException.setKey("generalDis.inventoryItem.genDis.referenced");
+            referencedException.addParam(genDisInventoryItem.getId());
+            throw referencedException;
         }
     }
 
-    class CheckoutRecordListener {
-        // Stop a checkout record from being deleted if there are still items using that
-        // checkout record
-        @EventListener(BeforeDeleteCheckoutRecord.class)
-        public void on(final BeforeDeleteCheckoutRecord event) {
-            final ReferencedException referencedException = new ReferencedException();
-            // TODO update check for current fields
-            final CheckoutRecord recordToBeDeleted = checkoutRecordRepository.getReferenceById(event.getId());
-            if (recordToBeDeleted.getReturnedTime() == null && recordToBeDeleted.getInventoryItems() != null
-                    && recordToBeDeleted.getInventoryItems().size() > 0) {
-                // This item is currently checkout to the that record
-                referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
-                referencedException.addParam(recordToBeDeleted.getInventoryItems().iterator().next().getId());
-                throw referencedException;
-            }
+    // Stop a checkout record from being deleted if there are still items using that
+    // checkout record
+    @EventListener(BeforeDeleteCheckoutRecord.class)
+    public void onBeforeDeleteCheckoutRecord(final BeforeDeleteCheckoutRecord event) {
+        final ReferencedException referencedException = new ReferencedException();
+        // TODO update check for current fields
+        final CheckoutRecord recordToBeDeleted = checkoutRecordRepository.getReferenceById(event.getId());
+        if (recordToBeDeleted.getReturnedTime() == null && recordToBeDeleted.getInventoryItems() != null
+                && recordToBeDeleted.getInventoryItems().size() > 0) {
+            // This item is currently checkout to the that record
+            referencedException.setKey("checkoutRecord.inventoryItem.currentCheckout.referenced");
+            referencedException.addParam(recordToBeDeleted.getInventoryItems().iterator().next().getId());
+            throw referencedException;
         }
     }
+
 }
