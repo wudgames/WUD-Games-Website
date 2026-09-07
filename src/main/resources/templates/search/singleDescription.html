@@ -8,12 +8,7 @@
 <body id="root">
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
     <div>Single description page</div>
-    <span th:replace="~{fragments/managementOptions :: managementOptions(${description})}">Management Options</span>
-    <!-- 
-    <div th:if="${show_editor == true}">Editor Visible</div>
-    <div th:if="${show_editor != true}">Editor Hidden</div>
-    -->
-    Description type is "<span th:text="${description_type}"></span>"
+    <span th:replace="~{fragments/managementOptions :: managementOptions(${descriptionAndAvailability})}">Management Options</span>
     <form action="/api/description/create" method="post" th:object="${description}">
         <input type="hidden" th:value="${description_type}" name="description_type">
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">

@@ -12,16 +12,16 @@
 <body>
   <div th:fragment="tile (type_displayed)" class="media tile">
     <div class="content">
-      <h3 th:text="${tiledata.generalDis.name}">Name</h3>
-      <span th:if="${tiledata.generalDis instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
-        Player Count: <span th:text="${tiledata.generalDis.minPlayers}">[Min]</span>-<span th:text="${tiledata.generalDis.maxPlayers}">[Max]</span><br>
+      <h3 th:text="${tiledata.description.name}">Name</h3>
+      <span th:if="${tiledata.description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+        Player Count: <span th:text="${tiledata.description.minPlayers}">[Min]</span>-<span th:text="${tiledata.description.maxPlayers}">[Max]</span><br>
       </span>
-      <span th:if="${tiledata.generalDis instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
-        Playtime (minutes): <span th:text="${tiledata.generalDis.minPlaytime}">[Min]</span>-<span th:text="${tiledata.generalDis.maxPlaytime}">[Max]</span><br>
+      <span th:if="${tiledata.description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+        Playtime (minutes): <span th:text="${tiledata.description.minPlaytime}">[Min]</span>-<span th:text="${tiledata.description.maxPlaytime}">[Max]</span><br>
       </span>
-      Availability: <span th:text="${tiledata.copiesAvailable}">available</span>/<span th:text="${tiledata.totalCopies}">total</span><br>
+      Availability: <span th:text="${tiledata.allItems.size() - tiledata.checkedOutItems.size()}">available</span>/<span th:text="${tiledata.allItems.size()}">total</span><br>
     </div>
-    <img th:src="${tiledata.generalDis.imageUrl}" alt="Description Image" class="img"
+    <img th:src="${tiledata.description.imageUrl}" alt="Description Image" class="img"
       src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
   </div>
 </body>

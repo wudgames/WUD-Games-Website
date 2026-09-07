@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.querydsl.core.types.dsl.StringPath;
 
+import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItem;
+
 public interface GeneralDisRepository extends JpaRepository<GeneralDis, Long>, QuerydslPredicateExecutor<GeneralDis>, QuerydslBinderCustomizer<QGeneralDis> {
 
     @Override
@@ -26,11 +28,11 @@ public interface GeneralDisRepository extends JpaRepository<GeneralDis, Long>, Q
     @Query(value = "SELECT description FROM GeneralDis description WHERE description.name LIKE %:searchText% ORDER BY name ASC")
     List<? extends GeneralDis> search(@Param("searchText") String searchText);
 
-    @Query(value = "SELECT COUNT(*) FROM CheckoutRecord checkoutRecord " + //
+    @Query(value = "SELECT item FROM CheckoutRecord checkoutRecord " + //
                 "INNER JOIN checkoutRecord.inventoryItems item " + //
                 "INNER JOIN item.genDis description " + //
                 "WHERE description.id=:id AND checkoutRecord.returnedTime IS NULL")
-    Integer getNumberCheckedOut(Long id);
+    List<InventoryItem> getItemsCheckedOut(Long id);
 
     @Query(value = "SELECT COUNT(*) FROM CheckoutRecord checkoutRecord " + //
                 "INNER JOIN checkoutRecord.inventoryItems item " + //

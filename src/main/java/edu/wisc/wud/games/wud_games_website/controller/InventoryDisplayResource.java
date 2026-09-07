@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
+import edu.wisc.wud.games.wud_games_website.general_dis.GenDisWithAvailabilityDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
@@ -50,9 +51,9 @@ public class InventoryDisplayResource {
     @GetMapping("/library/{id}/{vanity_name}")
     public ModelAndView getPageForDescription(@PathVariable Long id) {
         ModelAndView model = new ModelAndView("search/singleDescription");
-        GeneralDisDTO generalDisDTO = generalDisService.get(id);
-        model.addObject("description", generalDisDTO);
-        //model.addObject("id", id);
+        GenDisWithAvailabilityDTO descriptionAvailabilityDTO = generalDisService.getDescriptionAndAvailability(id);
+        model.addObject("descriptionAndAvailability", descriptionAvailabilityDTO);
+        model.addObject("description", descriptionAvailabilityDTO.getDescription());
         return model;
     }
 

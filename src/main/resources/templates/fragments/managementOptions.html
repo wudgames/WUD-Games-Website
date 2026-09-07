@@ -5,17 +5,18 @@
     <title id="pageTitle">Management Options</title>
 </head>
 
-<body id="root" th:fragment="managementOptions (description_managed)">
+<body id="root" th:fragment="managementOptions (disWithAvailability)">
     <span
-        th:if="${description_managed instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}"
+        th:if="${disWithAvailability.description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO) ||
+        disWithAvailability.description instanceof T(edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO) ||
+        disWithAvailability.description instanceof T(edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO)}"
         sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
-
-        <a th:href="@{~/manage/inventory/update/{id}(id=${description_managed.id})}">
+        <a th:href="@{~/manage/inventory/update/{id}(id=${disWithAvailability.description.id})}">
             <button>Edit</button>
         </a>
-
-        <form method="post" action="/manage/description/delate">
-            <input type="hidden" name="id" th:value="${description_managed.id}">
+        <form method="post" action="/manage/description/delate"
+            th:if="${disWithAvailability.allItems.size() == 0}">
+            <input type="hidden" name="id" th:value="${disWithAvailability.description.id}">
             <button type="submit" onclick="return confirm('Confirm Deleting Description?');">
                 Delete
             </button>

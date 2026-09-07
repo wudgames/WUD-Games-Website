@@ -13,12 +13,12 @@
             <td>Location</td>
             <td>Availability</td>
             <td
-                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO)}"
+                th:if="${rowDTOs.size() >= 1 && rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.physical_item.PhysicalItemDTO)}"
                 sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER') || hasRole('HOST')">
                 Physical Management Options
             </td>
             <td
-                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
+                th:if="${rowDTOs.size() >= 1 && rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
                 sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER') || hasRole('HOST')">
                 Digital Management Options
             </td>
@@ -70,7 +70,7 @@
                 </span>
             </td>
             <td
-                th:if="${rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
+                th:if="${rowDTOs.size() >= 1 && rowDTOs.get(0).item instanceof T(edu.wisc.wud.games.wud_games_website.digital_item.DigitalItemDTO)}"
                 sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER') || hasRole('HOST')">
                 <span
                     sec:authorize="hasRole('DIGITAL_INVENTORY_MANAGER')">

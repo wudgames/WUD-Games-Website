@@ -114,7 +114,7 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
             try {
                 Integer playerTime = Integer.valueOf(playTimeParam);
                 if (playerTime > 0) {
-                    //booleanBuilder.and(description.as(QBoardGameDis.class).minPlaytime.loe(playerTime));
+                    // booleanBuilder.and(description.as(QBoardGameDis.class).minPlaytime.loe(playerTime));
                     booleanBuilder.and(description.as(QBoardGameDis.class).maxPlaytime.loe(playerTime));
                 }
             } catch (NumberFormatException e) {
@@ -123,8 +123,8 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
 
         JPAQuery<GeneralDis> query = queryFactory.selectFrom((QGeneralDis) description)
                 .where(booleanBuilder);
-        //        .orderBy(description.name.desc())
-        
+        // .orderBy(description.name.desc())
+
         ComparableExpressionBase<?> sortField = null;
         // Determine field to sort by
         String sortBy = params.getFirst("sortBy");
@@ -132,7 +132,7 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
             sortField = description.name;
         } else if (sortBy.equals("Popularity")) {
             throw new IllegalStateException("Sorting by Popularity is not implemented");
-            //sortField = description.name;
+            // sortField = description.name;
         } else if (sortBy.equals("Min Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
             sortField = description.as(QGameDis.class).minPlayers;
         } else if (sortBy.equals("Max Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
@@ -144,7 +144,7 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         } else {
             throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
         }
-        
+
         // Determine sorting order
         String sortOrder = params.getFirst("sortOrder");
         if (sortOrder.equals("Ascending")) {
@@ -154,17 +154,12 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         } else {
             throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
         }
-        
+
         List<GeneralDisDTO> resultsList = mapper.allToDTO(query.fetch());
 
         // DOTO this should be able to be done as one query to the database
         List<GenDisWithAvailabilityDTO> resultsWithAvailabilityList = resultsList.stream().map(result -> {
-            GenDisWithAvailabilityDTO disWithAvailabilityDTO = new GenDisWithAvailabilityDTO();
-            disWithAvailabilityDTO.setGeneralDis(result);
-            int totalCopies = inventoryItemRepository.findByGenDis(mapper.toEntity(result)).size();
-            disWithAvailabilityDTO.setTotalCopies(totalCopies);
-            disWithAvailabilityDTO.setCopiesAvailable(totalCopies - repository.getNumberCheckedOut(result.getId()));
-            return disWithAvailabilityDTO;
+            return getDescriptionAndAvailability(result);
         }).toList();
 
         model.addObject("resultsList", resultsWithAvailabilityList);
@@ -187,6 +182,22 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public GenDisWithAvailabilityDTO getDescriptionAndAvailability(GeneralDisDTO description) {
+        GenDisWithAvailabilityDTO disWithAvailabilityDTO = new GenDisWithAvailabilityDTO();
+        disWithAvailabilityDTO.setDescription(description);
+        List<InventoryItemDTO> allItems = inventoryItemMapper
+                .allToDTO(inventoryItemRepository.findByGenDis(mapper.toEntity(description)));
+        disWithAvailabilityDTO.setAllItems(allItems);
+        List<InventoryItemDTO> itemsCheckedOut = inventoryItemMapper
+                .allToDTO(repository.getItemsCheckedOut(description.getId()));
+        disWithAvailabilityDTO.setCheckedOutItems(itemsCheckedOut);
+        return disWithAvailabilityDTO;
+    }
+
+    public GenDisWithAvailabilityDTO getDescriptionAndAvailability(Long id) {
+        return getDescriptionAndAvailability(get(id));
     }
 
     public void setDataForSingleDescription(Long description_id, ModelAndView model) {
