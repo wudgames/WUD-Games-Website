@@ -25,6 +25,7 @@ import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
 import edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_console_dis.GameConsoleDisDTO;
 import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
+import edu.wisc.wud.games.wud_games_website.general_dis.GenDisWithAvailabilityDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,14 +91,16 @@ public class InventoryManagementResource {
     public ModelAndView getMethodName(@PathVariable Long id, HttpServletRequest request) {
         ModelAndView model = new ModelAndView("search/singleDescription");
         System.out.println("Loading type for description with id: " + id);
-        GeneralDisDTO generalDisDTO = generalDisService.get(id);
-        System.out.println("found " + generalDisDTO);
-        verifyAuthorizationForDescriptionType(request, generalDisDTO.getClass());
+        GenDisWithAvailabilityDTO disWithAvailabilityDTO = generalDisService.getDescriptionAndAvailability(id);
+        System.out.println("found " + disWithAvailabilityDTO.getDescription());
+        verifyAuthorizationForDescriptionType(request, disWithAvailabilityDTO.getDescription().getClass());
         model.addObject("show_editor", true);
-        model.addObject("description_type", physicalDescriptionStrings.get(generalDisDTO.getClass()));
-        model.addObject("description", generalDisDTO);// This is used to pass the id along to the form options
+
+        model.addObject("description_type", physicalDescriptionStrings.get(disWithAvailabilityDTO.getDescription().getClass()));
+        model.addObject("descriptionAndAvailability", disWithAvailabilityDTO);
+        model.addObject("description", disWithAvailabilityDTO.getDescription());// This is used to pass the id along to the form options
         Set<String> type_option = new HashSet<>();
-        type_option.add(physicalDescriptionStrings.get(generalDisDTO.getClass()));
+        type_option.add(physicalDescriptionStrings.get(disWithAvailabilityDTO.getDescription().getClass()));
         model.addObject("type_options", type_option);
         return model;
     }

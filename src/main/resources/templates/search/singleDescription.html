@@ -7,13 +7,15 @@
 
 <body id="root">
     <div th:replace="~{fragments/header ::navbar}">The header should go here</div>
-    <div>Single description page</div>
-    <span th:replace="~{fragments/managementOptions :: managementOptions(${descriptionAndAvailability})}">Management Options</span>
+    <span th:if="${show_editor != true}">
+        <span th:replace="~{fragments/managementOptions :: managementOptions(${descriptionAndAvailability})}">
+            Management Options
+        </span>
+    </span>
     <form action="/api/description/create" method="post" th:object="${description}">
         <input type="hidden" th:value="${description_type}" name="description_type">
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
             <input type="hidden" th:field="*{id}">
-            <div>GeneralDis fields</div>
             <!-- add a prefill link option (link from steam or bgg) here -->
             <div class="media">
                 <div class="content">
@@ -40,11 +42,11 @@
                 Max player count: <span th:text="*{maxPlayers}"></span>
             </div>
             <span th:if="${show_editor == true}">
-                <div>GameDis fields</div>
                 <label for="minPlayers">Min player count</label>: <input id="minPlayers" type="number"
                     th:field="*{minPlayers}" />
                 <label for="maxPlayers">Max player count</label>: <input id="maxPlayers" type="number"
                     th:field="*{maxPlayers}" />
+                <br>
             </span>
         </span>
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
@@ -53,17 +55,17 @@
                 Max playtime (minutes): <span th:text="*{maxPlaytime}"></span>
             </div>
             <span th:if="${show_editor == true}">
-                <div>BoardGameDis fields</div>
                 <label for="minPlaytime">Min playtime (minutes)</label>: <input id="minPlaytime" type="number"
                     th:field="*{minPlaytime}" />
                 <label for="maxPlaytime">Max playtime (minutes)</label>: <input id="maxPlaytime" type="number"
                     th:field="*{maxPlaytime}" />
+                <br>
             </span>
         </span>
         <span
             th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_expansion_dis.BoardGameExpansionDisDTO)}">
             <span th:if="${show_editor == true}">
-                <div>BoardGameExpansionDis fields</div>
+                <div>BoardGameExpansionDis fields WIP</div>
                 <!-- Add selecting what this is an expansion to here -->
             </span>
         </span>
@@ -74,10 +76,9 @@
             </span>
             -->
         <div>
-            <input th:if="${show_editor == true}" type="submit" value="Submit">
+            <input th:if="${show_editor == true}" type="submit" value="Submit" aria-label="Submit">
         </div>
     </form>
-    <div>This with be were information about individual items could go.</div>
     <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}"
         sec:authorize="hasRole('PHYSICAL_INVENTORY_MANAGER')">
         <form method="post" th:action="@{/api/manage/createItem}">
@@ -86,9 +87,7 @@
         </form>
     </span>
     <input type="hidden" name="description_id" th:value="${description.id}">
-    <span hx-target="find #itemsTable"
-        hx-get="/library/itemsTable"
-        hx-trigger="load, submit from:[name='create_copy']"
+    <span hx-target="find #itemsTable" hx-get="/library/itemsTable" hx-trigger="load, submit from:[name='create_copy']"
         hx-include="[name='description_id']">
         <span id="itemsTable">Loading Items...</span>
     </span>
