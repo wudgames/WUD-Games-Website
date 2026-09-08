@@ -92,33 +92,13 @@ public class InventoryItemResource {
 
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/manage/inventoryItem/edit")
-    public ModelAndView updateItem(@ModelAttribute InventoryItemDTO item, @RequestParam Long description_id, @RequestParam(required = false) String locationsName) {
-        return inventoryItemService.updatedOrCreate(item, locationsName, description_id);
+    public ModelAndView updateItem(@RequestParam Map<String, String> parameters, @RequestParam Long description_id, @RequestParam(required = false) String locationsName) {
+        // Using module attribute was causing an issues because item did not including fields that are on subclasses of InventoryItemDTO
+        return inventoryItemService.updatedOrCreate(parameters, locationsName, description_id);
         //inventoryItemService.create(item);
         //return new ModelAndView("redirect:/library/" + item.getGenDis().getId());
     }
-    /*
-    private InventoryItemDTO updateItem(InventoryItemDTO originalItem, Map<String, String> parameters) {
-        InventoryItemDTO updatedItem = itemDTOSupplierMap.get(originalItem.getClass()).get();
-        updatedItem.setId(originalItem.getId());
-        updatedItem.setGenDis(originalItem.getGenDis());
-        updatedItem.setDateAdded(originalItem.getDateAdded());
-        updatedItem.setNotes(parameters.get("notes"));
-        // description is skipped
-        if (updatedItem instanceof PhysicalItemDTO) {
-            if (parameters.containsKey("barcode") && !parameters.get("barcode").isBlank()) {
-                ((PhysicalItemDTO) updatedItem).setBarcode(Long.valueOf(parameters.get("barcode")));
-            } else {
-                ((PhysicalItemDTO) updatedItem).setBarcode(((PhysicalItemDTO) originalItem).getBarcode());
-            }
-            // TODO Updating the location (skiped for now)
-            ((PhysicalItemDTO) updatedItem).setLocation(((PhysicalItemDTO) originalItem).getLocation());
-        }
-
-        // TODO Barcodes and accounts
-        return updatedItem;
-    }
-    */
+    
     @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
     @PostMapping("/api/manage/deleteItem")
     public ModelAndView postMethodName(@RequestParam Map<String, String> parameters) {

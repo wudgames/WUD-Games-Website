@@ -36,6 +36,9 @@ import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.security.InvalidParameterException;
+import java.text.ParseException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
     private final BarcodeRepository barcodeRepository;
     private final GeneralDisRepository generalDisRepository;
     private final InventoryItemRepository inventoryItemRepository;
+    private final InventoryItemMapper inventoryItemMapper;
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
     private final GeneralDisService generalDisService;
@@ -72,7 +76,9 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
             final CheckoutRecordRepository checkoutRecordRepository,
             final ApplicationEventPublisher publisher, final GeneralDisService generalDisService,
             final GeneralDisMapper generalDisMapper, final LocationRepository locationRepository,
-            final LocationMapper locationMapper, final CheckoutRecordMapper checkoutRecordMapper, GeneralDisRepository generalDisRepository, BarcodeRepository barcodeRepository) {
+            final LocationMapper locationMapper, final CheckoutRecordMapper checkoutRecordMapper,
+            GeneralDisRepository generalDisRepository, BarcodeRepository barcodeRepository,
+            final InventoryItemMapper inventoryItemMapper) {
         super(inventoryItemRepository, mapper, publisher);
         this.generalDisService = generalDisService;
         this.generalDisMapper = generalDisMapper;
@@ -81,6 +87,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         this.locationRepository = locationRepository;
         this.locationMapper = locationMapper;
         this.checkoutRecordMapper = checkoutRecordMapper;
+        this.inventoryItemMapper = inventoryItemMapper;
 
         // generalDisDTOToInventoryItemDTOMap.put(GeneralDisDTO.class, () -> new
         // InventoryItemDTO());
@@ -124,18 +131,48 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
         return model;
     }
 
-    public ModelAndView updatedOrCreate(InventoryItemDTO item, String locationsName, Long description_id) {
-        if (locationsName != null) {
-            ((PhysicalItemDTO) item).setLocation(locationMapper.toDTO(locationRepository.findByName(locationsName).orElseThrow()));
-        }
-        item.setGenDis(generalDisMapper.toDTO(generalDisRepository.findById(description_id).orElseThrow()));
+    public ModelAndView updatedOrCreate(Map<String, String> parameters, String locationsName, Long description_id) {
+        InventoryItemDTO item = paresParamsToDto(parameters);
         createOrUpdate(item);
-        return new ModelAndView("redirect:/library/");
+        return new ModelAndView("redirect:/library/" + description_id);
+    }
+
+    private InventoryItemDTO paresParamsToDto(Map<String, String> parameters) {
+        Long descriptionId = Long.valueOf(parameters.get("description_id"));
+        GeneralDisDTO description = generalDisMapper.toDTO(generalDisRepository.findById(descriptionId).orElseThrow());
+        InventoryItemDTO updatedItem = generalDisDTOToInventoryItemDTOMap.get(description.getClass()).get();
+        try {
+            Long id = Long.valueOf(parameters.get("id"));
+            updatedItem.setId(id);
+        } catch (NumberFormatException e) {}
+        updatedItem.setGenDis(description);
+        try {
+            OffsetDateTime dateAdded = OffsetDateTime.parse(parameters.get("dateAdded"));
+            updatedItem.setDateAdded(dateAdded);
+        } catch (DateTimeParseException e) {}
+        updatedItem.setNotes(parameters.get("notes"));
+        // description is skipped
+        if (updatedItem instanceof PhysicalItemDTO) {
+            if (parameters.containsKey("barcode") && !parameters.get("barcode").isBlank()) {
+                ((PhysicalItemDTO) updatedItem).setBarcode(Long.valueOf(parameters.get("barcode")));
+            }
+            String locationsName = parameters.get("locationName");
+            if (locationsName != null) {
+                ((PhysicalItemDTO) updatedItem)
+                        .setLocation(locationMapper.toDTO(locationRepository.findByName(locationsName).orElseThrow()));
+            }
+        }
+        // TODO accounts
+        return updatedItem;
     }
 
     public ModelAndView getPageToCreateItemFor(Long description_id, HttpServletRequest request) {
         final GeneralDisDTO generalDisDTO = generalDisService.get(description_id);
         InventoryItemDTO inventoryItemDTO = generalDisDTOToInventoryItemDTOMap.get(generalDisDTO.getClass()).get();
+        inventoryItemDTO = inventoryItemMapper.toDTO(inventoryItemMapper.toEntity(inventoryItemDTO));// This
+                                                                                                     // automatically
+                                                                                                     // sets some
+                                                                                                     // categories
         inventoryItemDTO.setGenDis(generalDisDTO);
         if (inventoryItemDTO instanceof PhysicalItemDTO) {
             if (!request.isUserInRole("PHYSICAL_INVENTORY_MANAGER")) {
@@ -150,7 +187,7 @@ public class InventoryItemService extends EntityService<InventoryItemRepository,
                     "Authorization could not be confirmed for type " + inventoryItemDTO.getClass());
         }
         ModelAndView model = new ModelAndView("manage/items/editItem");
-        //inventoryItemDTO
+        // inventoryItemDTO
         model.addObject("item", inventoryItemDTO);
         return model;
     }
