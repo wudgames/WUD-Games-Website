@@ -11,7 +11,7 @@ const WarningsToErrorsPlugin = require('warnings-to-errors-webpack-plugin');
 
 module.exports = (env, argv) => ({
   entry: {
-    bundle: 'index.html'
+    bundle: './src/main/resources/templates/index.html'
   },
   output: {
     path: path.resolve(__dirname, './target/classes/static'),
