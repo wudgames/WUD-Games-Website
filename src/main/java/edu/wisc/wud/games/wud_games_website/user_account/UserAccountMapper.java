@@ -7,9 +7,12 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 @Component
 public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO> {
 
-    public UserAccountMapper() {
+    private final UserAccountRepository userAccountRepository;
+
+    public UserAccountMapper(final UserAccountRepository userAccountRepository) {
         super(null, () -> new UserAccount(), () -> new UserAccountDTO());
-        //TODO Auto-generated constructor stub
+        
+        this.userAccountRepository = userAccountRepository;
     }
 
     @Override
@@ -31,9 +34,13 @@ public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO>
 
     @Override
     protected UserAccount localToEntity(UserAccountDTO dto, UserAccount entity) {
-        entity.setId(dto.getId());
+        Long id = dto.getId();
+        entity.setId(id);
         entity.setEmail(dto.getEmail());
-        //userAccount.setPassword(userAccountDTO.getPassword());
+        UserAccount existingAccount = userAccountRepository.findById(id).orElse(null);
+        if (existingAccount != null) {
+            entity.setPassword(existingAccount.getPassword());
+        }
         entity.setHost(dto.getIsHost());
         entity.setHoursHosted(dto.getHoursHosted());
         entity.setPhysicalInventoryManager(dto.getIsPhysicalInventoryManager());

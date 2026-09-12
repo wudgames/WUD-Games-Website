@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO;
@@ -18,9 +19,11 @@ import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.location.Location;
 import edu.wisc.wud.games.wud_games_website.location.LocationRepository;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccount;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountDTO;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
 import edu.wisc.wud.games.wud_games_website.user_account.UserAccountService;
+import jakarta.validation.Valid;
 
 @Component
 public class DataInitializer {
@@ -42,6 +45,9 @@ public class DataInitializer {
     @Value("${spring.datasource.admin-email}")
     private String defaultAdminEmail;
 
+    @Value("${spring.datasource.defaultAdminPassword}")
+    private String defaultAdminPassword; // This is already encoded
+
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
             UserAccountRepository userAccountRepository,
             @Qualifier("GeneralDisService") GeneralDisService generalDisService, LocationRepository locationRepository,
@@ -58,7 +64,7 @@ public class DataInitializer {
     }
 
     @Bean
-    public CommandLineRunner dataLoader() {
+    public CommandLineRunner dataLoader(PasswordEncoder encoder) {
         return args -> {
             System.out.println("User initialization started...");
 
@@ -79,11 +85,15 @@ public class DataInitializer {
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
             defaultAdminAccount.setEmail(defaultAdminEmail);
-            //defaultAdminAccount.setIsHost(true);
             defaultAdminAccount.setIsAdmin(true);
-            //defaultAdminAccount.setIsPhysicalInventoryManager(true);
             System.out.println("Saving defaultAdminAccount with email of " + defaultAdminAccount.getEmail() + "...");
-            userAccountService.createOrUpdate(defaultAdminAccount);
+
+            Long id = userAccountService.createOrUpdate(defaultAdminAccount);
+            UserAccount userAccountEntity = userAccountRepository.findById(id).orElseThrow();
+            String password = defaultAdminPassword;
+            userAccountEntity.setPassword(password);
+            defaultAdminPassword = null;
+            userAccountRepository.save(userAccountEntity);
 
             count = boardGameDisRepository.count();
             System.out.println("Number of game descriptions in the database: " + count);

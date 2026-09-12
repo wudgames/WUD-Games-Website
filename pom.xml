@@ -11,7 +11,7 @@
     </parent>
     <groupId>edu.wisc.wud.games.websitebackend</groupId>
     <artifactId>WUD-Games-Webcite</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>WUD-Games-Webcite</name>
 
     <properties>
