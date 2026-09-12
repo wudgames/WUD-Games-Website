@@ -1,5 +1,5 @@
 {
-  "name": "w-u-d-games-webcite-frontend",
+  "name": "w-u-d-games-website-frontend",
   "author": "Bootify.io",
   "scripts": {
     "devserver": "webpack serve --open --mode development",
