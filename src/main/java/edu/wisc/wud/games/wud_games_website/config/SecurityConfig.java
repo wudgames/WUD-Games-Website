@@ -9,46 +9,39 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
-
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import edu.wisc.wud.games.wud_games_website.oauth2.OAuthSuccessHandler;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountRepository;
+import edu.wisc.wud.games.wud_games_website.user_account.UserAccountService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	@Autowired
 	private OAuthSuccessHandler handler;
-	/*
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder(12);
 	}
-
+	
 	@Bean
-	public AuthenticationManager authenticationManager() throws Exception {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailService);
+	public AuthenticationManager authenticationManager(UserAccountService repository) throws Exception {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(repository);
         authProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(authProvider);
  	}
 	
 	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		System.out.println("regestering customUserDetailService");
-		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(customUserDetailService);
-		daoAuthenticationProvider.setPasswordEncoder(encoder());
+	public AuthenticationProvider authenticationProvider(PasswordEncoder encoder, UserAccountService repository) {
+		System.out.println("registering customUserDetailService");
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(repository);
+		daoAuthenticationProvider.setPasswordEncoder(encoder);
 		return daoAuthenticationProvider;
 	}
-	*/
+	
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -57,9 +50,9 @@ public class SecurityConfig {
 		httpSecurity.authorizeHttpRequests(authorize->{
 			authorize.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 			.requestMatchers("/error", "/webjars/**").permitAll()
-			.requestMatchers("/login/**").permitAll()
+			.requestMatchers("/index.html", "/library/**", "/api/search","/login/**").permitAll()
 			.requestMatchers("/myuser/**", "/api/user/**","/manage/**","/api/manage/**").authenticated()
-			.anyRequest().permitAll(); 
+			.anyRequest().denyAll(); 
 		});
 
 //		httpSecurity.csrf(csrf->csrf.ignoringRequestMatchers("/logout"));

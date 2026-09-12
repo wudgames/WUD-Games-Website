@@ -6,7 +6,6 @@
     ],
     "outDir": "./target/classes/static/out-tsc",
     "removeComments": true,
-    "baseUrl": "src/main/resources",
     "esModuleInterop": true,
     "jsx": "react",
     "moduleResolution": "bundler",
@@ -29,6 +28,9 @@
     "strictNullChecks": true,
     "typeRoots": ["src/main/webapp/types", "node_modules/@types"]
   },
+  "include": [
+    "src/main/resources/**/*",
+  ],
   "exclude": [
     "node_modules/**/*",
     "**/build/**/*",

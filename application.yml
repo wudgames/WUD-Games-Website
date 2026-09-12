@@ -3,6 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/mydatabase
     username: ${JDBC_DATABASE_USERNAME:sa}
     password: ${JDBC_DATABASE_PASSWORD:}
+    admin-email: ${DEFAULT_ADMIN_EMAIL}
     # the database should then have "host all all all scram-sha-256" in pg_hba.conf
     # for local development the user is create on the database from compose.yaml
     hikari:

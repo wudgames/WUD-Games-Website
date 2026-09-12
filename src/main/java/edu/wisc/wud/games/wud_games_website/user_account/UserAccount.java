@@ -106,7 +106,7 @@ public class UserAccount implements UserDetails, HasId {
 
     @Override
     public @Nullable String getPassword() {
-        return null;
+        return this.password;
     }
 	
     @Override

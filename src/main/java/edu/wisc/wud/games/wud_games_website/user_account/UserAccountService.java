@@ -3,6 +3,9 @@ package edu.wisc.wud.games.wud_games_website.user_account;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +13,7 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class UserAccountService extends EntityService<UserAccountRepository, UserAccount, UserAccountDTO> {
+public class UserAccountService extends EntityService<UserAccountRepository, UserAccount, UserAccountDTO> implements UserDetailsService {
     
     public UserAccountService(UserAccountRepository repository, UserAccountMapper mapper,
             ApplicationEventPublisher publisher) {
@@ -36,5 +39,10 @@ public class UserAccountService extends EntityService<UserAccountRepository, Use
     @Override
     public UserAccountDTO newDTO() {
         return new UserAccountDTO();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository.findByEmail(username);
     }
 }

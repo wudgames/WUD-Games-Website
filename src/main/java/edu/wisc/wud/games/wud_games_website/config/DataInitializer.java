@@ -64,8 +64,11 @@ public class DataInitializer {
 
             // Log to verify if the count check is working
             long count = userAccountRepository.count();
-            UserAccountDTO defaultAdminAccount = userAccountService.findByEmail(defaultAdminEmail);
             System.out.println("Number of users in the database: " + count);
+
+            System.out.println("defaultAdminEmail is " + defaultAdminEmail);
+            UserAccountDTO defaultAdminAccount = userAccountService.findByEmail(defaultAdminEmail);
+            
 
             if (null == defaultAdminAccount) {
                 System.out.println(
@@ -76,10 +79,10 @@ public class DataInitializer {
                 System.out.println("defaultAdminAccount already exist, skipping insertion.");
             }
             defaultAdminAccount.setEmail(defaultAdminEmail);
-            defaultAdminAccount.setIsHost(true);
+            //defaultAdminAccount.setIsHost(true);
             defaultAdminAccount.setIsAdmin(true);
-            defaultAdminAccount.setIsPhysicalInventoryManager(true);
-
+            //defaultAdminAccount.setIsPhysicalInventoryManager(true);
+            System.out.println("Saving defaultAdminAccount with email of " + defaultAdminAccount.getEmail() + "...");
             userAccountService.createOrUpdate(defaultAdminAccount);
 
             count = boardGameDisRepository.count();
