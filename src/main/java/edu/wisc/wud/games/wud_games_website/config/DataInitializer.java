@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,9 @@ public class DataInitializer {
     private final InventoryItemRepository inventoryItemRepository;
     private final CheckoutRecordRepository checkoutRecordRepository;
 
+    @Value("${spring.datasource.admin-email}")
+    private String defaultAdminEmail;
+
     public DataInitializer(BoardGameDisRepository boardGameDisRepository, UserAccountService userAccountService,
             UserAccountRepository userAccountRepository,
             @Qualifier("GeneralDisService") GeneralDisService generalDisService, LocationRepository locationRepository,
@@ -57,8 +61,6 @@ public class DataInitializer {
     public CommandLineRunner dataLoader() {
         return args -> {
             System.out.println("User initialization started...");
-
-            String defaultAdminEmail = System.getenv("DEFAULT_ADMIN_EMAIL");
 
             // Log to verify if the count check is working
             long count = userAccountRepository.count();
