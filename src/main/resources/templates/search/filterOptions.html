@@ -13,7 +13,7 @@
         <input type="hidden" name="type" th:value="${commonAncestor.getName()}">
         <span
             th:if="${T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO).isAssignableFrom(commonAncestor)}">
-            <label for="searchterm">query text felid: </label><input id="searchterm" name="searchterm" type="text"
+            <label for="searchterm">Name Search: </label><input id="searchterm" name="searchterm" type="text"
                 th:value="${param.searchterm}" />
         </span>
         <span th:if="${T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO).isAssignableFrom(commonAncestor)}">

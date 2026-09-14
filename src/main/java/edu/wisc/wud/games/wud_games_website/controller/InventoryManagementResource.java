@@ -181,7 +181,7 @@ public class InventoryManagementResource {
         return descriptionDTO;
     }
     
-    @PostMapping("/api/description/create")
+    @PostMapping("/manage/inventory/updateOrCreate")
     public ModelAndView createNewItem(HttpServletRequest request,
             @RequestParam Map<String, String> queryParameters) {
         // ModelAttribute is no respect polymorphic types so we need to use the

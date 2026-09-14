@@ -9,7 +9,7 @@
     <div id="formoptions">
         <div>This is the create/update form options page.</div>
         Description type is <object th:text="${description_type}"></object>
-        <form action="/api/description/create" method="post" th:object="${description}">
+        <form action="/manage/inventory/updateOrCreate" method="post" th:object="${description}">
             <input type="hidden" th:value="${description_type}" name="description_type">
             <input type="hidden" th:field="*{id}">
             <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
