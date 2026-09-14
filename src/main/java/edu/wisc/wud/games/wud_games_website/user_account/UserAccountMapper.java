@@ -1,5 +1,6 @@
 package edu.wisc.wud.games.wud_games_website.user_account;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
@@ -7,12 +8,14 @@ import edu.wisc.wud.games.wud_games_website.general_dis.EntityMapper;
 @Component
 public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO> {
 
+    private PasswordEncoder encoder;
     private final UserAccountRepository userAccountRepository;
 
-    public UserAccountMapper(final UserAccountRepository userAccountRepository) {
+    public UserAccountMapper(final UserAccountRepository userAccountRepository, PasswordEncoder encoder) {
         super(null, () -> new UserAccount(), () -> new UserAccountDTO());
         
         this.userAccountRepository = userAccountRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -37,8 +40,10 @@ public class UserAccountMapper extends EntityMapper<UserAccount, UserAccountDTO>
         Long id = dto.getId();
         entity.setId(id);
         entity.setEmail(dto.getEmail());
-        UserAccount existingAccount = userAccountRepository.findById(id).orElse(null);
-        if (existingAccount != null) {
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            entity.setPassword(encoder.encode(dto.getPassword()));
+        } else if (id != null) {
+            UserAccount existingAccount = userAccountRepository.findById(id).orElse(null);
             entity.setPassword(existingAccount.getPassword());
         }
         entity.setHost(dto.getIsHost());

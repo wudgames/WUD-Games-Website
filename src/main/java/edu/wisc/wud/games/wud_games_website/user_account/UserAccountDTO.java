@@ -13,7 +13,8 @@ public class UserAccountDTO implements HasId {
     private Long id;
 
     private String email;
-    // password is never sent to client
+    private String password;
+    // password is never mapped from entity to DTO
     // There need to be Boolean (not boolean) for Thymleaf and Lambok to pick the same names.
     private Boolean isHost = false;
     private float hoursHosted;

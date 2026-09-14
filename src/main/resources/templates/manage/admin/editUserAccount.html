@@ -11,6 +11,7 @@
     <form th:object="${userAccount}" action="/manage/admin/editUserAccount" method="post">
         <input type="hidden" th:field="*{id}">
         <label for="email">Email: </label><input type="text" id="email" th:field="*{email}">
+        <label for="password">Password: </label><input id="password" type="password" th:field="*{password}">
         <br>
         <label for="isHost">Is Host: </label><input type="checkbox" id="isHost" th:field="*{isHost}">
         <label for="hoursHosted">Hours Hosted: </label><input type="number" id="hoursHosted" th:field="*{hoursHosted}">
