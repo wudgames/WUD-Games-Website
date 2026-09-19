@@ -51,6 +51,7 @@ public class SecurityConfig {
 			authorize.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 			.requestMatchers("/error", "/webjars/**").permitAll()
 			.requestMatchers("/", "/index.html", "/library/**", "/api/search","/login/**").permitAll()
+			.requestMatchers("/host/**").hasAllRoles("HOST")
 			.requestMatchers("/myuser/**", "/api/user/**","/manage/**","/api/manage/**", "/api/**").authenticated()
 			.anyRequest().denyAll(); 
 		});

@@ -5,12 +5,19 @@ import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDelete;
 import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteInventoryItem;
 import edu.wisc.wud.games.wud_games_website.events.brfore_update.BeforeUpdateCheckoutRecord;
 import edu.wisc.wud.games.wud_games_website.general_dis.EntityService;
+import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDis;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemDTO;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -24,9 +31,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CheckoutRecordService extends EntityService<CheckoutRecordRepository, CheckoutRecord, CheckoutRecordDTO> {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final InventoryItemRepository inventoryItemRepository;
     private final InventoryItemMapper inventoryItemMapper;
@@ -85,6 +99,37 @@ public class CheckoutRecordService extends EntityService<CheckoutRecordRepositor
             update(dto.getId(), dto);
         }
         return new ModelAndView("redirect:/library");// TODO change to hosting page
+    }
+
+    private CheckoutRecordsAndItemsDTO getRowFor(CheckoutRecord record) {
+        CheckoutRecordsAndItemsDTO row = new CheckoutRecordsAndItemsDTO();
+        row.setItems(List.copyOf(inventoryItemMapper.allToDTO(record.getInventoryItems())));
+        row.setRecord(mapper.toDTO(record));
+        return row;
+    }
+
+    public ModelAndView getHostDashboard() {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QCheckoutRecord checkout = QCheckoutRecord.checkoutRecord;
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        booleanBuilder.and(checkout.returnedTime.isNull());
+
+        JPAQuery<CheckoutRecord> query = queryFactory.selectFrom(checkout)
+                .where(booleanBuilder);
+
+        query = query.orderBy(checkout.checkoutTime.desc());
+
+        ModelAndView dashboard = new ModelAndView("host/hostDashboard");
+        List<CheckoutRecord> records = query.fetch();
+
+        List<CheckoutRecordsAndItemsDTO> rows = records.stream().map(this::getRowFor).toList();
+
+        dashboard.addObject("checkoutRecordsAndItems", rows);
+        dashboard.addObject("userTimeZone", ZoneId.of("America/Chicago"));
+
+        return dashboard;
     }
 
     public ModelAndView markReturned(Long checkout_id) {

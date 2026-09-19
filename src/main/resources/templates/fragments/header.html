@@ -23,6 +23,9 @@
     </a>
     <nav class="navbar__links">
       <a class="navbar__option" href="/library">Library</a>
+      <a sec:authorize="hasRole('HOST')" class="navbar__option" href="/host/dashboard">
+        Host Dashboard
+      </a>
       <a sec:authorize="hasRole('ADMIN')" class="navbar__option" href="/manage/admin">
         Admin Dashboard
       </a>
