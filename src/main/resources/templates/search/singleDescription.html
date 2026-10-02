@@ -12,7 +12,7 @@
             Management Options
         </span>
     </span>
-    <form action="/api/description/create" method="post" th:object="${description}">
+    <form action="/manage/inventory/updateOrCreate" method="post" th:object="${description}">
         <input type="hidden" th:value="${description_type}" name="description_type">
         <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO)}">
             <input type="hidden" th:field="*{id}">
