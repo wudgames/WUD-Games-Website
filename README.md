@@ -1,57 +1,38 @@
-# WUDGames Webcite
+# WUD Games
 
-This app was created with Bootify.io - tips on working with the code [can be found here](https://bootify.io/next-steps/).
+## Run the application
 
-## Development
+Install Java 25, Node.js 24, and Docker Desktop. Start Docker Desktop, then open a terminal in this repository and run:
 
-Update your local database connection in `application.yml` or create your own `application-local.yml` file to override settings for development.
-
-During development it is recommended to use the profile `local`. In IntelliJ `-Dspring.profiles.active=local` can be added in the VM options of the Run Configuration after enabling this property in "Modify options".
-
-Lombok must be supported by your IDE. For IntelliJ install the Lombok plugin and enable annotation processing - [learn more](https://bootify.io/next-steps/spring-boot-with-lombok.html).
-
-In addition to the Spring Boot application, the DevServer must also be started - for this [Node.js](https://nodejs.org/) version 24 is required. On first usage and after updates the dependencies have to be installed:
-
-```
-npm install
+```powershell
+npm run server
 ```
 
-The DevServer can be started as follows:
+The first run creates `config/.env` from `config/.env.example`, builds the frontend and backend, starts PostgreSQL and Ollama with Docker Compose, and launches the Spring Boot app. Open <http://localhost:8080>. The first startup can take a few minutes while Ollama downloads its models. Both database files and downloaded models persist under `database/data/` between runs.
 
-```
-npm run devserver
-```
+Press **Ctrl+C** in the same terminal to stop the app, then run `npm run stop` to stop its Docker services. Your database files and downloaded models remain under `database/data/`.
 
-Using a proxy the whole application is now accessible under `localhost:3000`. All changes to the templates and JS/CSS files are immediately visible in the browser. Frontend unit tests can be executed with `npm run test`.
+The example config uses local development credentials. Google sign-in requires valid Google OAuth credentials; edit `config/.env` to set them. Keep `config/.env` private and do not commit it.
 
-## Build
+## Project folders
 
-The application can be built using the following command:
+- `frontend/` contains the Thymeleaf templates, static assets, npm dependencies, and webpack configuration.
+- `backend/` contains the Spring Boot source, Maven wrapper, and API test collection. Java code is grouped by domain; shared HTTP controllers live in `backend/src/main/java/edu/wisc/wud/games/wud_games_website/controller/`.
+- `database/` contains the Docker Compose definition and local database data.
+- `config/` contains the shareable environment example and ignored local `.env` files.
 
-```
-mvnw clean package
-```
+Spring maps routes with annotations on controller methods, so routes are kept with their controllers rather than duplicated in a separate routes folder. Security and request configuration live in the existing `config/` packages; there is no separate middleware layer to organize.
 
-Node.js is automatically downloaded using the `frontend-maven-plugin` and the final JS/CSS files are integrated into the jar.
+Backend unit tests belong under `backend/src/test/java/`, mirroring the production package structure. Add controller or service test packages there as those tests are introduced; empty folders are not needed.
 
-Start your application with the following command - here with the profile `production`:
+## Frontend development
 
-```
-java -Dspring.profiles.active=production -jar ./target/WUD-Games-Webcite-0.0.1-SNAPSHOT.jar
-```
+Run `npm --prefix frontend install` once, then `npm run devserver` to start the webpack development server at <http://localhost:3000>. It uses `config/.env.development` when present, otherwise the example config.
 
-If required, a Docker image can be created with the Spring Boot plugin. Add `SPRING_PROFILES_ACTIVE=production` as environment variable when running the container.
+## Tests
 
-```
-mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=edu.wisc.wud.games.websitebackend/wud-games-website
-```
+Run backend unit tests with `.\backend\mvnw.cmd -f .\backend\pom.xml test`. Frontend tests can be run with `npm test` from the repository root; no frontend test files have been added yet.
 
-## Further readings
+## More information
 
-* [Maven docs](https://maven.apache.org/guides/index.html)  
-* [Spring Boot reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)  
-* [Spring Data JPA reference](https://docs.spring.io/spring-data/jpa/reference/jpa.html)
-* [Learn React](https://react.dev/learn)
-* [Webpack concepts](https://webpack.js.org/concepts/)  
-* [npm docs](https://docs.npmjs.com/)  
-* [Tailwind CSS](https://tailwindcss.com/)  
+See the [Bootify next steps](https://bootify.io/next-steps/) and the [Spring Boot reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/).

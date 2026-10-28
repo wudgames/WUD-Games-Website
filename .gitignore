@@ -6,8 +6,8 @@ target/
 application-local.yml
 *.log
 .DS_Store
-node/
-node_modules/
+**/node/
+**/node_modules/
 coverage/
 .env
 .env.local
@@ -15,6 +15,9 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+/config/.env
+/config/.env.*
+!/config/.env.example
 
 ## IntelliJ IDEA
 .idea
@@ -44,4 +47,4 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-data/*
+/database/data/*

@@ -47,6 +47,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf(c->c.disable());
 		
+		// New endpoints stay private until an explicit access rule is added above.
 		httpSecurity.authorizeHttpRequests(authorize->{
 			authorize.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 			.requestMatchers("/error", "/webjars/**").permitAll()

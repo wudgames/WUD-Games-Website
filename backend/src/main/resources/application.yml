@@ -30,7 +30,7 @@ spring:
       embedding:
         # info on models https://ollama.com/blog/embedding-models
         model: nomic-embed-text
-      base-url: localhost:11435
+      base-url: http://localhost:11435
     vectorstore:
       pgvector:
         initialize-schema: true

@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 public class CustomCollectors {
 
     /**
-     * Provide a Collector for collecting values from a stream into a LinkedHashMap,
-     * thus keeping the order.
+     * Collects stream values into a LinkedHashMap, preserving encounter order.
+     * Duplicate keys cause an IllegalStateException.
      * @param keyMapper a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
-     * @return a Collector to collect values in a sorted map
+     * @return a Collector to collect values in an insertion-ordered map
      */
     public static <T, K, U> Collector<T, ?, Map<K, U>> toSortedMap(
             Function<? super T, ? extends K> keyMapper,
@@ -26,4 +26,3 @@ public class CustomCollectors {
     }
 
 }
-

@@ -4,6 +4,8 @@ services:
     image: 'ollama/ollama:latest'
     ports:
       - 11435:11434
+    volumes:
+      - ./data/ollama:/root/.ollama
   pgvector:
     image: 'pgvector/pgvector:pg18' # I think this is some sort of version number
     environment:

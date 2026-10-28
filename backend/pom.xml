@@ -138,6 +138,18 @@
     </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/../frontend</directory>
+                <includes>
+                    <include>templates/**</include>
+                    <include>static/**</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -188,7 +200,8 @@
                 </executions>
                 <configuration>
                     <nodeVersion>v24.14.0</nodeVersion>
-                    <workingDirectory>src/main/frontend</workingDirectory>
+                    <workingDirectory>${project.basedir}/../frontend</workingDirectory>
+                    <installDirectory>${project.basedir}/../frontend</installDirectory>
                 </configuration>
             </plugin>
             <plugin>

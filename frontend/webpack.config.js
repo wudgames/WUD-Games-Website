@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -11,10 +12,10 @@ const WarningsToErrorsPlugin = require('warnings-to-errors-webpack-plugin');
 
 module.exports = (env, argv) => ({
   entry: {
-    bundle: './src/main/resources/templates/index.html'
+    bundle: path.resolve(__dirname, 'templates/index.html')
   },
   output: {
-    path: path.resolve(__dirname, './target/classes/static'),
+    path: path.resolve(__dirname, '../backend/target/classes/static'),
     filename: 'js/[name].js',
     publicPath: '/'
   },
@@ -35,14 +36,23 @@ module.exports = (env, argv) => ({
       filename: 'css/[name].css'
     }),
     new Dotenv({
-      path: argv.mode === 'production' ? '.env' : '.env.development'
+      path: (() => {
+        const envPath = path.resolve(
+          __dirname,
+          '../config',
+          argv.mode === 'production' ? '.env' : '.env.development'
+        );
+        return fs.existsSync(envPath)
+          ? envPath
+          : path.resolve(__dirname, '../config', '.env.example');
+      })()
     }),
     new HtmlWebpackPlugin({
-      template: './src/main/resources/templates/index.html'
+      template: path.resolve(__dirname, 'templates/index.html')
     }),
     new CopyWebpackPlugin({
       patterns: [{
-        from: './src/main/resources/public'
+        from: path.resolve(__dirname, 'public')
       }],
     }),
     new WarningsToErrorsPlugin()
@@ -98,7 +108,8 @@ module.exports = (env, argv) => ({
     hot: true,
     static: false,
     watchFiles: [
-      'src/main/webapp/**',
+      'templates/**',
+      'static/**',
     ]
   }
 });
