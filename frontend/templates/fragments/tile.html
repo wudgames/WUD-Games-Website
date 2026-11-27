@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head xmlns:th="http://www.thymeleaf.org">
+  <title>WUDGames Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" user-scalable=yes />
+  <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div th:fragment="tile (type_displayed)" class="media tile">
+    <div class="content">
+      <h3 th:text="${tiledata.description.name}">Name</h3>
+      <span th:if="${tiledata.description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
+        Player Count: <span th:text="${tiledata.description.minPlayers}">[Min]</span>-<span th:text="${tiledata.description.maxPlayers}">[Max]</span><br>
+      </span>
+      <span th:if="${tiledata.description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+        Playtime (minutes): <span th:text="${tiledata.description.minPlaytime}">[Min]</span>-<span th:text="${tiledata.description.maxPlaytime}">[Max]</span><br>
+      </span>
+      <span th:if="${tiledata.description.tags != null && !tiledata.description.tags.isEmpty()}">
+        Characteristics:
+        <span th:each="tag, iterStat : ${tiledata.description.tags}">
+          <span th:text="${tag.name}"></span><span th:if="${!iterStat.last}">, </span>
+        </span><br>
+      </span>
+      Available: <span th:text="${tiledata.allItems.size() - tiledata.checkedOutItems.size()}">available</span>/<span th:text="${tiledata.allItems.size()}">total</span><br>
+    </div>
+    <img th:src="${tiledata.description.imageUrl}" alt="Description Image" class="img"
+      src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">
+  </div>
+</body>
+
+</html>
