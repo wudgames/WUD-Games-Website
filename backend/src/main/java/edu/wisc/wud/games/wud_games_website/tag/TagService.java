@@ -3,7 +3,10 @@ package edu.wisc.wud.games.wud_games_website.tag;
 import edu.wisc.wud.games.wud_games_website.events.before_delete.BeforeDeleteTag;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
 import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
@@ -41,6 +44,29 @@ public class TagService {
         final Tag tag = new Tag();
         mapToEntity(tagDTO, tag);
         return tagRepository.save(tag).getId();
+    }
+
+    public List<TagDTO> getOrCreateByNames(final String commaSeparatedNames) {
+        if (commaSeparatedNames == null || commaSeparatedNames.isBlank()) {
+            return List.of();
+        }
+
+        Map<String, TagDTO> tagsByName = new LinkedHashMap<>();
+        for (String value : commaSeparatedNames.split(",")) {
+            String name = value.trim();
+            if (name.isEmpty()) {
+                continue;
+            }
+            String key = name.toLowerCase(Locale.ROOT);
+            Tag tag = tagRepository.findFirstByNameIgnoreCase(name);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(name);
+                tag = tagRepository.save(tag);
+            }
+            tagsByName.putIfAbsent(key, mapToDTO(tag, new TagDTO()));
+        }
+        return new ArrayList<>(tagsByName.values());
     }
 
     public void update(final Long id, final TagDTO tagDTO) {

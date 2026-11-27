@@ -20,6 +20,13 @@
                 <label for="description">Description</label>: <textarea id="description" type="text"
                     th:field="*{description}" ></textarea>
                 <label for="imageUrl">Image Url</label>: <input id="imageUrl" type="url" th:field="*{imageUrl}" />
+                <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+                    <label for="tags">Characteristics</label>:
+                    <input id="tags" name="tags" type="text"
+                        th:value="${description.tags != null ? #strings.listJoin(description.tags.![name], ', ') : ''}"
+                        placeholder="strategy, cooperative, multiplayer" />
+                    <small>Enter comma-separated traits such as strategy, cooperative, or party game.</small>
+                </span>
             </span>
             <span th:if="${description instanceof T(edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO)}">
                 <div>GameDis fields</div>

@@ -4,7 +4,6 @@ import edu.wisc.wud.games.wud_games_website.equipment_dis.EquipmentDisDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +27,7 @@ import edu.wisc.wud.games.wud_games_website.game_dis.GameDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GenDisWithAvailabilityDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisDTO;
 import edu.wisc.wud.games.wud_games_website.general_dis.GeneralDisService;
+import edu.wisc.wud.games.wud_games_website.tag.TagService;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -35,13 +35,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 @PreAuthorize("hasRole('PHYSICAL_INVENTORY_MANAGER') or hasRole('DIGITAL_INVENTORY_MANAGER')")
 public class InventoryManagementResource {
     private final GeneralDisService generalDisService;
+    private final TagService tagService;
 
     private final Map<Class<? extends GeneralDisDTO>, String> physicalDescriptionStrings = new HashMap<>();
     // Used when  create a new entity
     private final Map<Class<? extends GeneralDisDTO>, Supplier<? extends GeneralDisDTO>> dtoFactories = new HashMap<>();
 
-    public InventoryManagementResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService) {
+    public InventoryManagementResource(@Qualifier("GeneralDisService") final GeneralDisService generalDisService,
+            final TagService tagService) {
         this.generalDisService = generalDisService;
+        this.tagService = tagService;
 
         physicalDescriptionStrings.put(BoardGameDisDTO.class, "Board Game");
         dtoFactories.put(BoardGameDisDTO.class, () -> new BoardGameDisDTO());
@@ -150,8 +153,9 @@ public class InventoryManagementResource {
             descriptionDTO.setName(queryParameters.get("name"));
             descriptionDTO.setDescription(queryParameters.get("description"));
             descriptionDTO.setImageUrl(queryParameters.get("imageUrl"));
-            descriptionDTO.setTags(new ArrayList<>());
-            // TODO tags
+            if (queryParameters.containsKey("tags")) {
+                descriptionDTO.setTags(tagService.getOrCreateByNames(queryParameters.get("tags")));
+            }
         }
 
         if (descriptionDTO instanceof GameDisDTO) {

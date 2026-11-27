@@ -20,7 +20,9 @@ import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemMapper;
 import edu.wisc.wud.games.wud_games_website.inventory_item.InventoryItemRepository;
 import edu.wisc.wud.games.wud_games_website.steam_account_dis.QSteamAccountDis;
 import edu.wisc.wud.games.wud_games_website.steam_account_dis.SteamAccountDisDTO;
+import edu.wisc.wud.games.wud_games_website.tag.TagRepository;
 import edu.wisc.wud.games.wud_games_website.util.CustomCollectors;
+import edu.wisc.wud.games.wud_games_website.util.NotFoundException;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.QVideoGameDis;
 import edu.wisc.wud.games.wud_games_website.video_game_dis.VideoGameDisDTO;
 import jakarta.persistence.EntityManager;
@@ -68,13 +70,15 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
 
     private final InventoryItemRepository inventoryItemRepository;
     private final InventoryItemMapper inventoryItemMapper;
+    private final TagRepository tagRepository;
 
     public GeneralDisService(GeneralDisRepository repository, EntityMapper<GeneralDis, GeneralDisDTO> mapper,
             ApplicationEventPublisher publisher, InventoryItemRepository inventoryItemRepository,
-            InventoryItemMapper inventoryItemMapper) {
+            InventoryItemMapper inventoryItemMapper, TagRepository tagRepository) {
         super(repository, mapper, publisher);
         this.inventoryItemRepository = inventoryItemRepository;
         this.inventoryItemMapper = inventoryItemMapper;
+        this.tagRepository = tagRepository;
     }
 
     public List<GeneralDisDTO> search(String query) {
@@ -88,10 +92,12 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
         QGeneralDis description = QGeneralDis.generalDis;
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
+        String searchTerm = params.getFirst("searchterm");
+        boolean rankedBoardGameSearch = BoardGameDisDTO.class.isAssignableFrom(clasz)
+                && searchTerm != null && !searchTerm.isBlank();
 
         if (GeneralDisDTO.class.isAssignableFrom(clasz)) {
-            String searchTerm = params.getFirst("searchterm");
-            if (searchTerm != null && !searchTerm.isEmpty()) {
+            if (searchTerm != null && !searchTerm.isEmpty() && !rankedBoardGameSearch) {
                 // description.as(QGeneralDis.class)
                 booleanBuilder.and(description.name.containsIgnoreCase(searchTerm));
             }
@@ -125,37 +131,45 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
                 .where(booleanBuilder);
         // .orderBy(description.name.desc())
 
-        ComparableExpressionBase<?> sortField = null;
-        // Determine field to sort by
-        String sortBy = params.getFirst("sortBy");
-        if (sortBy.equals("Name")) {
-            sortField = description.name;
-        } else if (sortBy.equals("Popularity")) {
-            throw new IllegalStateException("Sorting by Popularity is not implemented");
-            // sortField = description.name;
-        } else if (sortBy.equals("Min Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
-            sortField = description.as(QGameDis.class).minPlayers;
-        } else if (sortBy.equals("Max Players") && GameDisDTO.class.isAssignableFrom(clasz)) {
-            sortField = description.as(QGameDis.class).maxPlayers;
-        } else if (sortBy.equals("Min Playtime") && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
-            sortField = description.as(QBoardGameDis.class).minPlaytime;
-        } else if (sortBy.equals("Max Playtime") && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
-            sortField = description.as(QBoardGameDis.class).maxPlaytime;
-        } else {
-            throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
-        }
+        if (!rankedBoardGameSearch) {
+            ComparableExpressionBase<?> sortField;
+            String sortBy = params.getFirst("sortBy");
+            if (sortBy == null || sortBy.isBlank()) {
+                sortBy = "Name";
+            }
+            if ("Name".equals(sortBy)) {
+                sortField = description.name;
+            } else if ("Popularity".equals(sortBy)) {
+                throw new IllegalStateException("Sorting by Popularity is not implemented");
+            } else if ("Min Players".equals(sortBy) && GameDisDTO.class.isAssignableFrom(clasz)) {
+                sortField = description.as(QGameDis.class).minPlayers;
+            } else if ("Max Players".equals(sortBy) && GameDisDTO.class.isAssignableFrom(clasz)) {
+                sortField = description.as(QGameDis.class).maxPlayers;
+            } else if ("Min Playtime".equals(sortBy) && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
+                sortField = description.as(QBoardGameDis.class).minPlaytime;
+            } else if ("Max Playtime".equals(sortBy) && BoardGameDisDTO.class.isAssignableFrom(clasz)) {
+                sortField = description.as(QBoardGameDis.class).maxPlaytime;
+            } else {
+                throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
+            }
 
-        // Determine sorting order
-        String sortOrder = params.getFirst("sortOrder");
-        if (sortOrder.equals("Ascending")) {
-            query = query.orderBy(sortField.asc());
-        } else if (sortOrder.equals("Descending")) {
-            query = query.orderBy(sortField.desc());
-        } else {
-            throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
+            String sortOrder = params.getFirst("sortOrder");
+            if (sortOrder == null || "Ascending".equals(sortOrder)) {
+                query = query.orderBy(sortField.asc());
+            } else if ("Descending".equals(sortOrder)) {
+                query = query.orderBy(sortField.desc());
+            } else {
+                throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
+            }
         }
 
         List<GeneralDisDTO> resultsList = mapper.allToDTO(query.fetch());
+        if (clasz != GeneralDisDTO.class) {
+            resultsList = resultsList.stream().filter(clasz::isInstance).toList();
+        }
+        if (rankedBoardGameSearch) {
+            resultsList = BoardGameSearchRanking.rank(resultsList, searchTerm);
+        }
 
         // DOTO this should be able to be done as one query to the database
         List<GenDisWithAvailabilityDTO> resultsWithAvailabilityList = resultsList.stream().map(result -> {
@@ -173,15 +187,22 @@ public class GeneralDisService extends EntityService<GeneralDisRepository, Gener
 
     // Called when the manage description form is submitted created or updated
     public void createOrUpdateDescription(GeneralDisDTO generalDisDTO) {
-        System.out.println("Starting createOrUpdateDescription with " + generalDisDTO);
-        try {
-            create(generalDisDTO);
-            System.out.println("post-create");
-        } catch (Exception e) {
-            System.out.println(e.getMessage() + "\n");
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+        GeneralDis entity;
+        if (generalDisDTO.getId() == null) {
+            entity = mapper.toEntity(generalDisDTO);
+        } else {
+            GeneralDis existing = repository.findById(generalDisDTO.getId())
+                    .orElseThrow(NotFoundException::new);
+            entity = mapper.toEntity(generalDisDTO, existing);
         }
+        if (generalDisDTO.getTags() != null) {
+            List<Long> tagIds = generalDisDTO.getTags().stream()
+                    .map(tag -> tag.getId())
+                    .filter(id -> id != null)
+                    .toList();
+            entity.setTags(tagRepository.findAllById(tagIds));
+        }
+        repository.save(entity);
     }
 
     public GenDisWithAvailabilityDTO getDescriptionAndAvailability(GeneralDisDTO description) {

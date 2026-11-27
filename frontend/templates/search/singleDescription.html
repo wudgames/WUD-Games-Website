@@ -27,7 +27,18 @@
                     <p th:if="${show_editor != true}" th:text="${description.description}">description</p>
                     <textarea th:if="${show_editor == true}" id="description" aria-label="Description" type="text"
                         th:field="*{description}"></textarea>
-                    <!-- Add tags fields here -->
+                    <span th:if="${show_editor == true && description instanceof T(edu.wisc.wud.games.wud_games_website.board_game_dis.BoardGameDisDTO)}">
+                        <label for="tags">Characteristics (comma separated)</label>
+                        <input id="tags" name="tags" type="text"
+                            th:value="${description.tags != null ? #strings.listJoin(description.tags.![name], ', ') : ''}"
+                            placeholder="strategy, cooperative, multiplayer" />
+                    </span>
+                    <div th:if="${show_editor != true && !description.tags.isEmpty()}">
+                        Characteristics:
+                        <span th:each="tag, iterStat : ${description.tags}">
+                            <span th:text="${tag.name}"></span><span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </div>
                 </div>
                 <img th:if="${show_editor != true}" th:src="${description.imageUrl}" alt="Description Image" class="img"
                     src="https://cf.geekdo-images.com/TrBdhHzDw10cTw26V2QXkw__imagepage/img/ooPOAjbwO5DjZOWwzVpwe7A5jw8=/fit-in/900x600/filters:no_upscale():strip_icc()/pic184991.jpg">

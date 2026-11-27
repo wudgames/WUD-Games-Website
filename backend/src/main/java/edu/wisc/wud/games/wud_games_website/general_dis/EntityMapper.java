@@ -96,6 +96,14 @@ public abstract class EntityMapper<entityType, dtoType> {
         return (entityType) leaf.bubbleUpEntity(dto, leaf.entityTypeSupplier.get());
     }
 
+    public final entityType toEntity(final dtoType dto, final entityType entity) {
+        if (dto == null || entity == null) {
+            return null;
+        }
+        EntityMapper leaf = getLeafByDTO(dto);
+        return (entityType) leaf.bubbleUpEntity(dto, entity);
+    }
+
     public final List<entityType> allToEntity(final List<dtoType> dtoList) {
         return dtoList.stream().map(this::toEntity).toList();
     }

@@ -17,6 +17,7 @@
 
 <body th:fragment="searchresult">
     <div>Filter summery will go here</div>
+    <p th:if="${resultsList.isEmpty()}">No matching games found.</p>
     <div class="tilegrid">
 
         <div th:each="tiledata: ${resultsList}" class="overlay">
